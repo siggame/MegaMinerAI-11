@@ -1,0 +1,1 @@
+writer = makeWriter(language='java')
