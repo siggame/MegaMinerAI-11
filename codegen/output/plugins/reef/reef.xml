@@ -1,0 +1,16 @@
+<options>
+  <option>
+    <key>Check Box</key>
+    <type>Integer</type>
+    <value>1</value>
+    <minvalue>0</minvalue>
+    <maxvalue>1</maxvalue>
+  </option>
+  <option>
+    <key>Slider Bar</key>
+    <type>Float</type>
+    <value>100</value>
+    <minvalue>0</minvalue>
+    <maxvalue>100</maxvalue>
+  </option>
+</options>
