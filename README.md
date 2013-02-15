@@ -1,3 +1,3 @@
-Hey everyone, you have successfully cloned MM11. 
+Hey everyone, you have successfully found MM11. 
 
-Not to fill it out. Huzzah!
+Now to fill it out. Huzzah!
