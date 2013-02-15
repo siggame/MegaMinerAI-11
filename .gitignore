@@ -1,0 +1,74 @@
+#Codegen output doesn't go in the repository
+*.pyc
+codegen/output
+
+# shared objects don't go in the repository
+*.so
+
+#Game logs don't go in the repository
+*.gamelog
+*.glog
+
+#Visual studio files don't go in the repository
+#Visual Studio files
+*.[Oo]bj
+[Bb]in
+[Bb]in/
+[Dd]ebug*/
+[Rr]elease*/
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+ipch/
+obj/
+Ankh.NoLoad
+
+
+#Windows thumbnail files don't go in the repository
+Thumbs.db
+
+#Server logs don't go in the repository
+server/logs
+
+#tilde files don't go in the repository
+*~
+
+#visualizer qmake artifacts don't go in the repository
+*.o
+*.d
+*.a
+moc_*
+
+#Built Doxygen documentation doesn't go in the repository
+client/c/html/*
+client/c/latex/*
+client/python/html/*
+client/python/latex/*
+
+visualizer/visualizer
+visualizer/Makefile
+visualizer/botnet/Makefile
+
+
+#Build Logs don't go in the repository
+*build.log*
+
+#Dont ignore jna.jar
+!jna.jar
