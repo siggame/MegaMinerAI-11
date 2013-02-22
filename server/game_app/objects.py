@@ -16,7 +16,7 @@ class Mappable:
     pass
 
 
-
+#fdlksafld
 class Trash(Mappable):
   def __init__(self, game, id, x, y, weight):
     self.game = game
