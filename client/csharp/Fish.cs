@@ -162,12 +162,12 @@ public class Fish: Mappable
   }
 
   ///The current amount of weight the fish is carrying
-  public int CarryWeight
+  public int CarryingWeight
   {
     get
     {
       validify();
-      int value = Client.fishGetCarryWeight(ptr);
+      int value = Client.fishGetCarryingWeight(ptr);
       return value;
     }
   }
@@ -190,6 +190,17 @@ public class Fish: Mappable
     {
       validify();
       int value = Client.fishGetIsVisible(ptr);
+      return value;
+    }
+  }
+
+  ///The maximum number of attacks this fish has per turn
+  public int MaxAttacks
+  {
+    get
+    {
+      validify();
+      int value = Client.fishGetMaxAttacks(ptr);
       return value;
     }
   }

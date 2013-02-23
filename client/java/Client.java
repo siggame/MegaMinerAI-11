@@ -26,6 +26,9 @@ public interface Client extends Library {
   int playerTalk(Pointer object, String message);
 
     //accessors
+  int getInitialFood(Pointer connection);
+  int getSharedLowerBound(Pointer connection);
+  int getSharedUpperBound(Pointer connection);
   int getSpawnFoodPerTurn(Pointer connection);
   int getTurnNumber(Pointer connection);
   int getPlayerID(Pointer connection);
@@ -62,6 +65,10 @@ public interface Client extends Library {
   int fishSpeciesGetCarryCap(Pointer ptr);
   int fishSpeciesGetAttackPower(Pointer ptr);
   int fishSpeciesGetRange(Pointer ptr);
+  int fishSpeciesGetMaxAttacks(Pointer ptr);
+  int fishSpeciesGetCanStealth(Pointer ptr);
+  int fishSpeciesGetTurnsTillAvailalbe(Pointer ptr);
+  int fishSpeciesGetTurnsTillUnavailable(Pointer ptr);
 
   int tileGetId(Pointer ptr);
   int tileGetX(Pointer ptr);
@@ -77,9 +84,10 @@ public interface Client extends Library {
   int fishGetMaxMovement(Pointer ptr);
   int fishGetMovementLeft(Pointer ptr);
   int fishGetCarryCap(Pointer ptr);
-  int fishGetCarryWeight(Pointer ptr);
+  int fishGetCarryingWeight(Pointer ptr);
   int fishGetAttackPower(Pointer ptr);
   int fishGetIsVisible(Pointer ptr);
+  int fishGetMaxAttacks(Pointer ptr);
   int fishGetAttacksLeft(Pointer ptr);
   int fishGetRange(Pointer ptr);
   String fishGetSpecies(Pointer ptr);

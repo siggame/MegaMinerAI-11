@@ -157,6 +157,38 @@ class FishSpecies(GameObject):
   ##The attack arrange of the fish
   range = property(getRange)
 
+  #\cond
+  def getMaxAttacks(self):
+    self.validify()
+    return library.fishSpeciesGetMaxAttacks(self._ptr)
+  #\endcond
+  ##Maximum number of times this unit can attack per turn
+  maxAttacks = property(getMaxAttacks)
+
+  #\cond
+  def getCanStealth(self):
+    self.validify()
+    return library.fishSpeciesGetCanStealth(self._ptr)
+  #\endcond
+  ##If this species is able to use stealth
+  canStealth = property(getCanStealth)
+
+  #\cond
+  def getTurnsTillAvailalbe(self):
+    self.validify()
+    return library.fishSpeciesGetTurnsTillAvailalbe(self._ptr)
+  #\endcond
+  ##How many turns until you can spawn this fish species
+  turnsTillAvailalbe = property(getTurnsTillAvailalbe)
+
+  #\cond
+  def getTurnsTillUnavailable(self):
+    self.validify()
+    return library.fishSpeciesGetTurnsTillUnavailable(self._ptr)
+  #\endcond
+  ##How many turns until you can no longer spawn this fish species
+  turnsTillUnavailable = property(getTurnsTillUnavailable)
+
 
   def __str__(self):
     self.validify()
@@ -169,6 +201,10 @@ class FishSpecies(GameObject):
     ret += "carryCap: %s\n" % self.getCarryCap()
     ret += "attackPower: %s\n" % self.getAttackPower()
     ret += "range: %s\n" % self.getRange()
+    ret += "maxAttacks: %s\n" % self.getMaxAttacks()
+    ret += "canStealth: %s\n" % self.getCanStealth()
+    ret += "turnsTillAvailalbe: %s\n" % self.getTurnsTillAvailalbe()
+    ret += "turnsTillUnavailable: %s\n" % self.getTurnsTillUnavailable()
     return ret
 
 ##Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
@@ -350,12 +386,12 @@ class Fish(Mappable):
   carryCap = property(getCarryCap)
 
   #\cond
-  def getCarryWeight(self):
+  def getCarryingWeight(self):
     self.validify()
-    return library.fishGetCarryWeight(self._ptr)
+    return library.fishGetCarryingWeight(self._ptr)
   #\endcond
   ##The current amount of weight the fish is carrying
-  carryWeight = property(getCarryWeight)
+  carryingWeight = property(getCarryingWeight)
 
   #\cond
   def getAttackPower(self):
@@ -372,6 +408,14 @@ class Fish(Mappable):
   #\endcond
   ##The visibleness of the fish
   isVisible = property(getIsVisible)
+
+  #\cond
+  def getMaxAttacks(self):
+    self.validify()
+    return library.fishGetMaxAttacks(self._ptr)
+  #\endcond
+  ##The maximum number of attacks this fish has per turn
+  maxAttacks = property(getMaxAttacks)
 
   #\cond
   def getAttacksLeft(self):
@@ -410,9 +454,10 @@ class Fish(Mappable):
     ret += "maxMovement: %s\n" % self.getMaxMovement()
     ret += "movementLeft: %s\n" % self.getMovementLeft()
     ret += "carryCap: %s\n" % self.getCarryCap()
-    ret += "carryWeight: %s\n" % self.getCarryWeight()
+    ret += "carryingWeight: %s\n" % self.getCarryingWeight()
     ret += "attackPower: %s\n" % self.getAttackPower()
     ret += "isVisible: %s\n" % self.getIsVisible()
+    ret += "maxAttacks: %s\n" % self.getMaxAttacks()
     ret += "attacksLeft: %s\n" % self.getAttacksLeft()
     ret += "range: %s\n" % self.getRange()
     ret += "species: %s\n" % self.getSpecies()

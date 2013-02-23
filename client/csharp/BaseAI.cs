@@ -86,6 +86,24 @@ public abstract class BaseAI
   }
 
 
+  ///How much spawn food a player starts the game with
+  public int initialFood()
+  {
+    int value = Client.getInitialFood(connection);
+    return value;
+  }
+  ///The lower x-value of the shared zone
+  public int sharedLowerBound()
+  {
+    int value = Client.getSharedLowerBound(connection);
+    return value;
+  }
+  ///The upper x-value of the shared zone
+  public int sharedUpperBound()
+  {
+    int value = Client.getSharedUpperBound(connection);
+    return value;
+  }
   ///How much spawn food a player receives each turn
   public int spawnFoodPerTurn()
   {

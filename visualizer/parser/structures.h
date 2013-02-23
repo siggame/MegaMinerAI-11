@@ -41,6 +41,10 @@ struct FishSpecies
   int carryCap;
   int attackPower;
   int range;
+  int maxAttacks;
+  int canStealth;
+  int turnsTillAvailalbe;
+  int turnsTillUnavailable;
 
   friend std::ostream& operator<<(std::ostream& stream, FishSpecies obj);
 };
@@ -60,9 +64,10 @@ struct Fish: public Mappable
   int maxMovement;
   int movementLeft;
   int carryCap;
-  int carryWeight;
+  int carryingWeight;
   int attackPower;
   int isVisible;
+  int maxAttacks;
   int attacksLeft;
   int range;
   char* species;
@@ -164,6 +169,9 @@ struct GameState
   std::map<int,Fish> fishs;
   std::map<int,Player> players;
 
+  int initialFood;
+  int sharedLowerBound;
+  int sharedUpperBound;
   int spawnFoodPerTurn;
   int turnNumber;
   int playerID;

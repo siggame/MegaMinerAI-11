@@ -106,10 +106,10 @@ class Fish extends Mappable
     return Client.INSTANCE.fishGetCarryCap(ptr);
   }
   ///The current amount of weight the fish is carrying
-  public int getCarryWeight()
+  public int getCarryingWeight()
   {
     validify();
-    return Client.INSTANCE.fishGetCarryWeight(ptr);
+    return Client.INSTANCE.fishGetCarryingWeight(ptr);
   }
   ///The power of the fish's attack
   public int getAttackPower()
@@ -122,6 +122,12 @@ class Fish extends Mappable
   {
     validify();
     return Client.INSTANCE.fishGetIsVisible(ptr);
+  }
+  ///The maximum number of attacks this fish has per turn
+  public int getMaxAttacks()
+  {
+    validify();
+    return Client.INSTANCE.fishGetMaxAttacks(ptr);
   }
   ///The number of attacks a fish has left
   public int getAttacksLeft()

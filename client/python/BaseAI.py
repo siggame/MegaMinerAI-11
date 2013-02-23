@@ -50,6 +50,21 @@ class BaseAI:
     return r
   #\endcond
   #\cond
+  def getInitialFood(self):
+    return library.getInitialFood(self.connection)
+  #\endcond
+  initialFood = property(getInitialFood)
+  #\cond
+  def getSharedLowerBound(self):
+    return library.getSharedLowerBound(self.connection)
+  #\endcond
+  sharedLowerBound = property(getSharedLowerBound)
+  #\cond
+  def getSharedUpperBound(self):
+    return library.getSharedUpperBound(self.connection)
+  #\endcond
+  sharedUpperBound = property(getSharedUpperBound)
+  #\cond
   def getSpawnFoodPerTurn(self):
     return library.getSpawnFoodPerTurn(self.connection)
   #\endcond

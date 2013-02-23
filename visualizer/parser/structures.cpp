@@ -27,6 +27,10 @@ std::ostream& operator<<(std::ostream& stream, FishSpecies ob)
   stream << "carryCap: " << ob.carryCap  <<'\n';
   stream << "attackPower: " << ob.attackPower  <<'\n';
   stream << "range: " << ob.range  <<'\n';
+  stream << "maxAttacks: " << ob.maxAttacks  <<'\n';
+  stream << "canStealth: " << ob.canStealth  <<'\n';
+  stream << "turnsTillAvailalbe: " << ob.turnsTillAvailalbe  <<'\n';
+  stream << "turnsTillUnavailable: " << ob.turnsTillUnavailable  <<'\n';
   return stream;
 }
 
@@ -52,9 +56,10 @@ std::ostream& operator<<(std::ostream& stream, Fish ob)
   stream << "maxMovement: " << ob.maxMovement  <<'\n';
   stream << "movementLeft: " << ob.movementLeft  <<'\n';
   stream << "carryCap: " << ob.carryCap  <<'\n';
-  stream << "carryWeight: " << ob.carryWeight  <<'\n';
+  stream << "carryingWeight: " << ob.carryingWeight  <<'\n';
   stream << "attackPower: " << ob.attackPower  <<'\n';
   stream << "isVisible: " << ob.isVisible  <<'\n';
+  stream << "maxAttacks: " << ob.maxAttacks  <<'\n';
   stream << "attacksLeft: " << ob.attacksLeft  <<'\n';
   stream << "range: " << ob.range  <<'\n';
   stream << "species: " << ob.species  <<'\n';
@@ -146,6 +151,9 @@ std::ostream& operator<<(std::ostream& stream, playerTalk ob)
 
 std::ostream& operator<<(std::ostream& stream, GameState ob)
 {
+  stream << "initialFood: " << ob.initialFood  <<'\n';
+  stream << "sharedLowerBound: " << ob.sharedLowerBound  <<'\n';
+  stream << "sharedUpperBound: " << ob.sharedUpperBound  <<'\n';
   stream << "spawnFoodPerTurn: " << ob.spawnFoodPerTurn  <<'\n';
   stream << "turnNumber: " << ob.turnNumber  <<'\n';
   stream << "playerID: " << ob.playerID  <<'\n';

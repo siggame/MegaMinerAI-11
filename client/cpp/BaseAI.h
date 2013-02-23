@@ -29,6 +29,12 @@ protected:
   std::vector<Fish> fishs;
   std::vector<Player> players;
 public:
+  ///How much spawn food a player starts the game with
+  int initialFood();
+  ///The lower x-value of the shared zone
+  int sharedLowerBound();
+  ///The upper x-value of the shared zone
+  int sharedUpperBound();
   ///How much spawn food a player receives each turn
   int spawnFoodPerTurn();
   ///How many turns it has been since the beginning of the game

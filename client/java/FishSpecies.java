@@ -86,5 +86,29 @@ class FishSpecies
     validify();
     return Client.INSTANCE.fishSpeciesGetRange(ptr);
   }
+  ///Maximum number of times this unit can attack per turn
+  public int getMaxAttacks()
+  {
+    validify();
+    return Client.INSTANCE.fishSpeciesGetMaxAttacks(ptr);
+  }
+  ///If this species is able to use stealth
+  public int getCanStealth()
+  {
+    validify();
+    return Client.INSTANCE.fishSpeciesGetCanStealth(ptr);
+  }
+  ///How many turns until you can spawn this fish species
+  public int getTurnsTillAvailalbe()
+  {
+    validify();
+    return Client.INSTANCE.fishSpeciesGetTurnsTillAvailalbe(ptr);
+  }
+  ///How many turns until you can no longer spawn this fish species
+  public int getTurnsTillUnavailable()
+  {
+    validify();
+    return Client.INSTANCE.fishSpeciesGetTurnsTillUnavailable(ptr);
+  }
 
 }

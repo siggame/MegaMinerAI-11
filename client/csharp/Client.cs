@@ -39,6 +39,12 @@ public class Client {
 
     //accessors
   [DllImport("client")]
+  public static extern int getInitialFood(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getSharedLowerBound(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getSharedUpperBound(IntPtr connection);
+  [DllImport("client")]
   public static extern int getSpawnFoodPerTurn(IntPtr connection);
   [DllImport("client")]
   public static extern int getTurnNumber(IntPtr connection);
@@ -105,6 +111,14 @@ public class Client {
   public static extern int fishSpeciesGetAttackPower(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishSpeciesGetRange(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetMaxAttacks(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetCanStealth(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetTurnsTillAvailalbe(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetTurnsTillUnavailable(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int tileGetId(IntPtr ptr);
@@ -134,11 +148,13 @@ public class Client {
   [DllImport("client")]
   public static extern int fishGetCarryCap(IntPtr ptr);
   [DllImport("client")]
-  public static extern int fishGetCarryWeight(IntPtr ptr);
+  public static extern int fishGetCarryingWeight(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttackPower(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetIsVisible(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttacksLeft(IntPtr ptr);
   [DllImport("client")]

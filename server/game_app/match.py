@@ -30,6 +30,9 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
+    self.initialFood = None
+    self.sharedLowerBound = None
+    self.sharedUpperBound = None
     self.spawnFoodPerTurn = None
     self.turnNumber = None
     self.playerID = None
@@ -109,6 +112,9 @@ class Match(DefaultGameWorld):
     if( self.logJson ):
       self.dictLog['turns'].append(
         dict(
+          initialFood = self.initialFood,
+          sharedLowerBound = self.sharedLowerBound,
+          sharedUpperBound = self.sharedUpperBound,
           spawnFoodPerTurn = self.spawnFoodPerTurn,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
@@ -217,7 +223,7 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount])
+    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])

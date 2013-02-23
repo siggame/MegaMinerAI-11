@@ -54,6 +54,9 @@ DLLEXPORT Connection* createConnection()
   pthread_mutex_init(&c->mutex, NULL);
   #endif
 
+  c->initialFood = 0;
+  c->sharedLowerBound = 0;
+  c->sharedUpperBound = 0;
   c->spawnFoodPerTurn = 0;
   c->turnNumber = 0;
   c->playerID = 0;
@@ -353,6 +356,13 @@ void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
   sub = sub->next;
   object->range = atoi(sub->val);
   sub = sub->next;
+  object->maxAttacks = atoi(sub->val);
+  sub = sub->next;
+  sub = sub->next;
+  object->turnsTillAvailalbe = atoi(sub->val);
+  sub = sub->next;
+  object->turnsTillUnavailable = atoi(sub->val);
+  sub = sub->next;
 
 }
 void parseTile(Connection* c, _Tile* object, sexp_t* expression)
@@ -397,11 +407,13 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   sub = sub->next;
   object->carryCap = atoi(sub->val);
   sub = sub->next;
-  object->carryWeight = atoi(sub->val);
+  object->carryingWeight = atoi(sub->val);
   sub = sub->next;
   object->attackPower = atoi(sub->val);
   sub = sub->next;
   object->isVisible = atoi(sub->val);
+  sub = sub->next;
+  object->maxAttacks = atoi(sub->val);
   sub = sub->next;
   object->attacksLeft = atoi(sub->val);
   sub = sub->next;
@@ -503,6 +515,15 @@ DLLEXPORT int networkLoop(Connection* c)
         if(string(sub->val) == "game")
         {
           sub = sub->next;
+          c->initialFood = atoi(sub->val);
+          sub = sub->next;
+
+          c->sharedLowerBound = atoi(sub->val);
+          sub = sub->next;
+
+          c->sharedUpperBound = atoi(sub->val);
+          sub = sub->next;
+
           c->spawnFoodPerTurn = atoi(sub->val);
           sub = sub->next;
 
@@ -682,6 +703,18 @@ DLLEXPORT int getPlayerCount(Connection* c)
 }
 
 
+DLLEXPORT int getInitialFood(Connection* c)
+{
+  return c->initialFood;
+}
+DLLEXPORT int getSharedLowerBound(Connection* c)
+{
+  return c->sharedLowerBound;
+}
+DLLEXPORT int getSharedUpperBound(Connection* c)
+{
+  return c->sharedUpperBound;
+}
 DLLEXPORT int getSpawnFoodPerTurn(Connection* c)
 {
   return c->spawnFoodPerTurn;

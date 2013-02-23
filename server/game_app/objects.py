@@ -16,8 +16,9 @@ class Mappable:
     pass
 
 
+
 class FishSpecies:
-  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range):
+  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, canStealth, turnsTillAvailalbe, turnsTillUnavailable):
     self.game = game
     self.id = id
     self.species = species
@@ -27,20 +28,21 @@ class FishSpecies:
     self.carryCap = carryCap
     self.attackPower = attackPower
     self.range = range
+    self.maxAttacks = maxAttacks
+    self.canStealth = canStealth
+    self.turnsTillAvailalbe = turnsTillAvailalbe
+    self.turnsTillUnavailable = turnsTillUnavailable
 
   def toList(self):
-    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, ]
+    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.canStealth, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, )
+    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, canStealth = self.canStealth, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
   
   def nextTurn(self):
     pass
 
-  ###TODO: Spawn logic. Will need to parse through species config file and ensure that each fish gets the correct stats
-           #Can check how it was done in MM9, was similar. We may need to decide on a spawning area for fish, also decide
-           #if we'll initialize with fish spawned, or have them spawn their own on the first turn
   def spawn(self, x, y):
     pass
 
@@ -67,7 +69,7 @@ class Tile(Mappable):
 
 
 class Fish(Mappable):
-  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryWeight, attackPower, isVisible, attacksLeft, range, species):
+  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, isVisible, maxAttacks, attacksLeft, range, species):
     self.game = game
     self.id = id
     self.x = x
@@ -78,30 +80,27 @@ class Fish(Mappable):
     self.maxMovement = maxMovement
     self.movementLeft = movementLeft
     self.carryCap = carryCap
-    self.carryWeight = carryWeight
+    self.carryingWeight = carryingWeight
     self.attackPower = attackPower
     self.isVisible = isVisible
+    self.maxAttacks = maxAttacks
     self.attacksLeft = attacksLeft
     self.range = range
     self.species = species
 
   def toList(self):
-    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryWeight, self.attackPower, self.isVisible, self.attacksLeft, self.range, self.species, ]
+    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryWeight = self.carryWeight, attackPower = self.attackPower, isVisible = self.isVisible, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
+    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
   
-  ### TODO: Reset movement, attack, possible stealth, damage if carrying trash, possibly more
   def nextTurn(self):
     pass
 
-  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
   def move(self, x, y):
     pass
 
-  ### TODO: pick up trash from a tile 1 space away, can't exceec carrying cap, does damage on pickup, 
-  ### based off how trash was picked up, damage can't exceed health, can't pick up 0 trash
   def pickUp(self, x, y, weight):
     pass
 
@@ -121,8 +120,7 @@ class Player:
     self.time = time
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
-    self.spawning = []
-    
+
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
   
@@ -130,11 +128,9 @@ class Player:
   def toJson(self):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
   
-  ### TODO: Have trash to damage based off location, give food, warp in new fish
   def nextTurn(self):
     pass
 
-  ### TODO: should implement this function this time around, kinda missed it last time
   def talk(self, message):
     pass
 

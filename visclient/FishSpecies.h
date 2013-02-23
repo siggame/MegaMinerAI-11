@@ -33,6 +33,14 @@ class FishSpecies {
   int attackPower();
   ///The attack arrange of the fish
   int range();
+  ///Maximum number of times this unit can attack per turn
+  int maxAttacks();
+  ///If this species is able to use stealth
+  int canStealth();
+  ///How many turns until you can spawn this fish species
+  int turnsTillAvailalbe();
+  ///How many turns until you can no longer spawn this fish species
+  int turnsTillUnavailable();
 
   // Actions
   ///Have a new fish spawn and join the fight!

@@ -47,6 +47,22 @@ DLLEXPORT int fishSpeciesGetRange(_FishSpecies* ptr)
 {
   return ptr->range;
 }
+DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr)
+{
+  return ptr->maxAttacks;
+}
+DLLEXPORT int fishSpeciesGetCanStealth(_FishSpecies* ptr)
+{
+  return ptr->canStealth;
+}
+DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr)
+{
+  return ptr->turnsTillAvailalbe;
+}
+DLLEXPORT int fishSpeciesGetTurnsTillUnavailable(_FishSpecies* ptr)
+{
+  return ptr->turnsTillUnavailable;
+}
 DLLEXPORT int tileGetId(_Tile* ptr)
 {
   return ptr->id;
@@ -99,9 +115,9 @@ DLLEXPORT int fishGetCarryCap(_Fish* ptr)
 {
   return ptr->carryCap;
 }
-DLLEXPORT int fishGetCarryWeight(_Fish* ptr)
+DLLEXPORT int fishGetCarryingWeight(_Fish* ptr)
 {
-  return ptr->carryWeight;
+  return ptr->carryingWeight;
 }
 DLLEXPORT int fishGetAttackPower(_Fish* ptr)
 {
@@ -110,6 +126,10 @@ DLLEXPORT int fishGetAttackPower(_Fish* ptr)
 DLLEXPORT int fishGetIsVisible(_Fish* ptr)
 {
   return ptr->isVisible;
+}
+DLLEXPORT int fishGetMaxAttacks(_Fish* ptr)
+{
+  return ptr->maxAttacks;
 }
 DLLEXPORT int fishGetAttacksLeft(_Fish* ptr)
 {

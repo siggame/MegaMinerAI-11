@@ -33,6 +33,10 @@ struct _FishSpecies
   int carryCap;
   int attackPower;
   int range;
+  int maxAttacks;
+  int canStealth;
+  int turnsTillAvailalbe;
+  int turnsTillUnavailable;
 };
 struct _Tile
 {
@@ -54,9 +58,10 @@ struct _Fish
   int maxMovement;
   int movementLeft;
   int carryCap;
-  int carryWeight;
+  int carryingWeight;
   int attackPower;
   int isVisible;
+  int maxAttacks;
   int attacksLeft;
   int range;
   char* species;

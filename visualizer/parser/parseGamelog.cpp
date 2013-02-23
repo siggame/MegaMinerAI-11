@@ -140,6 +140,41 @@ static bool parseFishSpecies(FishSpecies& object, sexp_t* expression)
   object.range = atoi(sub->val);
   sub = sub->next;
 
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.maxAttacks = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.turnsTillAvailalbe = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.turnsTillUnavailable = atoi(sub->val);
+  sub = sub->next;
+
   return true;
 
 }
@@ -281,7 +316,7 @@ static bool parseFish(Fish& object, sexp_t* expression)
     return false;
   }
 
-  object.carryWeight = atoi(sub->val);
+  object.carryingWeight = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -300,6 +335,15 @@ static bool parseFish(Fish& object, sexp_t* expression)
   }
 
   object.isVisible = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFish.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.maxAttacks = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -622,6 +666,15 @@ static bool parseSexp(Game& game, sexp_t* expression)
       if ( !sub ) return false;
       if(string(sub->val) == "game")
       {
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.initialFood = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.sharedLowerBound = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.sharedUpperBound = atoi(sub->val);
           sub = sub->next;
           if ( !sub ) return false;
           gs.spawnFoodPerTurn = atoi(sub->val);

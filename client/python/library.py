@@ -62,6 +62,15 @@ library.playerTalk.argtypes = [c_void_p, c_char_p]
 # accessors
 
 #Globals
+library.getInitialFood.restype = c_int
+library.getInitialFood.argtypes = [c_void_p]
+
+library.getSharedLowerBound.restype = c_int
+library.getSharedLowerBound.argtypes = [c_void_p]
+
+library.getSharedUpperBound.restype = c_int
+library.getSharedUpperBound.argtypes = [c_void_p]
+
 library.getSpawnFoodPerTurn.restype = c_int
 library.getSpawnFoodPerTurn.argtypes = [c_void_p]
 
@@ -158,6 +167,18 @@ library.fishSpeciesGetAttackPower.argtypes = [c_void_p]
 library.fishSpeciesGetRange.restype = c_int
 library.fishSpeciesGetRange.argtypes = [c_void_p]
 
+library.fishSpeciesGetMaxAttacks.restype = c_int
+library.fishSpeciesGetMaxAttacks.argtypes = [c_void_p]
+
+library.fishSpeciesGetCanStealth.restype = c_int
+library.fishSpeciesGetCanStealth.argtypes = [c_void_p]
+
+library.fishSpeciesGetTurnsTillAvailalbe.restype = c_int
+library.fishSpeciesGetTurnsTillAvailalbe.argtypes = [c_void_p]
+
+library.fishSpeciesGetTurnsTillUnavailable.restype = c_int
+library.fishSpeciesGetTurnsTillUnavailable.argtypes = [c_void_p]
+
 library.tileGetId.restype = c_int
 library.tileGetId.argtypes = [c_void_p]
 
@@ -197,14 +218,17 @@ library.fishGetMovementLeft.argtypes = [c_void_p]
 library.fishGetCarryCap.restype = c_int
 library.fishGetCarryCap.argtypes = [c_void_p]
 
-library.fishGetCarryWeight.restype = c_int
-library.fishGetCarryWeight.argtypes = [c_void_p]
+library.fishGetCarryingWeight.restype = c_int
+library.fishGetCarryingWeight.argtypes = [c_void_p]
 
 library.fishGetAttackPower.restype = c_int
 library.fishGetAttackPower.argtypes = [c_void_p]
 
 library.fishGetIsVisible.restype = c_int
 library.fishGetIsVisible.argtypes = [c_void_p]
+
+library.fishGetMaxAttacks.restype = c_int
+library.fishGetMaxAttacks.argtypes = [c_void_p]
 
 library.fishGetAttacksLeft.restype = c_int
 library.fishGetAttacksLeft.argtypes = [c_void_p]

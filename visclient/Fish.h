@@ -36,11 +36,13 @@ class Fish : public Mappable {
   ///The total weight the fish can carry
   int carryCap();
   ///The current amount of weight the fish is carrying
-  int carryWeight();
+  int carryingWeight();
   ///The power of the fish's attack
   int attackPower();
   ///The visibleness of the fish
   int isVisible();
+  ///The maximum number of attacks this fish has per turn
+  int maxAttacks();
   ///The number of attacks a fish has left
   int attacksLeft();
   ///The attack range of the fish

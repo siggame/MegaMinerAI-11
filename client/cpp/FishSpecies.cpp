@@ -49,6 +49,26 @@ int FishSpecies::range()
   return ((_FishSpecies*)ptr)->range;
 }
 
+int FishSpecies::maxAttacks()
+{
+  return ((_FishSpecies*)ptr)->maxAttacks;
+}
+
+int FishSpecies::canStealth()
+{
+  return ((_FishSpecies*)ptr)->canStealth;
+}
+
+int FishSpecies::turnsTillAvailalbe()
+{
+  return ((_FishSpecies*)ptr)->turnsTillAvailalbe;
+}
+
+int FishSpecies::turnsTillUnavailable()
+{
+  return ((_FishSpecies*)ptr)->turnsTillUnavailable;
+}
+
 
 bool FishSpecies::spawn(int x, int y)
 {
@@ -67,5 +87,9 @@ std::ostream& operator<<(std::ostream& stream,FishSpecies ob)
   stream << "carryCap: " << ((_FishSpecies*)ob.ptr)->carryCap  <<'\n';
   stream << "attackPower: " << ((_FishSpecies*)ob.ptr)->attackPower  <<'\n';
   stream << "range: " << ((_FishSpecies*)ob.ptr)->range  <<'\n';
+  stream << "maxAttacks: " << ((_FishSpecies*)ob.ptr)->maxAttacks  <<'\n';
+  stream << "canStealth: " << ((_FishSpecies*)ob.ptr)->canStealth  <<'\n';
+  stream << "turnsTillAvailalbe: " << ((_FishSpecies*)ob.ptr)->turnsTillAvailalbe  <<'\n';
+  stream << "turnsTillUnavailable: " << ((_FishSpecies*)ob.ptr)->turnsTillUnavailable  <<'\n';
   return stream;
 }

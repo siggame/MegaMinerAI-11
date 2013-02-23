@@ -5,6 +5,18 @@
 #include "BaseAI.h"
 #include "game.h"
 
+int BaseAI::initialFood()
+{
+  return getInitialFood(c);
+}
+int BaseAI::sharedLowerBound()
+{
+  return getSharedLowerBound(c);
+}
+int BaseAI::sharedUpperBound()
+{
+  return getSharedUpperBound(c);
+}
 int BaseAI::spawnFoodPerTurn()
 {
   return getSpawnFoodPerTurn(c);

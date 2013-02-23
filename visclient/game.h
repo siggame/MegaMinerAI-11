@@ -34,6 +34,9 @@ struct Connection
   pthread_mutex_t mutex;
   #endif
   
+  int initialFood;
+  int sharedLowerBound;
+  int sharedUpperBound;
   int spawnFoodPerTurn;
   int turnNumber;
   int playerID;
@@ -94,6 +97,9 @@ extern "C"
 
 //accessors
 
+DLLEXPORT int getInitialFood(Connection* c);
+DLLEXPORT int getSharedLowerBound(Connection* c);
+DLLEXPORT int getSharedUpperBound(Connection* c);
 DLLEXPORT int getSpawnFoodPerTurn(Connection* c);
 DLLEXPORT int getTurnNumber(Connection* c);
 DLLEXPORT int getPlayerID(Connection* c);
