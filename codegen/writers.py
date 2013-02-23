@@ -41,7 +41,6 @@ class StaticWriter(object):
         outfile = os.path.join(outdir, i)
         self.writeFile(infile, outfile, data)
 
-
   def writeFile(self, infile, outfile, data):
     shutil.copy2(infile, outfile)
 

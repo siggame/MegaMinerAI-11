@@ -16,18 +16,21 @@ class BaseAI:
   connection = None
   #\endcond
   mappables = []
-  trashs = []
+  fishSpeciess = []
+  tiles = []
   fishs = []
   players = []
   #\cond
   def startTurn(self):
     from GameObject import Mappable
-    from GameObject import Trash
+    from GameObject import FishSpecies
+    from GameObject import Tile
     from GameObject import Fish
     from GameObject import Player
 
     BaseAI.mappables = [Mappable(library.getMappable(self.connection, i)) for i in xrange(library.getMappableCount(self.connection))]
-    BaseAI.trashs = [Trash(library.getTrash(self.connection, i)) for i in xrange(library.getTrashCount(self.connection))]
+    BaseAI.fishSpeciess = [FishSpecies(library.getFishSpecies(self.connection, i)) for i in xrange(library.getFishSpeciesCount(self.connection))]
+    BaseAI.tiles = [Tile(library.getTile(self.connection, i)) for i in xrange(library.getTileCount(self.connection))]
     BaseAI.fishs = [Fish(library.getFish(self.connection, i)) for i in xrange(library.getFishCount(self.connection))]
     BaseAI.players = [Player(library.getPlayer(self.connection, i)) for i in xrange(library.getPlayerCount(self.connection))]
 
@@ -47,10 +50,10 @@ class BaseAI:
     return r
   #\endcond
   #\cond
-  def getDollarsPerTurn(self):
-    return library.getDollarsPerTurn(self.connection)
+  def getSpawnFoodPerTurn(self):
+    return library.getSpawnFoodPerTurn(self.connection)
   #\endcond
-  dollarsPerTurn = property(getDollarsPerTurn)
+  spawnFoodPerTurn = property(getSpawnFoodPerTurn)
   #\cond
   def getTurnNumber(self):
     return library.getTurnNumber(self.connection)
@@ -91,5 +94,10 @@ class BaseAI:
     return library.getMapHeight(self.connection)
   #\endcond
   mapHeight = property(getMapHeight)
+  #\cond
+  def getTrashAmount(self):
+    return library.getTrashAmount(self.connection)
+  #\endcond
+  trashAmount = property(getTrashAmount)
   def __init__(self, connection):
     self.connection = connection

@@ -9,7 +9,8 @@
 #include "game.h"
 
 #include "Mappable.h"
-#include "Trash.h"
+#include "FishSpecies.h"
+#include "Tile.h"
 #include "Fish.h"
 #include "Player.h"
 
@@ -26,12 +27,13 @@ class BaseAI
 protected:
   Connection* c;
   std::vector<Mappable> mappables;
-  std::vector<Trash> trashs;
+  std::vector<FishSpecies> fishSpeciess;
+  std::vector<Tile> tiles;
   std::vector<Fish> fishs;
   std::vector<Player> players;
 public:
-  ///How many sand dollars a player receives
-  int dollarsPerTurn();
+  ///How much spawn food a player receives each turn
+  int spawnFoodPerTurn();
   ///How many turns it has been since the beginning of the game
   int turnNumber();
   ///Player Number; either 0 or 1
@@ -48,6 +50,8 @@ public:
   int mapWidth();
   ///How high the map is
   int mapHeight();
+  ///amount of trash in the game
+  int trashAmount();
   
   BaseAI(Connection* c);
   virtual ~BaseAI();

@@ -25,14 +25,12 @@ class Fish : public Mappable {
   int y();
   ///The owner of this fish
   int owner();
-  ///The type/species of the fish
-  char* species();
   ///The maximum health of the fish
   int maxHealth();
   ///The current health of the fish
-  int curHealth();
+  int currentHealth();
   ///The maximum number of movements in a turn
-  int maxMoves();
+  int maxMovement();
   ///The number of movements left
   int movementLeft();
   ///The total weight the fish can carry
@@ -45,6 +43,10 @@ class Fish : public Mappable {
   int isVisible();
   ///The number of attacks a fish has left
   int attacksLeft();
+  ///The attack range of the fish
+  int range();
+  ///The fish species
+  char* species();
 
   // Actions
   ///Command a fish to move to a specified position

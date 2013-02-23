@@ -8,9 +8,9 @@
 namespace client
 {
 
-int BaseAI::dollarsPerTurn()
+int BaseAI::spawnFoodPerTurn()
 {
-  return getDollarsPerTurn(c);
+  return getSpawnFoodPerTurn(c);
 }
 int BaseAI::turnNumber()
 {
@@ -44,6 +44,10 @@ int BaseAI::mapHeight()
 {
   return getMapHeight(c);
 }
+int BaseAI::trashAmount()
+{
+  return getTrashAmount(c);
+}
 
 bool BaseAI::startTurn()
 {
@@ -57,12 +61,20 @@ bool BaseAI::startTurn()
     mappables[i] = Mappable(getMappable(c, i));
   }
 
-  count = getTrashCount(c);
-  trashs.clear();
-  trashs.resize(count);
+  count = getFishSpeciesCount(c);
+  fishSpeciess.clear();
+  fishSpeciess.resize(count);
   for(int i = 0; i < count; i++)
   {
-    trashs[i] = Trash(getTrash(c, i));
+    fishSpeciess[i] = FishSpecies(getFishSpecies(c, i));
+  }
+
+  count = getTileCount(c);
+  tiles.clear();
+  tiles.resize(count);
+  for(int i = 0; i < count; i++)
+  {
+    tiles[i] = Tile(getTile(c, i));
   }
 
   count = getFishCount(c);

@@ -27,14 +27,14 @@ float Player::time()
   return ((_Player*)ptr)->time;
 }
 
-int Player::curReefHealth()
+int Player::currentReefHealth()
 {
-  return ((_Player*)ptr)->curReefHealth;
+  return ((_Player*)ptr)->currentReefHealth;
 }
 
-int Player::sandDollars()
+int Player::spawnFood()
 {
-  return ((_Player*)ptr)->sandDollars;
+  return ((_Player*)ptr)->spawnFood;
 }
 
 
@@ -50,8 +50,8 @@ std::ostream& operator<<(std::ostream& stream,Player ob)
   stream << "id: " << ((_Player*)ob.ptr)->id  <<'\n';
   stream << "playerName: " << ((_Player*)ob.ptr)->playerName  <<'\n';
   stream << "time: " << ((_Player*)ob.ptr)->time  <<'\n';
-  stream << "curReefHealth: " << ((_Player*)ob.ptr)->curReefHealth  <<'\n';
-  stream << "sandDollars: " << ((_Player*)ob.ptr)->sandDollars  <<'\n';
+  stream << "currentReefHealth: " << ((_Player*)ob.ptr)->currentReefHealth  <<'\n';
+  stream << "spawnFood: " << ((_Player*)ob.ptr)->spawnFood  <<'\n';
   return stream;
 }
 

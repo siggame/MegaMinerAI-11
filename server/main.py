@@ -117,6 +117,16 @@ class GameApp(AccountsAppMixin, BaseApp):
   @errorBuffer
   @requireTurn
   @requireTypes(None, int, int, int)
+  def gameSpawn(self, fishSpecies, x, y):
+    """Have a new fish spawn and join the fight!"""
+    if self.game.turn is not self:
+      return "Not your turn."
+    return self.game.spawn(fishSpecies, x, y)
+
+  @protocolmethod
+  @errorBuffer
+  @requireTurn
+  @requireTypes(None, int, int, int)
   def gameMove(self, fish, x, y):
     """Command a fish to move to a specified position"""
     if self.game.turn is not self:

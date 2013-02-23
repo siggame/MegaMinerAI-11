@@ -9,8 +9,8 @@ constants = [
   ]
 
 playerData = [
-  Variable('curReefHealth', int, 'The player\'s current reef health'),
-  Variable('sandDollars', int, 'Currency for fish'),
+  Variable('currentReefHealth', int, 'The player\'s current reef health'),
+  Variable('spawnFood', int, 'Food used to spawn new fish'),
   ]
 
 playerFunctions = [
@@ -26,7 +26,7 @@ Mappable = Model('Mappable',
 )
 
 globals = [
-  Variable('dollarsPerTurn', int, 'How many sand dollars a player receives'),
+  Variable('spawnFoodPerTurn', int, 'How much spawn food a player receives each turn'),
   Variable('turnNumber', int, 'How many turns it has been since the beginning of the game'),
   Variable('playerID', int, 'Player Number; either 0 or 1'),
   Variable('gameNumber', int, 'What number game this is for the server'),
@@ -35,27 +35,47 @@ globals = [
   Variable('trashDamage',int,'How much damage trash does'),
   Variable('mapWidth', int, 'How wide the map is'),
   Variable('mapHeight', int, 'How high the map is'),
+  Variable('trashAmount',int, 'amount of trash in the game')
   ]
 
-Trash = Model('Trash',
-  parent=Mappable,
-  data=[ Variable('weight', int, 'The weight of the trash')],
-  doc='This is a Trash object',
-)
+Tile = Model('Tile',
+  parent = Mappable,
+  data=[
+    Variable('trashAmount', int, 'The amount of trash on this tile'),
+    ],
+  doc='Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3',
+  )
 
+FishSpecies = Model('FishSpecies',
+  data = [
+    Variable('species', str, 'The fish species'),
+    Variable('cost', int, 'The amount of food it takes to raise this fish'),
+    Variable('maxHealth', int, 'The maximum health of this fish'),
+    Variable('maxMovement', int, 'The maximum number of movements in a turn'),
+    Variable('carryCap', int, 'The total weight the fish can carry'),
+    Variable('attackPower', int, 'The power of the fish\'s attack'),
+    Variable('range',int,'The attack arrange of the fish'),
+    ],
+  functions=[
+    Function('spawn',[Variable('x',int),Variable('y',int)],
+    doc='Have a new fish spawn and join the fight!'),
+    ],
+  )
+  
 Fish = Model('Fish',
   parent=Mappable,
   data=[ Variable('owner', int, 'The owner of this fish'),
-    Variable('species', str, 'The type/species of the fish'),
     Variable('maxHealth', int, 'The maximum health of the fish'),
-    Variable('curHealth', int, 'The current health of the fish'),
-    Variable('maxMoves', int, 'The maximum number of movements in a turn'),
+    Variable('currentHealth', int, 'The current health of the fish'),
+    Variable('maxMovement', int, 'The maximum number of movements in a turn'),
     Variable('movementLeft', int, 'The number of movements left'),
     Variable('carryCap', int, 'The total weight the fish can carry'),
     Variable('carryWeight', int, 'The current amount of weight the fish is carrying'),
     Variable('attackPower', int, 'The power of the fish\'s attack'),
     Variable('isVisible', int, 'The visibleness of the fish'),
     Variable('attacksLeft', int, 'The number of attacks a fish has left'),
+    Variable('range',int,'The attack range of the fish'),
+    Variable('species',str,'The fish species'),
     ],
   functions=[
     Function('move', [Variable('x', int), Variable('y', int)], 
@@ -97,6 +117,7 @@ spawn = Animation('spawn',
   data=[
     Variable('x', int),
     Variable('y', int),
+    Variable('species',str),
   ],
 )
 
@@ -105,6 +126,7 @@ pickUp = Animation('pickUp',
     Variable('x', int),
     Variable('y', int),
     Variable('actingID', int),
+    Variable('amount',int),
   ],
 )
 
@@ -113,6 +135,7 @@ drop = Animation('drop',
     Variable('x', int),
     Variable('y', int),
     Variable('actingID', int),
+    Variable('amount',int),
   ],
 )
 

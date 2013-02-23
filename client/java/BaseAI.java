@@ -8,7 +8,8 @@ import com.sun.jna.Pointer;
 public abstract class BaseAI
 {
   static Mappable[] mappables;
-  static Trash[] trashs;
+  static FishSpecies[] fishSpeciess;
+  static Tile[] tiles;
   static Fish[] fishs;
   static Player[] players;
   Pointer connection;
@@ -50,11 +51,17 @@ public abstract class BaseAI
     {
       mappables[i] = new Mappable(Client.INSTANCE.getMappable(connection, i));
     }
-    count = Client.INSTANCE.getTrashCount(connection);
-    trashs = new Trash[count];
+    count = Client.INSTANCE.getFishSpeciesCount(connection);
+    fishSpeciess = new FishSpecies[count];
     for(int i = 0; i < count; i++)
     {
-      trashs[i] = new Trash(Client.INSTANCE.getTrash(connection, i));
+      fishSpeciess[i] = new FishSpecies(Client.INSTANCE.getFishSpecies(connection, i));
+    }
+    count = Client.INSTANCE.getTileCount(connection);
+    tiles = new Tile[count];
+    for(int i = 0; i < count; i++)
+    {
+      tiles[i] = new Tile(Client.INSTANCE.getTile(connection, i));
     }
     count = Client.INSTANCE.getFishCount(connection);
     fishs = new Fish[count];
@@ -78,10 +85,10 @@ public abstract class BaseAI
   }
 
 
-  ///How many sand dollars a player receives
-  int dollarsPerTurn()
+  ///How much spawn food a player receives each turn
+  int spawnFoodPerTurn()
   {
-    return Client.INSTANCE.getDollarsPerTurn(connection);
+    return Client.INSTANCE.getSpawnFoodPerTurn(connection);
   }
   ///How many turns it has been since the beginning of the game
   int turnNumber()
@@ -122,5 +129,10 @@ public abstract class BaseAI
   int mapHeight()
   {
     return Client.INSTANCE.getMapHeight(connection);
+  }
+  ///amount of trash in the game
+  int trashAmount()
+  {
+    return Client.INSTANCE.getTrashAmount(connection);
   }
 }

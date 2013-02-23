@@ -41,6 +41,9 @@ library.networkLoop.restype = c_int
 library.networkLoop.argtypes = [c_void_p]
 
 #Functions
+library.fishSpeciesSpawn.restype = c_int
+library.fishSpeciesSpawn.argtypes = [c_void_p, c_int, c_int]
+
 library.fishMove.restype = c_int
 library.fishMove.argtypes = [c_void_p, c_int, c_int]
 
@@ -59,8 +62,8 @@ library.playerTalk.argtypes = [c_void_p, c_char_p]
 # accessors
 
 #Globals
-library.getDollarsPerTurn.restype = c_int
-library.getDollarsPerTurn.argtypes = [c_void_p]
+library.getSpawnFoodPerTurn.restype = c_int
+library.getSpawnFoodPerTurn.argtypes = [c_void_p]
 
 library.getTurnNumber.restype = c_int
 library.getTurnNumber.argtypes = [c_void_p]
@@ -86,17 +89,26 @@ library.getMapWidth.argtypes = [c_void_p]
 library.getMapHeight.restype = c_int
 library.getMapHeight.argtypes = [c_void_p]
 
+library.getTrashAmount.restype = c_int
+library.getTrashAmount.argtypes = [c_void_p]
+
 library.getMappable.restype = c_void_p
 library.getMappable.argtypes = [c_void_p, c_int]
 
 library.getMappableCount.restype = c_int
 library.getMappableCount.argtypes = [c_void_p]
 
-library.getTrash.restype = c_void_p
-library.getTrash.argtypes = [c_void_p, c_int]
+library.getFishSpecies.restype = c_void_p
+library.getFishSpecies.argtypes = [c_void_p, c_int]
 
-library.getTrashCount.restype = c_int
-library.getTrashCount.argtypes = [c_void_p]
+library.getFishSpeciesCount.restype = c_int
+library.getFishSpeciesCount.argtypes = [c_void_p]
+
+library.getTile.restype = c_void_p
+library.getTile.argtypes = [c_void_p, c_int]
+
+library.getTileCount.restype = c_int
+library.getTileCount.argtypes = [c_void_p]
 
 library.getFish.restype = c_void_p
 library.getFish.argtypes = [c_void_p, c_int]
@@ -122,17 +134,41 @@ library.mappableGetX.argtypes = [c_void_p]
 library.mappableGetY.restype = c_int
 library.mappableGetY.argtypes = [c_void_p]
 
-library.trashGetId.restype = c_int
-library.trashGetId.argtypes = [c_void_p]
+library.fishSpeciesGetId.restype = c_int
+library.fishSpeciesGetId.argtypes = [c_void_p]
 
-library.trashGetX.restype = c_int
-library.trashGetX.argtypes = [c_void_p]
+library.fishSpeciesGetSpecies.restype = c_char_p
+library.fishSpeciesGetSpecies.argtypes = [c_void_p]
 
-library.trashGetY.restype = c_int
-library.trashGetY.argtypes = [c_void_p]
+library.fishSpeciesGetCost.restype = c_int
+library.fishSpeciesGetCost.argtypes = [c_void_p]
 
-library.trashGetWeight.restype = c_int
-library.trashGetWeight.argtypes = [c_void_p]
+library.fishSpeciesGetMaxHealth.restype = c_int
+library.fishSpeciesGetMaxHealth.argtypes = [c_void_p]
+
+library.fishSpeciesGetMaxMovement.restype = c_int
+library.fishSpeciesGetMaxMovement.argtypes = [c_void_p]
+
+library.fishSpeciesGetCarryCap.restype = c_int
+library.fishSpeciesGetCarryCap.argtypes = [c_void_p]
+
+library.fishSpeciesGetAttackPower.restype = c_int
+library.fishSpeciesGetAttackPower.argtypes = [c_void_p]
+
+library.fishSpeciesGetRange.restype = c_int
+library.fishSpeciesGetRange.argtypes = [c_void_p]
+
+library.tileGetId.restype = c_int
+library.tileGetId.argtypes = [c_void_p]
+
+library.tileGetX.restype = c_int
+library.tileGetX.argtypes = [c_void_p]
+
+library.tileGetY.restype = c_int
+library.tileGetY.argtypes = [c_void_p]
+
+library.tileGetTrashAmount.restype = c_int
+library.tileGetTrashAmount.argtypes = [c_void_p]
 
 library.fishGetId.restype = c_int
 library.fishGetId.argtypes = [c_void_p]
@@ -146,17 +182,14 @@ library.fishGetY.argtypes = [c_void_p]
 library.fishGetOwner.restype = c_int
 library.fishGetOwner.argtypes = [c_void_p]
 
-library.fishGetSpecies.restype = c_char_p
-library.fishGetSpecies.argtypes = [c_void_p]
-
 library.fishGetMaxHealth.restype = c_int
 library.fishGetMaxHealth.argtypes = [c_void_p]
 
-library.fishGetCurHealth.restype = c_int
-library.fishGetCurHealth.argtypes = [c_void_p]
+library.fishGetCurrentHealth.restype = c_int
+library.fishGetCurrentHealth.argtypes = [c_void_p]
 
-library.fishGetMaxMoves.restype = c_int
-library.fishGetMaxMoves.argtypes = [c_void_p]
+library.fishGetMaxMovement.restype = c_int
+library.fishGetMaxMovement.argtypes = [c_void_p]
 
 library.fishGetMovementLeft.restype = c_int
 library.fishGetMovementLeft.argtypes = [c_void_p]
@@ -176,6 +209,12 @@ library.fishGetIsVisible.argtypes = [c_void_p]
 library.fishGetAttacksLeft.restype = c_int
 library.fishGetAttacksLeft.argtypes = [c_void_p]
 
+library.fishGetRange.restype = c_int
+library.fishGetRange.argtypes = [c_void_p]
+
+library.fishGetSpecies.restype = c_char_p
+library.fishGetSpecies.argtypes = [c_void_p]
+
 library.playerGetId.restype = c_int
 library.playerGetId.argtypes = [c_void_p]
 
@@ -185,11 +224,11 @@ library.playerGetPlayerName.argtypes = [c_void_p]
 library.playerGetTime.restype = c_float
 library.playerGetTime.argtypes = [c_void_p]
 
-library.playerGetCurReefHealth.restype = c_int
-library.playerGetCurReefHealth.argtypes = [c_void_p]
+library.playerGetCurrentReefHealth.restype = c_int
+library.playerGetCurrentReefHealth.argtypes = [c_void_p]
 
-library.playerGetSandDollars.restype = c_int
-library.playerGetSandDollars.argtypes = [c_void_p]
+library.playerGetSpawnFood.restype = c_int
+library.playerGetSpawnFood.argtypes = [c_void_p]
 
 
 #Properties

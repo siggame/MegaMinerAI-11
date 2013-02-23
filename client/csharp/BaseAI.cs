@@ -9,7 +9,8 @@ using System.Runtime.InteropServices;
 public abstract class BaseAI
 {
   public static Mappable[] mappables;
-  public static Trash[] trashs;
+  public static FishSpecies[] fishSpeciess;
+  public static Tile[] tiles;
   public static Fish[] fishs;
   public static Player[] players;
   IntPtr connection;
@@ -51,11 +52,17 @@ public abstract class BaseAI
     {
       mappables[i] = new Mappable(Client.getMappable(connection, i));
     }
-    count = Client.getTrashCount(connection);
-    trashs = new Trash[count];
+    count = Client.getFishSpeciesCount(connection);
+    fishSpeciess = new FishSpecies[count];
     for(int i = 0; i < count; i++)
     {
-      trashs[i] = new Trash(Client.getTrash(connection, i));
+      fishSpeciess[i] = new FishSpecies(Client.getFishSpecies(connection, i));
+    }
+    count = Client.getTileCount(connection);
+    tiles = new Tile[count];
+    for(int i = 0; i < count; i++)
+    {
+      tiles[i] = new Tile(Client.getTile(connection, i));
     }
     count = Client.getFishCount(connection);
     fishs = new Fish[count];
@@ -79,10 +86,10 @@ public abstract class BaseAI
   }
 
 
-  ///How many sand dollars a player receives
-  public int dollarsPerTurn()
+  ///How much spawn food a player receives each turn
+  public int spawnFoodPerTurn()
   {
-    int value = Client.getDollarsPerTurn(connection);
+    int value = Client.getSpawnFoodPerTurn(connection);
     return value;
   }
   ///How many turns it has been since the beginning of the game
@@ -131,6 +138,12 @@ public abstract class BaseAI
   public int mapHeight()
   {
     int value = Client.getMapHeight(connection);
+    return value;
+  }
+  ///amount of trash in the game
+  public int trashAmount()
+  {
+    int value = Client.getTrashAmount(connection);
     return value;
   }
 }

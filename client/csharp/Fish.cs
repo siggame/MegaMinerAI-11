@@ -106,17 +106,6 @@ public class Fish: Mappable
     }
   }
 
-  ///The type/species of the fish
-  public string Species
-  {
-    get
-    {
-      validify();
-      IntPtr value = Client.fishGetSpecies(ptr);
-      return Marshal.PtrToStringAuto(value);
-    }
-  }
-
   ///The maximum health of the fish
   public int MaxHealth
   {
@@ -129,23 +118,23 @@ public class Fish: Mappable
   }
 
   ///The current health of the fish
-  public int CurHealth
+  public int CurrentHealth
   {
     get
     {
       validify();
-      int value = Client.fishGetCurHealth(ptr);
+      int value = Client.fishGetCurrentHealth(ptr);
       return value;
     }
   }
 
   ///The maximum number of movements in a turn
-  public int MaxMoves
+  public int MaxMovement
   {
     get
     {
       validify();
-      int value = Client.fishGetMaxMoves(ptr);
+      int value = Client.fishGetMaxMovement(ptr);
       return value;
     }
   }
@@ -213,6 +202,28 @@ public class Fish: Mappable
       validify();
       int value = Client.fishGetAttacksLeft(ptr);
       return value;
+    }
+  }
+
+  ///The attack range of the fish
+  public int Range
+  {
+    get
+    {
+      validify();
+      int value = Client.fishGetRange(ptr);
+      return value;
+    }
+  }
+
+  ///The fish species
+  public string Species
+  {
+    get
+    {
+      validify();
+      IntPtr value = Client.fishGetSpecies(ptr);
+      return Marshal.PtrToStringAuto(value);
     }
   }
 

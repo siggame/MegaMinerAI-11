@@ -18,6 +18,7 @@ public interface Client extends Library {
 
 
     //commands
+  int fishSpeciesSpawn(Pointer object, int x, int y);
   int fishMove(Pointer object, int x, int y);
   int fishPickUp(Pointer object, int x, int y, int weight);
   int fishDrop(Pointer object, int x, int y, int weight);
@@ -25,7 +26,7 @@ public interface Client extends Library {
   int playerTalk(Pointer object, String message);
 
     //accessors
-  int getDollarsPerTurn(Pointer connection);
+  int getSpawnFoodPerTurn(Pointer connection);
   int getTurnNumber(Pointer connection);
   int getPlayerID(Pointer connection);
   int getGameNumber(Pointer connection);
@@ -34,11 +35,14 @@ public interface Client extends Library {
   int getTrashDamage(Pointer connection);
   int getMapWidth(Pointer connection);
   int getMapHeight(Pointer connection);
+  int getTrashAmount(Pointer connection);
 
   Pointer getMappable(Pointer connection, int num);
   int getMappableCount(Pointer connection);
-  Pointer getTrash(Pointer connection, int num);
-  int getTrashCount(Pointer connection);
+  Pointer getFishSpecies(Pointer connection, int num);
+  int getFishSpeciesCount(Pointer connection);
+  Pointer getTile(Pointer connection, int num);
+  int getTileCount(Pointer connection);
   Pointer getFish(Pointer connection, int num);
   int getFishCount(Pointer connection);
   Pointer getPlayer(Pointer connection, int num);
@@ -50,31 +54,41 @@ public interface Client extends Library {
   int mappableGetX(Pointer ptr);
   int mappableGetY(Pointer ptr);
 
-  int trashGetId(Pointer ptr);
-  int trashGetX(Pointer ptr);
-  int trashGetY(Pointer ptr);
-  int trashGetWeight(Pointer ptr);
+  int fishSpeciesGetId(Pointer ptr);
+  String fishSpeciesGetSpecies(Pointer ptr);
+  int fishSpeciesGetCost(Pointer ptr);
+  int fishSpeciesGetMaxHealth(Pointer ptr);
+  int fishSpeciesGetMaxMovement(Pointer ptr);
+  int fishSpeciesGetCarryCap(Pointer ptr);
+  int fishSpeciesGetAttackPower(Pointer ptr);
+  int fishSpeciesGetRange(Pointer ptr);
+
+  int tileGetId(Pointer ptr);
+  int tileGetX(Pointer ptr);
+  int tileGetY(Pointer ptr);
+  int tileGetTrashAmount(Pointer ptr);
 
   int fishGetId(Pointer ptr);
   int fishGetX(Pointer ptr);
   int fishGetY(Pointer ptr);
   int fishGetOwner(Pointer ptr);
-  String fishGetSpecies(Pointer ptr);
   int fishGetMaxHealth(Pointer ptr);
-  int fishGetCurHealth(Pointer ptr);
-  int fishGetMaxMoves(Pointer ptr);
+  int fishGetCurrentHealth(Pointer ptr);
+  int fishGetMaxMovement(Pointer ptr);
   int fishGetMovementLeft(Pointer ptr);
   int fishGetCarryCap(Pointer ptr);
   int fishGetCarryWeight(Pointer ptr);
   int fishGetAttackPower(Pointer ptr);
   int fishGetIsVisible(Pointer ptr);
   int fishGetAttacksLeft(Pointer ptr);
+  int fishGetRange(Pointer ptr);
+  String fishGetSpecies(Pointer ptr);
 
   int playerGetId(Pointer ptr);
   String playerGetPlayerName(Pointer ptr);
   float playerGetTime(Pointer ptr);
-  int playerGetCurReefHealth(Pointer ptr);
-  int playerGetSandDollars(Pointer ptr);
+  int playerGetCurrentReefHealth(Pointer ptr);
+  int playerGetSpawnFood(Pointer ptr);
 
 
     //properties

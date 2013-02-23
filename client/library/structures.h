@@ -6,7 +6,8 @@
 
 struct Connection;
 struct _Mappable;
-struct _Trash;
+struct _FishSpecies;
+struct _Tile;
 struct _Fish;
 struct _Player;
 
@@ -18,13 +19,25 @@ struct _Mappable
   int x;
   int y;
 };
-struct _Trash
+struct _FishSpecies
+{
+  Connection* _c;
+  int id;
+  char* species;
+  int cost;
+  int maxHealth;
+  int maxMovement;
+  int carryCap;
+  int attackPower;
+  int range;
+};
+struct _Tile
 {
   Connection* _c;
   int id;
   int x;
   int y;
-  int weight;
+  int trashAmount;
 };
 struct _Fish
 {
@@ -33,16 +46,17 @@ struct _Fish
   int x;
   int y;
   int owner;
-  char* species;
   int maxHealth;
-  int curHealth;
-  int maxMoves;
+  int currentHealth;
+  int maxMovement;
   int movementLeft;
   int carryCap;
   int carryWeight;
   int attackPower;
   int isVisible;
   int attacksLeft;
+  int range;
+  char* species;
 };
 struct _Player
 {
@@ -50,8 +64,8 @@ struct _Player
   int id;
   char* playerName;
   float time;
-  int curReefHealth;
-  int sandDollars;
+  int currentReefHealth;
+  int spawnFood;
 };
 
 #endif

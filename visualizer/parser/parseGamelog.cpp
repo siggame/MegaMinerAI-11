@@ -60,7 +60,7 @@ static bool parseMappable(Mappable& object, sexp_t* expression)
   return true;
 
 }
-static bool parseTrash(Trash& object, sexp_t* expression)
+static bool parseFishSpecies(FishSpecies& object, sexp_t* expression)
 {
   sexp_t* sub;
   if ( !expression ) return false;
@@ -68,7 +68,7 @@ static bool parseTrash(Trash& object, sexp_t* expression)
 
   if ( !sub ) 
   {
-    cerr << "Error in parseTrash.\n Parsing: " << *expression << endl;
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
     return false;
   }
 
@@ -77,7 +77,90 @@ static bool parseTrash(Trash& object, sexp_t* expression)
 
   if ( !sub ) 
   {
-    cerr << "Error in parseTrash.\n Parsing: " << *expression << endl;
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.species = new char[strlen(sub->val)+1];
+  strncpy(object.species, sub->val, strlen(sub->val));
+  object.species[strlen(sub->val)] = 0;
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.cost = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.maxHealth = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.maxMovement = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.carryCap = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.attackPower = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.range = atoi(sub->val);
+  sub = sub->next;
+
+  return true;
+
+}
+static bool parseTile(Tile& object, sexp_t* expression)
+{
+  sexp_t* sub;
+  if ( !expression ) return false;
+  sub = expression->list;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.id = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
     return false;
   }
 
@@ -86,7 +169,7 @@ static bool parseTrash(Trash& object, sexp_t* expression)
 
   if ( !sub ) 
   {
-    cerr << "Error in parseTrash.\n Parsing: " << *expression << endl;
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
     return false;
   }
 
@@ -95,11 +178,11 @@ static bool parseTrash(Trash& object, sexp_t* expression)
 
   if ( !sub ) 
   {
-    cerr << "Error in parseTrash.\n Parsing: " << *expression << endl;
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
     return false;
   }
 
-  object.weight = atoi(sub->val);
+  object.trashAmount = atoi(sub->val);
   sub = sub->next;
 
   return true;
@@ -153,17 +236,6 @@ static bool parseFish(Fish& object, sexp_t* expression)
     return false;
   }
 
-  object.species = new char[strlen(sub->val)+1];
-  strncpy(object.species, sub->val, strlen(sub->val));
-  object.species[strlen(sub->val)] = 0;
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseFish.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
   object.maxHealth = atoi(sub->val);
   sub = sub->next;
 
@@ -173,7 +245,7 @@ static bool parseFish(Fish& object, sexp_t* expression)
     return false;
   }
 
-  object.curHealth = atoi(sub->val);
+  object.currentHealth = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -182,7 +254,7 @@ static bool parseFish(Fish& object, sexp_t* expression)
     return false;
   }
 
-  object.maxMoves = atoi(sub->val);
+  object.maxMovement = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -239,6 +311,26 @@ static bool parseFish(Fish& object, sexp_t* expression)
   object.attacksLeft = atoi(sub->val);
   sub = sub->next;
 
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFish.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.range = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseFish.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.species = new char[strlen(sub->val)+1];
+  strncpy(object.species, sub->val, strlen(sub->val));
+  object.species[strlen(sub->val)] = 0;
+  sub = sub->next;
+
   return true;
 
 }
@@ -283,7 +375,7 @@ static bool parsePlayer(Player& object, sexp_t* expression)
     return false;
   }
 
-  object.curReefHealth = atoi(sub->val);
+  object.currentReefHealth = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -292,7 +384,7 @@ static bool parsePlayer(Player& object, sexp_t* expression)
     return false;
   }
 
-  object.sandDollars = atoi(sub->val);
+  object.spawnFood = atoi(sub->val);
   sub = sub->next;
 
   return true;
@@ -318,6 +410,15 @@ static bool parseSpawn(spawn& object, sexp_t* expression)
     return false;
   }
   object.y = atoi(sub->val);
+  sub = sub->next;
+  if( !sub ) 
+  {
+    cerr << "Error in parsespawn.\n Parsing: " << *expression << endl;
+    return false;
+  }
+  object.species = new char[strlen(sub->val)+1];
+  strncpy(object.species, sub->val, strlen(sub->val));
+  object.species[strlen(sub->val)] = 0;
   sub = sub->next;
   return true;
 
@@ -393,6 +494,13 @@ static bool parsePickUp(pickUp& object, sexp_t* expression)
   }
   object.actingID = atoi(sub->val);
   sub = sub->next;
+  if( !sub ) 
+  {
+    cerr << "Error in parsepickUp.\n Parsing: " << *expression << endl;
+    return false;
+  }
+  object.amount = atoi(sub->val);
+  sub = sub->next;
   return true;
 
 }
@@ -438,6 +546,13 @@ static bool parseDrop(drop& object, sexp_t* expression)
     return false;
   }
   object.actingID = atoi(sub->val);
+  sub = sub->next;
+  if( !sub ) 
+  {
+    cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
+    return false;
+  }
+  object.amount = atoi(sub->val);
   sub = sub->next;
   return true;
 
@@ -509,7 +624,7 @@ static bool parseSexp(Game& game, sexp_t* expression)
       {
           sub = sub->next;
           if ( !sub ) return false;
-          gs.dollarsPerTurn = atoi(sub->val);
+          gs.spawnFoodPerTurn = atoi(sub->val);
           sub = sub->next;
           if ( !sub ) return false;
           gs.turnNumber = atoi(sub->val);
@@ -535,6 +650,9 @@ static bool parseSexp(Game& game, sexp_t* expression)
           if ( !sub ) return false;
           gs.mapHeight = atoi(sub->val);
           sub = sub->next;
+          if ( !sub ) return false;
+          gs.trashAmount = atoi(sub->val);
+          sub = sub->next;
       }
       else if(string(sub->val) == "Mappable")
       {
@@ -549,15 +667,28 @@ static bool parseSexp(Game& game, sexp_t* expression)
         }
         if ( !flag ) return false;
       }
-      else if(string(sub->val) == "Trash")
+      else if(string(sub->val) == "FishSpecies")
       {
         sub = sub->next;
         bool flag = true;
         while(sub && flag)
         {
-          Trash object;
-          flag = parseTrash(object, sub);
-          gs.trashs[object.id] = object;
+          FishSpecies object;
+          flag = parseFishSpecies(object, sub);
+          gs.fishSpeciess[object.id] = object;
+          sub = sub->next;
+        }
+        if ( !flag ) return false;
+      }
+      else if(string(sub->val) == "Tile")
+      {
+        sub = sub->next;
+        bool flag = true;
+        while(sub && flag)
+        {
+          Tile object;
+          flag = parseTile(object, sub);
+          gs.tiles[object.id] = object;
           sub = sub->next;
         }
         if ( !flag ) return false;

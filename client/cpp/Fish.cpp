@@ -29,24 +29,19 @@ int Fish::owner()
   return ((_Fish*)ptr)->owner;
 }
 
-char* Fish::species()
-{
-  return ((_Fish*)ptr)->species;
-}
-
 int Fish::maxHealth()
 {
   return ((_Fish*)ptr)->maxHealth;
 }
 
-int Fish::curHealth()
+int Fish::currentHealth()
 {
-  return ((_Fish*)ptr)->curHealth;
+  return ((_Fish*)ptr)->currentHealth;
 }
 
-int Fish::maxMoves()
+int Fish::maxMovement()
 {
-  return ((_Fish*)ptr)->maxMoves;
+  return ((_Fish*)ptr)->maxMovement;
 }
 
 int Fish::movementLeft()
@@ -79,6 +74,16 @@ int Fish::attacksLeft()
   return ((_Fish*)ptr)->attacksLeft;
 }
 
+int Fish::range()
+{
+  return ((_Fish*)ptr)->range;
+}
+
+char* Fish::species()
+{
+  return ((_Fish*)ptr)->species;
+}
+
 
 bool Fish::move(int x, int y)
 {
@@ -108,15 +113,16 @@ std::ostream& operator<<(std::ostream& stream,Fish ob)
   stream << "x: " << ((_Fish*)ob.ptr)->x  <<'\n';
   stream << "y: " << ((_Fish*)ob.ptr)->y  <<'\n';
   stream << "owner: " << ((_Fish*)ob.ptr)->owner  <<'\n';
-  stream << "species: " << ((_Fish*)ob.ptr)->species  <<'\n';
   stream << "maxHealth: " << ((_Fish*)ob.ptr)->maxHealth  <<'\n';
-  stream << "curHealth: " << ((_Fish*)ob.ptr)->curHealth  <<'\n';
-  stream << "maxMoves: " << ((_Fish*)ob.ptr)->maxMoves  <<'\n';
+  stream << "currentHealth: " << ((_Fish*)ob.ptr)->currentHealth  <<'\n';
+  stream << "maxMovement: " << ((_Fish*)ob.ptr)->maxMovement  <<'\n';
   stream << "movementLeft: " << ((_Fish*)ob.ptr)->movementLeft  <<'\n';
   stream << "carryCap: " << ((_Fish*)ob.ptr)->carryCap  <<'\n';
   stream << "carryWeight: " << ((_Fish*)ob.ptr)->carryWeight  <<'\n';
   stream << "attackPower: " << ((_Fish*)ob.ptr)->attackPower  <<'\n';
   stream << "isVisible: " << ((_Fish*)ob.ptr)->isVisible  <<'\n';
   stream << "attacksLeft: " << ((_Fish*)ob.ptr)->attacksLeft  <<'\n';
+  stream << "range: " << ((_Fish*)ob.ptr)->range  <<'\n';
+  stream << "species: " << ((_Fish*)ob.ptr)->species  <<'\n';
   return stream;
 }

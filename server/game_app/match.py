@@ -30,7 +30,7 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
-    self.dollarsPerTurn = None
+    self.spawnFoodPerTurn = None
     self.turnNumber = None
     self.playerID = None
     self.gameNumber = id
@@ -39,6 +39,7 @@ class Match(DefaultGameWorld):
     self.trashDamage = None
     self.mapWidth = None
     self.mapHeight = None
+    self.trashAmount = None
 
   #this is here to be wrapped
   def __del__(self):
@@ -108,7 +109,7 @@ class Match(DefaultGameWorld):
     if( self.logJson ):
       self.dictLog['turns'].append(
         dict(
-          dollarsPerTurn = self.dollarsPerTurn,
+          spawnFoodPerTurn = self.spawnFoodPerTurn,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
           gameNumber = self.gameNumber,
@@ -117,8 +118,10 @@ class Match(DefaultGameWorld):
           trashDamage = self.trashDamage,
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
+          trashAmount = self.trashAmount,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
-          Trashs = [i.toJson() for i in self.objects.values() if i.__class__ is Trash],
+          FishSpeciess = [i.toJson() for i in self.objects.values() if i.__class__ is FishSpecies],
+          Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
           Fishs = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
           Players = [i.toJson() for i in self.objects.values() if i.__class__ is Player],
           animations = self.jsonAnimations
@@ -162,6 +165,10 @@ class Match(DefaultGameWorld):
 
   def logPath(self):
     return "logs/" + str(self.id)
+
+  @derefArgs(FishSpecies, None, None)
+  def spawn(self, object, x, y):
+    return object.spawn(x, y, )
 
   @derefArgs(Fish, None, None)
   def move(self, object, x, y):
@@ -210,11 +217,12 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.dollarsPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight])
+    msg.append(["game", self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["Trash"] + [i.toList() for i in self.objects.values() if i.__class__ is Trash])
+    typeLists.append(["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies])
+    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
     typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 

@@ -31,26 +31,41 @@ struct Mappable
   friend std::ostream& operator<<(std::ostream& stream, Mappable obj);
 };
 
-struct Trash: public Mappable 
+struct FishSpecies
 {
-  int weight;
+  int id;
+  char* species;
+  int cost;
+  int maxHealth;
+  int maxMovement;
+  int carryCap;
+  int attackPower;
+  int range;
 
-  friend std::ostream& operator<<(std::ostream& stream, Trash obj);
+  friend std::ostream& operator<<(std::ostream& stream, FishSpecies obj);
+};
+
+struct Tile: public Mappable 
+{
+  int trashAmount;
+
+  friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
 
 struct Fish: public Mappable 
 {
   int owner;
-  char* species;
   int maxHealth;
-  int curHealth;
-  int maxMoves;
+  int currentHealth;
+  int maxMovement;
   int movementLeft;
   int carryCap;
   int carryWeight;
   int attackPower;
   int isVisible;
   int attacksLeft;
+  int range;
+  char* species;
 
   friend std::ostream& operator<<(std::ostream& stream, Fish obj);
 };
@@ -60,8 +75,8 @@ struct Player
   int id;
   char* playerName;
   float time;
-  int curReefHealth;
-  int sandDollars;
+  int currentReefHealth;
+  int spawnFood;
 
   friend std::ostream& operator<<(std::ostream& stream, Player obj);
 };
@@ -76,6 +91,7 @@ struct spawn : public Animation
 {
   int x;
   int y;
+  char* species;
 
   friend std::ostream& operator<<(std::ostream& stream, spawn obj);
 };
@@ -96,6 +112,7 @@ struct pickUp : public Animation
   int x;
   int y;
   int actingID;
+  int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, pickUp obj);
 };
@@ -112,6 +129,7 @@ struct drop : public Animation
   int x;
   int y;
   int actingID;
+  int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, drop obj);
 };
@@ -141,11 +159,12 @@ struct AnimOwner: public Animation
 struct GameState
 {
   std::map<int,Mappable> mappables;
-  std::map<int,Trash> trashs;
+  std::map<int,FishSpecies> fishSpeciess;
+  std::map<int,Tile> tiles;
   std::map<int,Fish> fishs;
   std::map<int,Player> players;
 
-  int dollarsPerTurn;
+  int spawnFoodPerTurn;
   int turnNumber;
   int playerID;
   int gameNumber;
@@ -154,6 +173,7 @@ struct GameState
   int trashDamage;
   int mapWidth;
   int mapHeight;
+  int trashAmount;
 
   std::map< int, std::vector< SmartPointer< Animation > > > animations;
   friend std::ostream& operator<<(std::ostream& stream, GameState obj);

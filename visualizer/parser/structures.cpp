@@ -17,12 +17,26 @@ std::ostream& operator<<(std::ostream& stream, Mappable ob)
 }
 
 
-std::ostream& operator<<(std::ostream& stream, Trash ob)
+std::ostream& operator<<(std::ostream& stream, FishSpecies ob)
+{
+  stream << "id: " << ob.id  <<'\n';
+  stream << "species: " << ob.species  <<'\n';
+  stream << "cost: " << ob.cost  <<'\n';
+  stream << "maxHealth: " << ob.maxHealth  <<'\n';
+  stream << "maxMovement: " << ob.maxMovement  <<'\n';
+  stream << "carryCap: " << ob.carryCap  <<'\n';
+  stream << "attackPower: " << ob.attackPower  <<'\n';
+  stream << "range: " << ob.range  <<'\n';
+  return stream;
+}
+
+
+std::ostream& operator<<(std::ostream& stream, Tile ob)
 {
   stream << "id: " << ob.id  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
-  stream << "weight: " << ob.weight  <<'\n';
+  stream << "trashAmount: " << ob.trashAmount  <<'\n';
   return stream;
 }
 
@@ -33,16 +47,17 @@ std::ostream& operator<<(std::ostream& stream, Fish ob)
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "owner: " << ob.owner  <<'\n';
-  stream << "species: " << ob.species  <<'\n';
   stream << "maxHealth: " << ob.maxHealth  <<'\n';
-  stream << "curHealth: " << ob.curHealth  <<'\n';
-  stream << "maxMoves: " << ob.maxMoves  <<'\n';
+  stream << "currentHealth: " << ob.currentHealth  <<'\n';
+  stream << "maxMovement: " << ob.maxMovement  <<'\n';
   stream << "movementLeft: " << ob.movementLeft  <<'\n';
   stream << "carryCap: " << ob.carryCap  <<'\n';
   stream << "carryWeight: " << ob.carryWeight  <<'\n';
   stream << "attackPower: " << ob.attackPower  <<'\n';
   stream << "isVisible: " << ob.isVisible  <<'\n';
   stream << "attacksLeft: " << ob.attacksLeft  <<'\n';
+  stream << "range: " << ob.range  <<'\n';
+  stream << "species: " << ob.species  <<'\n';
   return stream;
 }
 
@@ -52,8 +67,8 @@ std::ostream& operator<<(std::ostream& stream, Player ob)
   stream << "id: " << ob.id  <<'\n';
   stream << "playerName: " << ob.playerName  <<'\n';
   stream << "time: " << ob.time  <<'\n';
-  stream << "curReefHealth: " << ob.curReefHealth  <<'\n';
-  stream << "sandDollars: " << ob.sandDollars  <<'\n';
+  stream << "currentReefHealth: " << ob.currentReefHealth  <<'\n';
+  stream << "spawnFood: " << ob.spawnFood  <<'\n';
   return stream;
 }
 
@@ -64,6 +79,7 @@ std::ostream& operator<<(std::ostream& stream, spawn ob)
   stream << "spawn" << "\n";
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
+  stream << "species: " << ob.species  <<'\n';
   return stream;
 }
 
@@ -86,6 +102,7 @@ std::ostream& operator<<(std::ostream& stream, pickUp ob)
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }
 
@@ -104,6 +121,7 @@ std::ostream& operator<<(std::ostream& stream, drop ob)
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }
 
@@ -128,7 +146,7 @@ std::ostream& operator<<(std::ostream& stream, playerTalk ob)
 
 std::ostream& operator<<(std::ostream& stream, GameState ob)
 {
-  stream << "dollarsPerTurn: " << ob.dollarsPerTurn  <<'\n';
+  stream << "spawnFoodPerTurn: " << ob.spawnFoodPerTurn  <<'\n';
   stream << "turnNumber: " << ob.turnNumber  <<'\n';
   stream << "playerID: " << ob.playerID  <<'\n';
   stream << "gameNumber: " << ob.gameNumber  <<'\n';
@@ -137,12 +155,16 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
   stream << "trashDamage: " << ob.trashDamage  <<'\n';
   stream << "mapWidth: " << ob.mapWidth  <<'\n';
   stream << "mapHeight: " << ob.mapHeight  <<'\n';
+  stream << "trashAmount: " << ob.trashAmount  <<'\n';
 
   stream << "\n\nMappables:\n";
   for(std::map<int,Mappable>::iterator i = ob.mappables.begin(); i != ob.mappables.end(); i++)
     stream << i->second << '\n';
-  stream << "\n\nTrashs:\n";
-  for(std::map<int,Trash>::iterator i = ob.trashs.begin(); i != ob.trashs.end(); i++)
+  stream << "\n\nFishSpeciess:\n";
+  for(std::map<int,FishSpecies>::iterator i = ob.fishSpeciess.begin(); i != ob.fishSpeciess.end(); i++)
+    stream << i->second << '\n';
+  stream << "\n\nTiles:\n";
+  for(std::map<int,Tile>::iterator i = ob.tiles.begin(); i != ob.tiles.end(); i++)
     stream << i->second << '\n';
   stream << "\n\nFishs:\n";
   for(std::map<int,Fish>::iterator i = ob.fishs.begin(); i != ob.fishs.end(); i++)

@@ -24,9 +24,9 @@ class Player {
   ///Time remaining, updated at start of turn
   float time();
   ///The player's current reef health
-  int curReefHealth();
-  ///Currency for fish
-  int sandDollars();
+  int currentReefHealth();
+  ///Food used to spawn new fish
+  int spawnFood();
 
   // Actions
   ///Allows a player to display messages on the screen

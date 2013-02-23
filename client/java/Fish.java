@@ -75,12 +75,6 @@ class Fish extends Mappable
     validify();
     return Client.INSTANCE.fishGetOwner(ptr);
   }
-  ///The type/species of the fish
-  public String getSpecies()
-  {
-    validify();
-    return Client.INSTANCE.fishGetSpecies(ptr);
-  }
   ///The maximum health of the fish
   public int getMaxHealth()
   {
@@ -88,16 +82,16 @@ class Fish extends Mappable
     return Client.INSTANCE.fishGetMaxHealth(ptr);
   }
   ///The current health of the fish
-  public int getCurHealth()
+  public int getCurrentHealth()
   {
     validify();
-    return Client.INSTANCE.fishGetCurHealth(ptr);
+    return Client.INSTANCE.fishGetCurrentHealth(ptr);
   }
   ///The maximum number of movements in a turn
-  public int getMaxMoves()
+  public int getMaxMovement()
   {
     validify();
-    return Client.INSTANCE.fishGetMaxMoves(ptr);
+    return Client.INSTANCE.fishGetMaxMovement(ptr);
   }
   ///The number of movements left
   public int getMovementLeft()
@@ -134,6 +128,18 @@ class Fish extends Mappable
   {
     validify();
     return Client.INSTANCE.fishGetAttacksLeft(ptr);
+  }
+  ///The attack range of the fish
+  public int getRange()
+  {
+    validify();
+    return Client.INSTANCE.fishGetRange(ptr);
+  }
+  ///The fish species
+  public String getSpecies()
+  {
+    validify();
+    return Client.INSTANCE.fishGetSpecies(ptr);
   }
 
 }

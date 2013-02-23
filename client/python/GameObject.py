@@ -66,13 +66,13 @@ class Mappable(GameObject):
     ret += "y: %s\n" % self.getY()
     return ret
 
-##This is a Trash object
-class Trash(Mappable):
+##
+class FishSpecies(GameObject):
   def __init__(self, ptr):
     from BaseAI import BaseAI
     self._ptr = ptr
     self._iteration = BaseAI.iteration
-    self._id = library.trashGetId(ptr)
+    self._id = library.fishSpeciesGetId(ptr)
 
   #\cond
   def validify(self):
@@ -81,7 +81,112 @@ class Trash(Mappable):
     #somewhere else in memory now
     if self._iteration == BaseAI.iteration:
       return True
-    for i in BaseAI.trashs:
+    for i in BaseAI.fishSpeciess:
+      if i._id == self._id:
+        self._ptr = i._ptr
+        self._iteration = BaseAI.iteration
+        return True
+    raise ExistentialError()
+  #\endcond
+  ##Have a new fish spawn and join the fight!
+  def spawn(self, x, y):
+    self.validify()
+    return library.fishSpeciesSpawn(self._ptr, x, y)
+
+  #\cond
+  def getId(self):
+    self.validify()
+    return library.fishSpeciesGetId(self._ptr)
+  #\endcond
+  ##Unique Identifier
+  id = property(getId)
+
+  #\cond
+  def getSpecies(self):
+    self.validify()
+    return library.fishSpeciesGetSpecies(self._ptr)
+  #\endcond
+  ##The fish species
+  species = property(getSpecies)
+
+  #\cond
+  def getCost(self):
+    self.validify()
+    return library.fishSpeciesGetCost(self._ptr)
+  #\endcond
+  ##The amount of food it takes to raise this fish
+  cost = property(getCost)
+
+  #\cond
+  def getMaxHealth(self):
+    self.validify()
+    return library.fishSpeciesGetMaxHealth(self._ptr)
+  #\endcond
+  ##The maximum health of this fish
+  maxHealth = property(getMaxHealth)
+
+  #\cond
+  def getMaxMovement(self):
+    self.validify()
+    return library.fishSpeciesGetMaxMovement(self._ptr)
+  #\endcond
+  ##The maximum number of movements in a turn
+  maxMovement = property(getMaxMovement)
+
+  #\cond
+  def getCarryCap(self):
+    self.validify()
+    return library.fishSpeciesGetCarryCap(self._ptr)
+  #\endcond
+  ##The total weight the fish can carry
+  carryCap = property(getCarryCap)
+
+  #\cond
+  def getAttackPower(self):
+    self.validify()
+    return library.fishSpeciesGetAttackPower(self._ptr)
+  #\endcond
+  ##The power of the fish's attack
+  attackPower = property(getAttackPower)
+
+  #\cond
+  def getRange(self):
+    self.validify()
+    return library.fishSpeciesGetRange(self._ptr)
+  #\endcond
+  ##The attack arrange of the fish
+  range = property(getRange)
+
+
+  def __str__(self):
+    self.validify()
+    ret = ""
+    ret += "id: %s\n" % self.getId()
+    ret += "species: %s\n" % self.getSpecies()
+    ret += "cost: %s\n" % self.getCost()
+    ret += "maxHealth: %s\n" % self.getMaxHealth()
+    ret += "maxMovement: %s\n" % self.getMaxMovement()
+    ret += "carryCap: %s\n" % self.getCarryCap()
+    ret += "attackPower: %s\n" % self.getAttackPower()
+    ret += "range: %s\n" % self.getRange()
+    return ret
+
+##Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
+class Tile(Mappable):
+  def __init__(self, ptr):
+    from BaseAI import BaseAI
+    self._ptr = ptr
+    self._iteration = BaseAI.iteration
+    self._id = library.tileGetId(ptr)
+
+  #\cond
+  def validify(self):
+    from BaseAI import BaseAI
+    #if this class is pointing to an object from before the current turn it's probably
+    #somewhere else in memory now
+    if self._iteration == BaseAI.iteration:
+      return True
+    for i in BaseAI.tiles:
       if i._id == self._id:
         self._ptr = i._ptr
         self._iteration = BaseAI.iteration
@@ -91,7 +196,7 @@ class Trash(Mappable):
   #\cond
   def getId(self):
     self.validify()
-    return library.trashGetId(self._ptr)
+    return library.tileGetId(self._ptr)
   #\endcond
   ##Unique Identifier
   id = property(getId)
@@ -99,7 +204,7 @@ class Trash(Mappable):
   #\cond
   def getX(self):
     self.validify()
-    return library.trashGetX(self._ptr)
+    return library.tileGetX(self._ptr)
   #\endcond
   ##X position of the object
   x = property(getX)
@@ -107,18 +212,18 @@ class Trash(Mappable):
   #\cond
   def getY(self):
     self.validify()
-    return library.trashGetY(self._ptr)
+    return library.tileGetY(self._ptr)
   #\endcond
   ##Y position of the object
   y = property(getY)
 
   #\cond
-  def getWeight(self):
+  def getTrashAmount(self):
     self.validify()
-    return library.trashGetWeight(self._ptr)
+    return library.tileGetTrashAmount(self._ptr)
   #\endcond
-  ##The weight of the trash
-  weight = property(getWeight)
+  ##The amount of trash on this tile
+  trashAmount = property(getTrashAmount)
 
 
   def __str__(self):
@@ -127,7 +232,7 @@ class Trash(Mappable):
     ret += "id: %s\n" % self.getId()
     ret += "x: %s\n" % self.getX()
     ret += "y: %s\n" % self.getY()
-    ret += "weight: %s\n" % self.getWeight()
+    ret += "trashAmount: %s\n" % self.getTrashAmount()
     return ret
 
 ##
@@ -205,14 +310,6 @@ class Fish(Mappable):
   owner = property(getOwner)
 
   #\cond
-  def getSpecies(self):
-    self.validify()
-    return library.fishGetSpecies(self._ptr)
-  #\endcond
-  ##The type/species of the fish
-  species = property(getSpecies)
-
-  #\cond
   def getMaxHealth(self):
     self.validify()
     return library.fishGetMaxHealth(self._ptr)
@@ -221,20 +318,20 @@ class Fish(Mappable):
   maxHealth = property(getMaxHealth)
 
   #\cond
-  def getCurHealth(self):
+  def getCurrentHealth(self):
     self.validify()
-    return library.fishGetCurHealth(self._ptr)
+    return library.fishGetCurrentHealth(self._ptr)
   #\endcond
   ##The current health of the fish
-  curHealth = property(getCurHealth)
+  currentHealth = property(getCurrentHealth)
 
   #\cond
-  def getMaxMoves(self):
+  def getMaxMovement(self):
     self.validify()
-    return library.fishGetMaxMoves(self._ptr)
+    return library.fishGetMaxMovement(self._ptr)
   #\endcond
   ##The maximum number of movements in a turn
-  maxMoves = property(getMaxMoves)
+  maxMovement = property(getMaxMovement)
 
   #\cond
   def getMovementLeft(self):
@@ -284,6 +381,22 @@ class Fish(Mappable):
   ##The number of attacks a fish has left
   attacksLeft = property(getAttacksLeft)
 
+  #\cond
+  def getRange(self):
+    self.validify()
+    return library.fishGetRange(self._ptr)
+  #\endcond
+  ##The attack range of the fish
+  range = property(getRange)
+
+  #\cond
+  def getSpecies(self):
+    self.validify()
+    return library.fishGetSpecies(self._ptr)
+  #\endcond
+  ##The fish species
+  species = property(getSpecies)
+
 
   def __str__(self):
     self.validify()
@@ -292,16 +405,17 @@ class Fish(Mappable):
     ret += "x: %s\n" % self.getX()
     ret += "y: %s\n" % self.getY()
     ret += "owner: %s\n" % self.getOwner()
-    ret += "species: %s\n" % self.getSpecies()
     ret += "maxHealth: %s\n" % self.getMaxHealth()
-    ret += "curHealth: %s\n" % self.getCurHealth()
-    ret += "maxMoves: %s\n" % self.getMaxMoves()
+    ret += "currentHealth: %s\n" % self.getCurrentHealth()
+    ret += "maxMovement: %s\n" % self.getMaxMovement()
     ret += "movementLeft: %s\n" % self.getMovementLeft()
     ret += "carryCap: %s\n" % self.getCarryCap()
     ret += "carryWeight: %s\n" % self.getCarryWeight()
     ret += "attackPower: %s\n" % self.getAttackPower()
     ret += "isVisible: %s\n" % self.getIsVisible()
     ret += "attacksLeft: %s\n" % self.getAttacksLeft()
+    ret += "range: %s\n" % self.getRange()
+    ret += "species: %s\n" % self.getSpecies()
     return ret
 
 ##
@@ -356,20 +470,20 @@ class Player(GameObject):
   time = property(getTime)
 
   #\cond
-  def getCurReefHealth(self):
+  def getCurrentReefHealth(self):
     self.validify()
-    return library.playerGetCurReefHealth(self._ptr)
+    return library.playerGetCurrentReefHealth(self._ptr)
   #\endcond
   ##The player's current reef health
-  curReefHealth = property(getCurReefHealth)
+  currentReefHealth = property(getCurrentReefHealth)
 
   #\cond
-  def getSandDollars(self):
+  def getSpawnFood(self):
     self.validify()
-    return library.playerGetSandDollars(self._ptr)
+    return library.playerGetSpawnFood(self._ptr)
   #\endcond
-  ##Currency for fish
-  sandDollars = property(getSandDollars)
+  ##Food used to spawn new fish
+  spawnFood = property(getSpawnFood)
 
 
   def __str__(self):
@@ -378,6 +492,6 @@ class Player(GameObject):
     ret += "id: %s\n" % self.getId()
     ret += "playerName: %s\n" % self.getPlayerName()
     ret += "time: %s\n" % self.getTime()
-    ret += "curReefHealth: %s\n" % self.getCurReefHealth()
-    ret += "sandDollars: %s\n" % self.getSandDollars()
+    ret += "currentReefHealth: %s\n" % self.getCurrentReefHealth()
+    ret += "spawnFood: %s\n" % self.getSpawnFood()
     return ret

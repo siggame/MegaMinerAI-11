@@ -25,6 +25,8 @@ public class Client {
 
     //commands
   [DllImport("client")]
+  public static extern int fishSpeciesSpawn(IntPtr self, int x, int y);
+  [DllImport("client")]
   public static extern int fishMove(IntPtr self, int x, int y);
   [DllImport("client")]
   public static extern int fishPickUp(IntPtr self, int x, int y, int weight);
@@ -37,7 +39,7 @@ public class Client {
 
     //accessors
   [DllImport("client")]
-  public static extern int getDollarsPerTurn(IntPtr connection);
+  public static extern int getSpawnFoodPerTurn(IntPtr connection);
   [DllImport("client")]
   public static extern int getTurnNumber(IntPtr connection);
   [DllImport("client")]
@@ -54,15 +56,21 @@ public class Client {
   public static extern int getMapWidth(IntPtr connection);
   [DllImport("client")]
   public static extern int getMapHeight(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getTrashAmount(IntPtr connection);
 
   [DllImport("client")]
   public static extern IntPtr getMappable(IntPtr connection, int num);
   [DllImport("client")]
   public static extern int getMappableCount(IntPtr connection);
   [DllImport("client")]
-  public static extern IntPtr getTrash(IntPtr connection, int num);
+  public static extern IntPtr getFishSpecies(IntPtr connection, int num);
   [DllImport("client")]
-  public static extern int getTrashCount(IntPtr connection);
+  public static extern int getFishSpeciesCount(IntPtr connection);
+  [DllImport("client")]
+  public static extern IntPtr getTile(IntPtr connection, int num);
+  [DllImport("client")]
+  public static extern int getTileCount(IntPtr connection);
   [DllImport("client")]
   public static extern IntPtr getFish(IntPtr connection, int num);
   [DllImport("client")]
@@ -82,13 +90,30 @@ public class Client {
   public static extern int mappableGetY(IntPtr ptr);
 
   [DllImport("client")]
-  public static extern int trashGetId(IntPtr ptr);
+  public static extern int fishSpeciesGetId(IntPtr ptr);
   [DllImport("client")]
-  public static extern int trashGetX(IntPtr ptr);
+  public static extern IntPtr fishSpeciesGetSpecies(IntPtr ptr);
   [DllImport("client")]
-  public static extern int trashGetY(IntPtr ptr);
+  public static extern int fishSpeciesGetCost(IntPtr ptr);
   [DllImport("client")]
-  public static extern int trashGetWeight(IntPtr ptr);
+  public static extern int fishSpeciesGetMaxHealth(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetMaxMovement(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetCarryCap(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetAttackPower(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishSpeciesGetRange(IntPtr ptr);
+
+  [DllImport("client")]
+  public static extern int tileGetId(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetX(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetY(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetTrashAmount(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int fishGetId(IntPtr ptr);
@@ -99,13 +124,11 @@ public class Client {
   [DllImport("client")]
   public static extern int fishGetOwner(IntPtr ptr);
   [DllImport("client")]
-  public static extern IntPtr fishGetSpecies(IntPtr ptr);
-  [DllImport("client")]
   public static extern int fishGetMaxHealth(IntPtr ptr);
   [DllImport("client")]
-  public static extern int fishGetCurHealth(IntPtr ptr);
+  public static extern int fishGetCurrentHealth(IntPtr ptr);
   [DllImport("client")]
-  public static extern int fishGetMaxMoves(IntPtr ptr);
+  public static extern int fishGetMaxMovement(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetMovementLeft(IntPtr ptr);
   [DllImport("client")]
@@ -118,6 +141,10 @@ public class Client {
   public static extern int fishGetIsVisible(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttacksLeft(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishGetRange(IntPtr ptr);
+  [DllImport("client")]
+  public static extern IntPtr fishGetSpecies(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int playerGetId(IntPtr ptr);
@@ -126,9 +153,9 @@ public class Client {
   [DllImport("client")]
   public static extern float playerGetTime(IntPtr ptr);
   [DllImport("client")]
-  public static extern int playerGetCurReefHealth(IntPtr ptr);
+  public static extern int playerGetCurrentReefHealth(IntPtr ptr);
   [DllImport("client")]
-  public static extern int playerGetSandDollars(IntPtr ptr);
+  public static extern int playerGetSpawnFood(IntPtr ptr);
 
 
     //properties

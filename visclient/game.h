@@ -34,7 +34,7 @@ struct Connection
   pthread_mutex_t mutex;
   #endif
   
-  int dollarsPerTurn;
+  int spawnFoodPerTurn;
   int turnNumber;
   int playerID;
   int gameNumber;
@@ -43,11 +43,14 @@ struct Connection
   int trashDamage;
   int mapWidth;
   int mapHeight;
+  int trashAmount;
 
   _Mappable* Mappables;
   int MappableCount;
-  _Trash* Trashs;
-  int TrashCount;
+  _FishSpecies* FishSpeciess;
+  int FishSpeciesCount;
+  _Tile* Tiles;
+  int TileCount;
   _Fish* Fishs;
   int FishCount;
   _Player* Players;
@@ -72,6 +75,8 @@ extern "C"
 
 //commands
 
+  ///Have a new fish spawn and join the fight!
+  DLLEXPORT int fishSpeciesSpawn(_FishSpecies* object, int x, int y);
   ///Command a fish to move to a specified position
   DLLEXPORT int fishMove(_Fish* object, int x, int y);
   ///Command a fish to pick up some trash at a specified position
@@ -89,7 +94,7 @@ extern "C"
 
 //accessors
 
-DLLEXPORT int getDollarsPerTurn(Connection* c);
+DLLEXPORT int getSpawnFoodPerTurn(Connection* c);
 DLLEXPORT int getTurnNumber(Connection* c);
 DLLEXPORT int getPlayerID(Connection* c);
 DLLEXPORT int getGameNumber(Connection* c);
@@ -98,12 +103,16 @@ DLLEXPORT int getMaxReefHealth(Connection* c);
 DLLEXPORT int getTrashDamage(Connection* c);
 DLLEXPORT int getMapWidth(Connection* c);
 DLLEXPORT int getMapHeight(Connection* c);
+DLLEXPORT int getTrashAmount(Connection* c);
 
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);
 
-DLLEXPORT _Trash* getTrash(Connection* c, int num);
-DLLEXPORT int getTrashCount(Connection* c);
+DLLEXPORT _FishSpecies* getFishSpecies(Connection* c, int num);
+DLLEXPORT int getFishSpeciesCount(Connection* c);
+
+DLLEXPORT _Tile* getTile(Connection* c, int num);
+DLLEXPORT int getTileCount(Connection* c);
 
 DLLEXPORT _Fish* getFish(Connection* c, int num);
 DLLEXPORT int getFishCount(Connection* c);

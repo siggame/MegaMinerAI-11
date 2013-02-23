@@ -57,16 +57,16 @@ class Player
     return Client.INSTANCE.playerGetTime(ptr);
   }
   ///The player's current reef health
-  public int getCurReefHealth()
+  public int getCurrentReefHealth()
   {
     validify();
-    return Client.INSTANCE.playerGetCurReefHealth(ptr);
+    return Client.INSTANCE.playerGetCurrentReefHealth(ptr);
   }
-  ///Currency for fish
-  public int getSandDollars()
+  ///Food used to spawn new fish
+  public int getSpawnFood()
   {
     validify();
-    return Client.INSTANCE.playerGetSandDollars(ptr);
+    return Client.INSTANCE.playerGetSpawnFood(ptr);
   }
 
 }

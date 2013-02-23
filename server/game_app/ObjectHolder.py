@@ -4,7 +4,8 @@ class ObjectHolder(dict):
   def __init__(self, *args, **kwargs):
     dict.__init__(self, *args, **kwargs)
     self.mappables = []
-    self.trashs = []
+    self.fishSpeciess = []
+    self.tiles = []
     self.fishs = []
     self.players = []
 
@@ -14,8 +15,10 @@ class ObjectHolder(dict):
     dict.__setitem__(self, key, value)
     if isinstance(value, objects.Mappable):
       self.mappables.append(value)
-    if isinstance(value, objects.Trash):
-      self.trashs.append(value)
+    if isinstance(value, objects.FishSpecies):
+      self.fishSpeciess.append(value)
+    if isinstance(value, objects.Tile):
+      self.tiles.append(value)
     if isinstance(value, objects.Fish):
       self.fishs.append(value)
     if isinstance(value, objects.Player):
@@ -26,8 +29,10 @@ class ObjectHolder(dict):
     dict.__delitem__(self, key)
     if value in self.mappables:
       self.mappables.remove(value)
-    if value in self.trashs:
-      self.trashs.remove(value)
+    if value in self.fishSpeciess:
+      self.fishSpeciess.remove(value)
+    if value in self.tiles:
+      self.tiles.remove(value)
     if value in self.fishs:
       self.fishs.remove(value)
     if value in self.players:

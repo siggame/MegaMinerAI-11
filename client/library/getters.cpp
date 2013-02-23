@@ -12,21 +12,53 @@ DLLEXPORT int mappableGetY(_Mappable* ptr)
 {
   return ptr->y;
 }
-DLLEXPORT int trashGetId(_Trash* ptr)
+DLLEXPORT int fishSpeciesGetId(_FishSpecies* ptr)
 {
   return ptr->id;
 }
-DLLEXPORT int trashGetX(_Trash* ptr)
+DLLEXPORT char* fishSpeciesGetSpecies(_FishSpecies* ptr)
+{
+  return ptr->species;
+}
+DLLEXPORT int fishSpeciesGetCost(_FishSpecies* ptr)
+{
+  return ptr->cost;
+}
+DLLEXPORT int fishSpeciesGetMaxHealth(_FishSpecies* ptr)
+{
+  return ptr->maxHealth;
+}
+DLLEXPORT int fishSpeciesGetMaxMovement(_FishSpecies* ptr)
+{
+  return ptr->maxMovement;
+}
+DLLEXPORT int fishSpeciesGetCarryCap(_FishSpecies* ptr)
+{
+  return ptr->carryCap;
+}
+DLLEXPORT int fishSpeciesGetAttackPower(_FishSpecies* ptr)
+{
+  return ptr->attackPower;
+}
+DLLEXPORT int fishSpeciesGetRange(_FishSpecies* ptr)
+{
+  return ptr->range;
+}
+DLLEXPORT int tileGetId(_Tile* ptr)
+{
+  return ptr->id;
+}
+DLLEXPORT int tileGetX(_Tile* ptr)
 {
   return ptr->x;
 }
-DLLEXPORT int trashGetY(_Trash* ptr)
+DLLEXPORT int tileGetY(_Tile* ptr)
 {
   return ptr->y;
 }
-DLLEXPORT int trashGetWeight(_Trash* ptr)
+DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
 {
-  return ptr->weight;
+  return ptr->trashAmount;
 }
 DLLEXPORT int fishGetId(_Fish* ptr)
 {
@@ -44,21 +76,17 @@ DLLEXPORT int fishGetOwner(_Fish* ptr)
 {
   return ptr->owner;
 }
-DLLEXPORT char* fishGetSpecies(_Fish* ptr)
-{
-  return ptr->species;
-}
 DLLEXPORT int fishGetMaxHealth(_Fish* ptr)
 {
   return ptr->maxHealth;
 }
-DLLEXPORT int fishGetCurHealth(_Fish* ptr)
+DLLEXPORT int fishGetCurrentHealth(_Fish* ptr)
 {
-  return ptr->curHealth;
+  return ptr->currentHealth;
 }
-DLLEXPORT int fishGetMaxMoves(_Fish* ptr)
+DLLEXPORT int fishGetMaxMovement(_Fish* ptr)
 {
-  return ptr->maxMoves;
+  return ptr->maxMovement;
 }
 DLLEXPORT int fishGetMovementLeft(_Fish* ptr)
 {
@@ -84,6 +112,14 @@ DLLEXPORT int fishGetAttacksLeft(_Fish* ptr)
 {
   return ptr->attacksLeft;
 }
+DLLEXPORT int fishGetRange(_Fish* ptr)
+{
+  return ptr->range;
+}
+DLLEXPORT char* fishGetSpecies(_Fish* ptr)
+{
+  return ptr->species;
+}
 DLLEXPORT int playerGetId(_Player* ptr)
 {
   return ptr->id;
@@ -96,12 +132,12 @@ DLLEXPORT float playerGetTime(_Player* ptr)
 {
   return ptr->time;
 }
-DLLEXPORT int playerGetCurReefHealth(_Player* ptr)
+DLLEXPORT int playerGetCurrentReefHealth(_Player* ptr)
 {
-  return ptr->curReefHealth;
+  return ptr->currentReefHealth;
 }
-DLLEXPORT int playerGetSandDollars(_Player* ptr)
+DLLEXPORT int playerGetSpawnFood(_Player* ptr)
 {
-  return ptr->sandDollars;
+  return ptr->spawnFood;
 }
 

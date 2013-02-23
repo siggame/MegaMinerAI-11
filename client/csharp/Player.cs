@@ -81,23 +81,23 @@ public class Player
   }
 
   ///The player's current reef health
-  public int CurReefHealth
+  public int CurrentReefHealth
   {
     get
     {
       validify();
-      int value = Client.playerGetCurReefHealth(ptr);
+      int value = Client.playerGetCurrentReefHealth(ptr);
       return value;
     }
   }
 
-  ///Currency for fish
-  public int SandDollars
+  ///Food used to spawn new fish
+  public int SpawnFood
   {
     get
     {
       validify();
-      int value = Client.playerGetSandDollars(ptr);
+      int value = Client.playerGetSpawnFood(ptr);
       return value;
     }
   }
