@@ -16,7 +16,6 @@ class Mappable:
     pass
 
 
-
 class FishSpecies:
   def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range):
     self.game = game
