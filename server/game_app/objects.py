@@ -38,6 +38,9 @@ class FishSpecies:
   def nextTurn(self):
     pass
 
+  ###TODO: Spawn logic. Will need to parse through species config file and ensure that each fish gets the correct stats
+           #Can check how it was done in MM9, was similar. We may need to decide on a spawning area for fish, also decide
+           #if we'll initialize with fish spawned, or have them spawn their own on the first turn
   def spawn(self, x, y):
     pass
 
@@ -89,12 +92,16 @@ class Fish(Mappable):
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryWeight = self.carryWeight, attackPower = self.attackPower, isVisible = self.isVisible, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
   
+  ### TODO: Reset movement, attack, possible stealth, damage if carrying trash, possibly more
   def nextTurn(self):
     pass
 
+  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
   def move(self, x, y):
     pass
 
+  ### TODO: pick up trash from a tile 1 space away, can't exceec carrying cap, does damage on pickup, 
+  ### based off how trash was picked up, damage can't exceed health, can't pick up 0 trash
   def pickUp(self, x, y, weight):
     pass
 
@@ -114,7 +121,8 @@ class Player:
     self.time = time
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
-
+    self.spawning = []
+    
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
   
@@ -122,9 +130,11 @@ class Player:
   def toJson(self):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
   
+  ### TODO: Have trash to damage based off location, give food, warp in new fish
   def nextTurn(self):
     pass
 
+  ### TODO: should implement this function this time around, kinda missed it last time
   def talk(self, message):
     pass
 
