@@ -43,6 +43,8 @@ class FishSpecies:
   def nextTurn(self):
     pass
 
+  
+  ###TODO: Spawn logic. Parse through species.conf file and give each species the correct stats. turnsTill logic will need to be implmented. 
   def spawn(self, x, y):
     pass
 
@@ -95,15 +97,18 @@ class Fish(Mappable):
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
   
+  ### TODO: Reset movement, attack, possible stealth, damage if carrying trash, possibly more
   def nextTurn(self):
     pass
-
+  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
   def move(self, x, y):
     pass
-
+  
+  ### TODO: pick up trash from a tile 1 space away, can't exceec carrying cap, does damage on pickup,
+  ### based off how trash was picked up, damage can't exceed health, can't pick up 0 trash
   def pickUp(self, x, y, weight):
     pass
-
+ 
   def drop(self, x, y, weight):
     pass
 
@@ -120,7 +125,8 @@ class Player:
     self.time = time
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
-
+    self.spawning = []
+    
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
   
@@ -128,6 +134,8 @@ class Player:
   def toJson(self):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
   
+  
+  ### TODO: Have trash to damage based off location, give food, spawn new fish
   def nextTurn(self):
     pass
 
