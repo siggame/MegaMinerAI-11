@@ -38,13 +38,17 @@ globals = [
   Variable('trashDamage',int,'How much damage trash does'),
   Variable('mapWidth', int, 'How wide the map is'),
   Variable('mapHeight', int, 'How high the map is'),
-  Variable('trashAmount',int, 'amount of trash in the game')
+  Variable('trashAmount',int, 'Amount of trash in the game'),
+  Variable('coveX', int, 'X bound for the cove' ),
+  Variable('coveY', int, 'Y bound for the cove' ),
   ]
 
 Tile = Model('Tile',
   parent = Mappable,
-  data=[
+  data = [
     Variable('trashAmount', int, 'The amount of trash on this tile'),
+    Variable('owner', int , 'The owner of the tile if it is part of a cove'),
+    Variable('isCove', bool, 'If the current tile is part of a cove'),
     ],
   doc='Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3',
   )
