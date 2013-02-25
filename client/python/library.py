@@ -101,6 +101,12 @@ library.getMapHeight.argtypes = [c_void_p]
 library.getTrashAmount.restype = c_int
 library.getTrashAmount.argtypes = [c_void_p]
 
+library.getCoveX.restype = c_int
+library.getCoveX.argtypes = [c_void_p]
+
+library.getCoveY.restype = c_int
+library.getCoveY.argtypes = [c_void_p]
+
 library.getMappable.restype = c_void_p
 library.getMappable.argtypes = [c_void_p, c_int]
 
@@ -190,6 +196,12 @@ library.tileGetY.argtypes = [c_void_p]
 
 library.tileGetTrashAmount.restype = c_int
 library.tileGetTrashAmount.argtypes = [c_void_p]
+
+library.tileGetOwner.restype = c_int
+library.tileGetOwner.argtypes = [c_void_p]
+
+library.tileGetIsCove.restype = c_int
+library.tileGetIsCove.argtypes = [c_void_p]
 
 library.fishGetId.restype = c_int
 library.fishGetId.argtypes = [c_void_p]

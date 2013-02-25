@@ -261,6 +261,22 @@ class Tile(Mappable):
   ##The amount of trash on this tile
   trashAmount = property(getTrashAmount)
 
+  #\cond
+  def getOwner(self):
+    self.validify()
+    return library.tileGetOwner(self._ptr)
+  #\endcond
+  ##The owner of the tile if it is part of a cove
+  owner = property(getOwner)
+
+  #\cond
+  def getIsCove(self):
+    self.validify()
+    return library.tileGetIsCove(self._ptr)
+  #\endcond
+  ##If the current tile is part of a cove
+  isCove = property(getIsCove)
+
 
   def __str__(self):
     self.validify()
@@ -269,6 +285,8 @@ class Tile(Mappable):
     ret += "x: %s\n" % self.getX()
     ret += "y: %s\n" % self.getY()
     ret += "trashAmount: %s\n" % self.getTrashAmount()
+    ret += "owner: %s\n" % self.getOwner()
+    ret += "isCove: %s\n" % self.getIsCove()
     return ret
 
 ##

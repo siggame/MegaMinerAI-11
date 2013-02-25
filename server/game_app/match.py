@@ -43,6 +43,8 @@ class Match(DefaultGameWorld):
     self.mapWidth = None
     self.mapHeight = None
     self.trashAmount = None
+    self.coveX = None
+    self.coveY = None
 
   #this is here to be wrapped
   def __del__(self):
@@ -125,6 +127,8 @@ class Match(DefaultGameWorld):
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
           trashAmount = self.trashAmount,
+          coveX = self.coveX,
+          coveY = self.coveY,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
           FishSpeciess = [i.toJson() for i in self.objects.values() if i.__class__ is FishSpecies],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
@@ -223,7 +227,7 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount])
+    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])

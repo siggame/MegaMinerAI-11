@@ -158,10 +158,22 @@ public abstract class BaseAI
     int value = Client.getMapHeight(connection);
     return value;
   }
-  ///amount of trash in the game
+  ///Amount of trash in the game
   public int trashAmount()
   {
     int value = Client.getTrashAmount(connection);
+    return value;
+  }
+  ///X bound for the cove
+  public int coveX()
+  {
+    int value = Client.getCoveX(connection);
+    return value;
+  }
+  ///Y bound for the cove
+  public int coveY()
+  {
+    int value = Client.getCoveY(connection);
     return value;
   }
 }

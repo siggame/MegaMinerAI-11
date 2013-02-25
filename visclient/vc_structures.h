@@ -45,6 +45,8 @@ struct _Tile
   int x;
   int y;
   int trashAmount;
+  int owner;
+  int isCove;
 };
 struct _Fish
 {

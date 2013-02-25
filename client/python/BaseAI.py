@@ -114,5 +114,15 @@ class BaseAI:
     return library.getTrashAmount(self.connection)
   #\endcond
   trashAmount = property(getTrashAmount)
+  #\cond
+  def getCoveX(self):
+    return library.getCoveX(self.connection)
+  #\endcond
+  coveX = property(getCoveX)
+  #\cond
+  def getCoveY(self):
+    return library.getCoveY(self.connection)
+  #\endcond
+  coveY = property(getCoveY)
   def __init__(self, connection):
     self.connection = connection

@@ -79,6 +79,14 @@ DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
 {
   return ptr->trashAmount;
 }
+DLLEXPORT int tileGetOwner(_Tile* ptr)
+{
+  return ptr->owner;
+}
+DLLEXPORT int tileGetIsCove(_Tile* ptr)
+{
+  return ptr->isCove;
+}
 DLLEXPORT int fishGetId(_Fish* ptr)
 {
   return ptr->id;

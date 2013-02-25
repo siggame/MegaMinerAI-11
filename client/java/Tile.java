@@ -51,5 +51,17 @@ class Tile extends Mappable
     validify();
     return Client.INSTANCE.tileGetTrashAmount(ptr);
   }
+  ///The owner of the tile if it is part of a cove
+  public int getOwner()
+  {
+    validify();
+    return Client.INSTANCE.tileGetOwner(ptr);
+  }
+  ///If the current tile is part of a cove
+  public int getIsCove()
+  {
+    validify();
+    return Client.INSTANCE.tileGetIsCove(ptr);
+  }
 
 }

@@ -41,6 +41,8 @@ std::ostream& operator<<(std::ostream& stream, Tile ob)
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "trashAmount: " << ob.trashAmount  <<'\n';
+  stream << "owner: " << ob.owner  <<'\n';
+  stream << "isCove: " << ob.isCove  <<'\n';
   return stream;
 }
 
@@ -164,6 +166,8 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
   stream << "mapWidth: " << ob.mapWidth  <<'\n';
   stream << "mapHeight: " << ob.mapHeight  <<'\n';
   stream << "trashAmount: " << ob.trashAmount  <<'\n';
+  stream << "coveX: " << ob.coveX  <<'\n';
+  stream << "coveY: " << ob.coveY  <<'\n';
 
   stream << "\n\nMappables:\n";
   for(std::map<int,Mappable>::iterator i = ob.mappables.begin(); i != ob.mappables.end(); i++)
