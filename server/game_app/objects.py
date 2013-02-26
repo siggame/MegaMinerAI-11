@@ -1,3 +1,11 @@
+import netowrking.config.config
+
+#Initializes cfgSpecies
+cfgSpecies = networking.config.config.readConfig("config/species.cfg")
+for key in cfgSpecies.keys():
+  cfgSpecies[key]['type'] = key
+
+
 class Mappable:
   def __init__(self, game, id, x, y):
     self.game = game
