@@ -143,10 +143,50 @@ class Match(DefaultGameWorld):
     return True
 
   def checkWinner(self):
-    #TODO: Make this check if a player won, and call declareWinner with a player if they did
-    if self.turnNumber >= self.turnLimit:
-       self.declareWinner(self.players[0], "Because I said so, this shold be removed")
-
+    # Get the players
+    player1 = self.objects.players[0]
+    player2 = self.objects.players[1]
+    # Get the current reef healths
+    p1h = player1.currentReefHealth
+    p2h = player2.currentReefHealth
+    # The game should end if any of these conditions are met
+    if p1h <= 0 or p2h <= 0 or self.turnNumber >= self.turnLimit:
+      # Player 2 wins if Player 1's health is lower
+      if p1h < p2h:
+        self.declareWinner(self.players[1], "Player 2 wins through reef survival")
+      # Player 1 wins if Player 2's health is lower
+      elif p2h < p1h:
+        self.declareWinner(self.players[0], "Player 1 wins through reef survival")
+      # The game must end, but both players have the same reef health.  Resort to secondary criteria
+      else:
+        # Start by computing the total value of all fish for each player
+        fishValues = [0, 0]
+        for fish in self.objects.fishs:
+          fishValues[fish.owner] += cfgSpecies[fish.species]["cost"]
+        # Now compare!
+        # Player 1 wins if they have the higher value school of fish
+        if fishValues[0] > fishValues[1]:
+          self.declareWinner(self.players[0], "Player 1 wins by total fish value")
+        # Player 2 wins if they have the higher value school of fish
+        elif fishValues[1] > fishValues[0]:
+          self.declareWinner(self.players[1], "Player 2 wins by total fish value")
+        # Otherwise, both players have the same value of fish
+        else:
+          # Start by computing the total health of all fish for each player
+          fishHealths = [0, 0]
+          for fish in self.objects.fishs:
+            fishHealths[fish.owner] += fish.currentHealth
+          # Now compare!
+          # Player 1 wins if they have the school of fish with more health
+          if fishHealths[0] > fishHealths[1]:
+            self.declareWinner(self.players[0], "Player 1 wins by total fish health")
+          # Player 2 wins if they have the school of fish with more health
+          elif fishHealths[1] > fishHealths[0]:
+            self.declareWinner(self.players[1], "Player 2 wins by total fish health")
+          # Otherwise, both players have the same fish health
+          else:
+            # At this point, we consider the AIs identical and it doesn't matter who we pick to win
+            self.declareWinner(self.players[0], "Player 1 wins because they connected first")
 
   def declareWinner(self, winner, reason=''):
     print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
