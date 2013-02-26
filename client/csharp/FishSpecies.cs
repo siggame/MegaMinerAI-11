@@ -146,17 +146,6 @@ public class FishSpecies
     }
   }
 
-  ///If this species is able to use stealth
-  public int CanStealth
-  {
-    get
-    {
-      validify();
-      int value = Client.fishSpeciesGetCanStealth(ptr);
-      return value;
-    }
-  }
-
   ///How many turns until you can spawn this fish species
   public int TurnsTillAvailalbe
   {

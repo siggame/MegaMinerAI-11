@@ -42,7 +42,6 @@ struct FishSpecies
   int attackPower;
   int range;
   int maxAttacks;
-  int canStealth;
   int turnsTillAvailalbe;
   int turnsTillUnavailable;
 

@@ -350,7 +350,6 @@ void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
-  sub = sub->next;
   object->turnsTillAvailalbe = atoi(sub->val);
   sub = sub->next;
   object->turnsTillUnavailable = atoi(sub->val);
@@ -374,6 +373,7 @@ void parseTile(Connection* c, _Tile* object, sexp_t* expression)
   sub = sub->next;
   object->owner = atoi(sub->val);
   sub = sub->next;
+  object->isCove = atoi(sub->val);
   sub = sub->next;
 
 }

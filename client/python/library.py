@@ -176,9 +176,6 @@ library.fishSpeciesGetRange.argtypes = [c_void_p]
 library.fishSpeciesGetMaxAttacks.restype = c_int
 library.fishSpeciesGetMaxAttacks.argtypes = [c_void_p]
 
-library.fishSpeciesGetCanStealth.restype = c_int
-library.fishSpeciesGetCanStealth.argtypes = [c_void_p]
-
 library.fishSpeciesGetTurnsTillAvailalbe.restype = c_int
 library.fishSpeciesGetTurnsTillAvailalbe.argtypes = [c_void_p]
 

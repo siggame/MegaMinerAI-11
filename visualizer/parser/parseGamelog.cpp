@@ -155,14 +155,6 @@ static bool parseFishSpecies(FishSpecies& object, sexp_t* expression)
     return false;
   }
 
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
   object.turnsTillAvailalbe = atoi(sub->val);
   sub = sub->next;
 
@@ -235,6 +227,7 @@ static bool parseTile(Tile& object, sexp_t* expression)
     return false;
   }
 
+  object.isCove = atoi(sub->val);
   sub = sub->next;
 
   return true;

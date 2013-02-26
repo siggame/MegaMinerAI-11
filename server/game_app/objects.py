@@ -18,7 +18,7 @@ class Mappable:
 
 
 class FishSpecies:
-  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, canStealth, turnsTillAvailalbe, turnsTillUnavailable):
+  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, turnsTillAvailalbe, turnsTillUnavailable):
     self.game = game
     self.id = id
     self.species = species
@@ -29,16 +29,15 @@ class FishSpecies:
     self.attackPower = attackPower
     self.range = range
     self.maxAttacks = maxAttacks
-    self.canStealth = canStealth
     self.turnsTillAvailalbe = turnsTillAvailalbe
     self.turnsTillUnavailable = turnsTillUnavailable
 
   def toList(self):
-    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.canStealth, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
+    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, canStealth = self.canStealth, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
+    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
   
   def nextTurn(self):
     pass

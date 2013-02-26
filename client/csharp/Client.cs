@@ -118,8 +118,6 @@ public class Client {
   [DllImport("client")]
   public static extern int fishSpeciesGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
-  public static extern int fishSpeciesGetCanStealth(IntPtr ptr);
-  [DllImport("client")]
   public static extern int fishSpeciesGetTurnsTillAvailalbe(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishSpeciesGetTurnsTillUnavailable(IntPtr ptr);

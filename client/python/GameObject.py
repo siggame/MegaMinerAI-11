@@ -166,14 +166,6 @@ class FishSpecies(GameObject):
   maxAttacks = property(getMaxAttacks)
 
   #\cond
-  def getCanStealth(self):
-    self.validify()
-    return library.fishSpeciesGetCanStealth(self._ptr)
-  #\endcond
-  ##If this species is able to use stealth
-  canStealth = property(getCanStealth)
-
-  #\cond
   def getTurnsTillAvailalbe(self):
     self.validify()
     return library.fishSpeciesGetTurnsTillAvailalbe(self._ptr)
@@ -202,7 +194,6 @@ class FishSpecies(GameObject):
     ret += "attackPower: %s\n" % self.getAttackPower()
     ret += "range: %s\n" % self.getRange()
     ret += "maxAttacks: %s\n" % self.getMaxAttacks()
-    ret += "canStealth: %s\n" % self.getCanStealth()
     ret += "turnsTillAvailalbe: %s\n" % self.getTurnsTillAvailalbe()
     ret += "turnsTillUnavailable: %s\n" % self.getTurnsTillUnavailable()
     return ret
