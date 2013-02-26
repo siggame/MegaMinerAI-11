@@ -92,12 +92,6 @@ class FishSpecies
     validify();
     return Client.INSTANCE.fishSpeciesGetMaxAttacks(ptr);
   }
-  ///If this species is able to use stealth
-  public int getCanStealth()
-  {
-    validify();
-    return Client.INSTANCE.fishSpeciesGetCanStealth(ptr);
-  }
   ///How many turns until you can spawn this fish species
   public int getTurnsTillAvailalbe()
   {

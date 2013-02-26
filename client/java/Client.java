@@ -68,7 +68,6 @@ public interface Client extends Library {
   int fishSpeciesGetAttackPower(Pointer ptr);
   int fishSpeciesGetRange(Pointer ptr);
   int fishSpeciesGetMaxAttacks(Pointer ptr);
-  int fishSpeciesGetCanStealth(Pointer ptr);
   int fishSpeciesGetTurnsTillAvailalbe(Pointer ptr);
   int fishSpeciesGetTurnsTillUnavailable(Pointer ptr);
 

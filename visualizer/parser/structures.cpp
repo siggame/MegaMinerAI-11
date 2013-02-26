@@ -28,7 +28,6 @@ std::ostream& operator<<(std::ostream& stream, FishSpecies ob)
   stream << "attackPower: " << ob.attackPower  <<'\n';
   stream << "range: " << ob.range  <<'\n';
   stream << "maxAttacks: " << ob.maxAttacks  <<'\n';
-  stream << "canStealth: " << ob.canStealth  <<'\n';
   stream << "turnsTillAvailalbe: " << ob.turnsTillAvailalbe  <<'\n';
   stream << "turnsTillUnavailable: " << ob.turnsTillUnavailable  <<'\n';
   return stream;

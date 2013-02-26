@@ -48,10 +48,6 @@ DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr)
 {
   return ptr->maxAttacks;
 }
-DLLEXPORT int fishSpeciesGetCanStealth(_FishSpecies* ptr)
-{
-  return ptr->canStealth;
-}
 DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr)
 {
   return ptr->turnsTillAvailalbe;

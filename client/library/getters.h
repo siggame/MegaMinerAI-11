@@ -26,7 +26,6 @@ DLLEXPORT int fishSpeciesGetCarryCap(_FishSpecies* ptr);
 DLLEXPORT int fishSpeciesGetAttackPower(_FishSpecies* ptr);
 DLLEXPORT int fishSpeciesGetRange(_FishSpecies* ptr);
 DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetCanStealth(_FishSpecies* ptr);
 DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr);
 DLLEXPORT int fishSpeciesGetTurnsTillUnavailable(_FishSpecies* ptr);
 
