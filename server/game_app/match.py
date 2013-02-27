@@ -52,8 +52,8 @@ class Match(DefaultGameWorld):
   def getObject(self, x, y):
     if len(self.grid[x][y]) > 0:
       return self.grid[x][y][0]
-    else
-    return None
+    else:
+      return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -87,6 +87,15 @@ class Match(DefaultGameWorld):
 
   def spawnTrash(self):
     #Put a tile in every location
+
+    #Loop trash amount number of times
+      #Generate random x and y
+      #Check if x and y is cove
+        #If cove, then repeat loop for current value
+      #If x and y is less than max value
+        #Add one to current trash count for tile
+      #Else
+        #Repeat loop for current value
     pass
 
 
