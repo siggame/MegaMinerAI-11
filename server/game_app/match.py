@@ -30,21 +30,30 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
-    self.initialFood = None
-    self.sharedLowerBound = None
-    self.sharedUpperBound = None
-    self.spawnFoodPerTurn = None
-    self.turnNumber = None
-    self.playerID = None
-    self.gameNumber = id
-    self.turnsTillSpawn = None
-    self.maxReefHealth = None
-    self.trashDamage = None
-    self.mapWidth = None
-    self.mapHeight = None
-    self.trashAmount = None
-    self.coveX = None
-    self.coveY = None
+    self.initialFood = self.initialFood
+    self.sharedLowerBound = self.sharedLowerBound
+    self.sharedUpperBound = self.sharedUpperBound
+    self.spawnFoodPerTurn = self.spawnFoodPerTurn
+    self.turnNumber = self.turnNumber
+    self.playerID = self.playerID
+    self.gameNumber = self.gameNumber
+    self.turnsTillSpawn = self.turnsTillSpawn
+    self.maxReefHealth = self.maxReefHealth
+    self.trashDamage = self.trashDamage
+    self.mapWidth = self.mapWidth
+    self.mapHeight = self.mapHeight
+    self.trashAmount = self.trashAmount
+    self.coveX = self.coveX
+    self.coveY = self.coveY
+
+    #Make grid
+    self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
+
+  def getObject(self, x, y):
+    if len(self.grid[x][y]) > 0:
+      return self.grid[x][y][0]
+    else
+    return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -75,6 +84,11 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
+
+  def spawnTrash(self):
+    #Put a tile in every location
+    pass
+
 
   def start(self):
     if len(self.players) < 2:
@@ -189,6 +203,8 @@ class Match(DefaultGameWorld):
             self.declareWinner(self.players[0], "Player 1 wins because they connected first")
 
   def declareWinner(self, winner, reason=''):
+    #DELETE GRID
+    del self.grid
     print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
     self.winner = winner
 
