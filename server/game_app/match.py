@@ -89,31 +89,51 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
 
   def spawnTrash(self):
-  #Put a tile in every location
-  for x in range(0, self.mapWidth):
-    for y in range(0, self.mapHeight):
-      self.addObject(Tile, [x, y, 3, False])
-  for tile in self.objects.tiles:
-    self.grid[tile.x][tile.y] = [tile]
+    #Put a tile in every location
+    for x in range(0, self.mapWidth):
+      for y in range(0, self.mapHeight):
+        self.addObject(Tile, [x, y, 3, False])
+    for tile in self.objects.tiles:
+      self.grid[tile.x][tile.y] = [tile]
 
-  #Set coves on left side
-  for tile in self.objects.tiles:
-    if tile.x < coveX and tile.y > self.mapHeight-coveY:
-      tile.isCove = True;
-  #Set coves on right side
-  for tile in self.objects.tiles:
-    if tile.x > self.mapWidth-coveX and tile.y > self.mapHeight-coveY:
-      tile.isCove = True
+    #Set coves on left side
+    for tile in self.objects.tiles:
+      if tile.x < coveX and tile.y > self.mapHeight-coveY:
+        tile.isCove = True
+    #Set coves on right side
+    for tile in self.objects.tiles:
+      if tile.x > self.mapWidth-coveX and tile.y > self.mapHeight-coveY:
+        tile.isCove = True
 
-  #RANDOM ALGORITHM
-  #Loop trashAmount number of times
-    #Create random X and random Y
-    #Find tile at random X and random Y position
-    #If tile isCove or if tile trashAmount > trashMax
-      #Rerun loop (subtract/add one to index)
-    #Else
-      #Increment trashAmount by 1
-  return True
+    #RANDOM ALGORITHM
+    #Loop trashAmount number of times
+    trashCur = 0
+    while(trashCur < trashAmount):
+      #Create random X and random Y
+      randX = random.randint(0, self.mapWidth//2)
+      randY = random.randint(0, self.mapWidth//2)
+
+      #Find tile at random X and random Y position
+      randTile = None
+      for tile in self.object.tiles:
+        if tile.x == randX and tile.y == randY:
+          randTile = Tile
+
+      #If tile isCove
+      if randTile.isCove == True:
+        #Rerun loop (subtract/add one to index)
+        continue
+      #Else if tile trashAmount >= trashMax
+      elif randTile.trashAmount >= trashMax:
+        #Rerun loop (subtract/add one to index)
+        continue
+      #Else
+      else:
+        #Increment trashAmount by 1
+        randTile.trashAmount += 1
+        trashCur += 1
+
+    return True
     
   def start(self):
     if len(self.players) < 2:
@@ -124,6 +144,8 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
+    if spawnTrash() == False:
+      return "Error in spawning trash."
 
     self.nextTurn()
     return True
