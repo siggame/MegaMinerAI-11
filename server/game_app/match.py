@@ -117,9 +117,12 @@ class Match(DefaultGameWorld):
       #Find tile at random X and random Y position
       randTile = None
       for tile in self.object.tiles:
-        if tile.x == randX and tile.y == randY:
+        if isinstance(tile, Tile):
           randTile = Tile
-
+      
+      if randTile == None:
+        return "Error in getting randTile"    
+      
       #If tile isCove
       if randTile.isCove == True:
         #Rerun loop (subtract/add one to index)
