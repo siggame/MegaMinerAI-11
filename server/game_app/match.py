@@ -95,7 +95,16 @@ class Match(DefaultGameWorld):
    	    Self.grid[x][y][0] = Tile,[x, y, 0, 0, False]
    	    y += 1
       x += 1
-  pass
+    #
+    #Loop trash amount number of times
+      #Generate random x and y
+      #Check if x and y is cove
+        #If cove, then repeat loop for current value
+      #If x and y is less than max value
+        #Add one to current trash count for tile
+      #Else
+        #Repeat loop for current value
+    pass
 
     
   def start(self):
