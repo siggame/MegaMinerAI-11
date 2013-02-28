@@ -114,6 +114,23 @@ class Fish(Mappable):
     pass
 
   def drop(self, x, y, weight):
+	  if self.owner != self.game.playerID:
+		  return "You can only control your own fish"
+	  elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+		  return "Cannot drop off the map"
+	  elif abs(self.x-x) + abs(self.y-y) != 1:
+		  return "Can only drop onto adjacent locations"
+	  elif weight > self.carryingWeight:
+		  return "You cannot drop more than you're carrying"
+	  elif isinstance(self.game.getObject(x,y), Fish):
+		  return "Cannot drop onto a fish"
+	  #do locations have a max trash?
+	  #drop behavior for stealth fish?
+	  
+	  if not self.Visible:
+		  self.Visible = true
+		  #unstealth the fish as he drops... is this right?
+	  self.game.grid[x][y].trashAmount += weight
     pass
 
   def attack(self, x, y):
