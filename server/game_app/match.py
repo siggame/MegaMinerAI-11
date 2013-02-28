@@ -8,6 +8,8 @@ import os
 import itertools
 import scribe
 import jsonLogger
+import random
+import math
 
 Scribe = scribe.Scribe
 
@@ -30,13 +32,14 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
+    self.turnNumber = -1
+    self.playerID = -1
+    self.gameNumber = id
+    
     self.initialFood = self.initialFood
     self.sharedLowerBound = self.sharedLowerBound
     self.sharedUpperBound = self.sharedUpperBound
     self.spawnFoodPerTurn = self.spawnFoodPerTurn
-    self.turnNumber = self.turnNumber
-    self.playerID = self.playerID
-    self.gameNumber = self.gameNumber
     self.turnsTillSpawn = self.turnsTillSpawn
     self.maxReefHealth = self.maxReefHealth
     self.trashDamage = self.trashDamage
@@ -50,8 +53,8 @@ class Match(DefaultGameWorld):
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
 
   def getObject(self, x, y):
-    if len(self.grid[x][y]) > 0:
-      return self.grid[x][y][0]
+    if len(self.grid[x][y]) > 1:
+      return self.grid[x][y][1]
     else:
       return None
 
@@ -86,18 +89,32 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
 
   def spawnTrash(self):
-    #Put a tile in every location
-    #Loop trash amount number of times
-      #Generate random x and y
-      #Check if x and y is cove
-        #If cove, then repeat loop for current value
-      #If x and y is less than max value
-        #Add one to current trash count for tile
-      #Else
-        #Repeat loop for current value
-    pass
+  #Put a tile in every location
+  for x in range(0, self.mapWidth):
+    for y in range(0, self.mapHeight):
+      self.addObject(Tile, [x, y, 3, False])
+  for tile in self.objects.tiles:
+    self.grid[tile.x][tile.y] = [tile]
 
+  #Set coves on left side
+  for tile in self.objects.tiles:
+    if tile.x < coveX and tile.y > self.mapHeight-coveY:
+      tile.isCove = True;
+  #Set coves on right side
+  for tile in self.objects.tiles:
+    if tile.x > self.mapWidth-coveX and tile.y > self.mapHeight-coveY:
+      tile.isCove = True
 
+  #RANDOM ALGORITHM
+  #Loop trashAmount number of times
+    #Create random X and random Y
+    #Find tile at random X and random Y position
+    #If tile isCove or if tile trashAmount > trashMax
+      #Rerun loop (subtract/add one to index)
+    #Else
+      #Increment trashAmount by 1
+  return True
+    
   def start(self):
     if len(self.players) < 2:
       return "Game is not full"
