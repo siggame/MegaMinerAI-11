@@ -90,19 +90,20 @@ class Match(DefaultGameWorld):
 
   def spawnTrash(self):
     #Put a tile in every location
-    for x in range(0, self.mapWidth):
-      for y in range(0, self.mapHeight):
+    #Location of grid starts at 0 and goes to self.mapWidth-1
+    for x in range(self.mapWidth-1):
+      for y in range(self.mapHeight-1):
         self.addObject(Tile, [x, y, 3, False])
     for tile in self.objects.tiles:
       self.grid[tile.x][tile.y] = [tile]
 
     #Set coves on left side
     for tile in self.objects.tiles:
-      if tile.x < coveX and tile.y > self.mapHeight-coveY:
+      if tile.x < coveX and tile.y > self.mapHeight-1-coveY:
         tile.isCove = True
     #Set coves on right side
     for tile in self.objects.tiles:
-      if tile.x > self.mapWidth-coveX and tile.y > self.mapHeight-coveY:
+      if tile.x > self.mapWidth-1-coveX and tile.y > self.mapHeight-1-coveY:
         tile.isCove = True
 
     #RANDOM ALGORITHM
