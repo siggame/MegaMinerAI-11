@@ -111,8 +111,8 @@ class Match(DefaultGameWorld):
     trashCur = 0
     while(trashCur < trashAmount):
       #Create random X and random Y
-      randX = random.randint(0, self.mapWidth//2)
-      randY = random.randint(0, self.mapWidth//2)
+      randX = random.randint(0, (self.mapWidth-1)//2)
+      randY = random.randint(0, (self.mapWidth-1)//2)
 
       #Find tile at random X and random Y position
       randTile = None
