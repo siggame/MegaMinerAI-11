@@ -99,17 +99,18 @@ class Match(DefaultGameWorld):
 
     #Set coves on left side
     for tile in self.objects.tiles:
-      if tile.x < coveX and tile.y > self.mapHeight-coveY:
+      if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
         tile.isCove = True
     #Set coves on right side
     for tile in self.objects.tiles:
-      if tile.x > self.mapWidth-coveX and tile.y > self.mapHeight-coveY:
+      if tile.x > self.mapWidth-self.coveX and tile.y > self.mapHeight-self.coveY:
         tile.isCove = True
 
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
     trashCur = 0
-    while(trashCur < trashAmount):
+    trashMax = 500
+    while(trashCur < self.trashAmount):
       #Create random X and random Y
       randX = random.randint(0, (self.mapWidth)//2)
       randY = random.randint(0, (self.mapWidth)//2)
@@ -118,13 +119,13 @@ class Match(DefaultGameWorld):
       randTile = None
       for tile in self.object.tiles:
         if isinstance(tile, Tile):
-          randTile = Tile
+          randTile = tile
       
-      if randTile == None:
+      if randTile is None:
         return "Error in getting randTile"    
       
       #If tile isCove
-      if randTile.isCove == True:
+      if randTile.isCove is True:
         #Rerun loop (subtract/add one to index)
         continue
       #Else if tile trashAmount >= trashMax
@@ -148,7 +149,7 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    if spawnTrash() == False:
+    if self.spawnTrash() is False:
       return "Error in spawning trash."
 
     self.nextTurn()
