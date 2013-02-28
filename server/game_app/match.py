@@ -87,7 +87,6 @@ class Match(DefaultGameWorld):
 
   def spawnTrash(self):
     #Put a tile in every location
-    #
     #Loop trash amount number of times
       #Generate random x and y
       #Check if x and y is cove
