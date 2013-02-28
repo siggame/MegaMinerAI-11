@@ -108,6 +108,29 @@ class Fish(Mappable):
     pass
 
   def move(self, x, y):
+		if self.owner != self.game.playerID:
+			return "You can only control your own fish"
+		elif (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+			return "Cannot move off of the map"
+		elif self.movemmentLeft <= 0
+			return "You have no moves left"
+		elif abs(self.x-x) + abs(self.y-y) != 1:
+			return "Can only move to adjacent locations"
+		elif self.game.grid[x][y].trashAmount > 0:
+			return "Cannot move onto a tile containing trash"
+		elif isinstance(self.game.getObject(x,y), Fish):
+			return "Another fish is occupying that tile"
+			#stealth unit?
+		elif self.game.grid[x][y].isCove
+			return "Cannot move into enemy's cove"
+		#how to test for moving above a certain y value?
+		
+		#updating map
+		self.game.grid[self.x][self.y].remove(self)
+    self.game.grid[x][y].append(self)
+		self.x = x
+		self.y = y
+		self.movementLeft -= 1
     pass
 
   def pickUp(self, x, y, weight):
@@ -131,6 +154,7 @@ class Fish(Mappable):
 		  self.Visible = true
 		  #unstealth the fish as he drops... is this right?
 	  self.game.grid[x][y].trashAmount += weight
+		self.carryingWeight -= weight
     pass
 
   def attack(self, x, y):
