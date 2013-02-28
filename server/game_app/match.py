@@ -52,8 +52,8 @@ class Match(DefaultGameWorld):
   def getObject(self, x, y):
     if len(self.grid[x][y]) > 0:
       return self.grid[x][y][0]
-    else
-    return None
+    else:
+      return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -87,9 +87,17 @@ class Match(DefaultGameWorld):
 
   def spawnTrash(self):
     #Put a tile in every location
-    pass
+    x = 0
+    #lame C-style for loops because I don't know how to use python loops here
+    while x < self.width:
+      y = 0
+      while y < self.height:
+   	    Self.grid[x][y][0] = Tile,[x, y, 0, 0, False]
+   	    y += 1
+      x += 1
+  pass
 
-
+    
   def start(self):
     if len(self.players) < 2:
       return "Game is not full"
