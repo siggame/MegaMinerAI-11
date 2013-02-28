@@ -51,8 +51,8 @@ class Match(DefaultGameWorld):
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
 
   def getObject(self, x, y):
-    if len(self.grid[x][y]) > 0:
-      return self.grid[x][y][0]
+    if len(self.grid[x][y]) > 1:
+      return self.grid[x][y][1]
     else:
       return None
 
