@@ -30,13 +30,14 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
+    self.turnNumber = -1
+    self.playerID = -1
+    self.gameNumber = id
+    
     self.initialFood = self.initialFood
     self.sharedLowerBound = self.sharedLowerBound
     self.sharedUpperBound = self.sharedUpperBound
     self.spawnFoodPerTurn = self.spawnFoodPerTurn
-    self.turnNumber = self.turnNumber
-    self.playerID = self.playerID
-    self.gameNumber = self.gameNumber
     self.turnsTillSpawn = self.turnsTillSpawn
     self.maxReefHealth = self.maxReefHealth
     self.trashDamage = self.trashDamage
