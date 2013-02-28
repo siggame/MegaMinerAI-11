@@ -15,11 +15,11 @@ class Mappable:
 
   def toList(self):
     return [self.id, self.x, self.y, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, )
-  
+
   def nextTurn(self):
     pass
 
@@ -42,11 +42,11 @@ class FishSpecies:
 
   def toList(self):
     return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
-  
+
   def nextTurn(self):
     pass
 
@@ -67,11 +67,11 @@ class Tile(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.trashAmount, self.owner, self.isCove, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, isCove = self.isCove, )
-  
+
   def nextTurn(self):
     pass
 
@@ -99,62 +99,62 @@ class Fish(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
-  
+
   def nextTurn(self):
     pass
 
   def move(self, x, y):
-		if self.owner != self.game.playerID:
-			return "You can only control your own fish"
-		elif (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-			return "Cannot move off of the map"
-		elif self.movemmentLeft <= 0
-			return "You have no moves left"
-		elif abs(self.x-x) + abs(self.y-y) != 1:
-			return "Can only move to adjacent locations"
-		elif self.game.grid[x][y].trashAmount > 0:
-			return "Cannot move onto a tile containing trash"
-		elif isinstance(self.game.getObject(x,y), Fish):
-			return "Another fish is occupying that tile"
-			#stealth unit?
-		elif self.game.grid[x][y].isCove
-			return "Cannot move into enemy's cove"
-		#how to test for moving above a certain y value?
-		
-		#updating map
-		self.game.grid[self.x][self.y].remove(self)
+    if self.owner != self.game.playerID:
+        return "You can only control your own fish"
+    elif (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+        return "Cannot move off of the map"
+    elif self.movemmentLeft <= 0:
+        return "You have no moves left"
+    elif abs(self.x-x) + abs(self.y-y) != 1:
+        return "Can only move to adjacent locations"
+    elif self.game.grid[x][y].trashAmount > 0:
+        return "Cannot move onto a tile containing trash"
+    elif isinstance(self.game.getObject(x,y), Fish):
+        return "Another fish is occupying that tile"
+        #stealth unit?
+    elif self.game.grid[x][y].isCove:
+        return "Cannot move into enemy's cove"
+    #how to test for moving above a certain y value?
+
+    #updating map
+    self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
-		self.x = x
-		self.y = y
-		self.movementLeft -= 1
+    self.x = x
+    self.y = y
+    self.movementLeft -= 1
     pass
 
   def pickUp(self, x, y, weight):
     pass
 
   def drop(self, x, y, weight):
-	  if self.owner != self.game.playerID:
-		  return "You can only control your own fish"
-	  elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-		  return "Cannot drop off the map"
-	  elif abs(self.x-x) + abs(self.y-y) != 1:
-		  return "Can only drop onto adjacent locations"
-	  elif weight > self.carryingWeight:
-		  return "You cannot drop more than you're carrying"
-	  elif isinstance(self.game.getObject(x,y), Fish):
-		  return "Cannot drop onto a fish"
-	  #do locations have a max trash?
-	  #drop behavior for stealth fish?
-	  
-	  if not self.Visible:
-		  self.Visible = true
-		  #unstealth the fish as he drops... is this right?
-	  self.game.grid[x][y].trashAmount += weight
-		self.carryingWeight -= weight
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish"
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "Cannot drop off the map"
+    elif abs(self.x-x) + abs(self.y-y) != 1:
+      return "Can only drop onto adjacent locations"
+    elif weight > self.carryingWeight:
+      return "You cannot drop more than you're carrying"
+    elif isinstance(self.game.getObject(x,y), Fish):
+      return "Cannot drop onto a fish"
+    #do locations have a max trash?
+    #drop behavior for stealth fish?
+
+    if not self.Visible:
+      self.Visible = True
+      #unstealth the fish as he drops... is this right?
+    self.game.grid[x][y].trashAmount += weight
+    self.carryingWeight -= weight
     pass
 
   def attack(self, x, y):
@@ -173,11 +173,11 @@ class Player:
 
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
-  
+
   def nextTurn(self):
     pass
 
