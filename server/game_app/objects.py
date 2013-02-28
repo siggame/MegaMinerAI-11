@@ -1,4 +1,4 @@
-import netowrking.config.config
+import networking.config.config
 
 #Initializes cfgSpecies
 cfgSpecies = networking.config.config.readConfig("config/species.cfg")
