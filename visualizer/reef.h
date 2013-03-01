@@ -28,7 +28,7 @@ namespace visualizer
             PluginInfo getPluginInfo();
             void loadGamelog( std::string gamelog );
 
-            void run();
+            void run(); //main function
             void setup();
             void destroy();
 
