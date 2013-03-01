@@ -50,7 +50,7 @@ class Match(DefaultGameWorld):
     self.coveY = self.coveY
 
     # Helper function
-    def getTileOwner(x)
+    def getTileOwner(x):
       if x < self.sharedLowerBound:
         return 1
       elif x > self.sharedUpperBound:
@@ -58,7 +58,7 @@ class Match(DefaultGameWorld):
       else:
         return 3
     #Make grid		
-    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile, [x, y, 0, getTileOwner(x), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
   #getTile RETURN [TILE]
   def getTile(self, x, y):
@@ -104,8 +104,9 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
-
+  '''
   def spawnTrash(self):
+    print("START spawnTrash(self)")
     #Set coves on left side
     for tile in self.objects.tiles:
       if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
@@ -117,10 +118,13 @@ class Match(DefaultGameWorld):
 
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
+    print("START RANDOM TRASH GENERATION")
     trashCur = 0
-    trashMax = 500
-    while(trashCur < self.trashAmount):
+    trashMax = 50
+    while(trashCur < trashMax):
       #Create random X and random Y
+      print("CREATE RANDOM X AND Y")
+      print(trashCur)
       randX = random.randint(0, (self.mapWidth)//2)
       randY = random.randint(0, (self.mapWidth)//2)
 
@@ -133,23 +137,18 @@ class Match(DefaultGameWorld):
       if randTile is None:
         return "Error in getting randTile"    
       
-      #If tile isCove
-      if randTile.isCove is True:
-        #Rerun loop (subtract/add one to index)
-        continue
-      #Else if tile trashAmount >= trashMax
-      elif randTile.trashAmount >= trashMax:
-        #Rerun loop (subtract/add one to index)
-        continue
-      #Else
-      else:
-        #Increment trashAmount by 1
-        randTile.trashAmount += 1
-        trashCur += 1
-
+      #Don't spawn on a cove
+      if randTile.isCove is true:
+        trashCur -= 1
+      #Don't spawn if grea
+       
+      
+    print("END RANDOM TRASH GENERATION")
     return True
-    
+  '''
+     
   def start(self):
+    print("GAME STARTED")
     if len(self.players) < 2:
       return "Game is not full"
     if self.winner is not None or self.turn is not None:
@@ -158,13 +157,13 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    self.spawnTrash()
+    #self.spawnTrash()
 
     self.nextTurn()
     return True
 
-
   def nextTurn(self):
+    print "TURN NUMBER: %i"%(self.turnNumber)
     self.turnNumber += 1
     if self.turn == self.players[0]:
       self.turn = self.players[1]
