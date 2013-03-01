@@ -183,6 +183,8 @@ class Fish(Mappable):
     target.currentHealth -= self.attackPower
     #make the other fish visible; in case an invisible fish is being healed
     target.isVisible = True
+    #make the attacking fish visible
+    self.isVisible = True
     
     #check if dead
     if target.currentHealth <= 0:
