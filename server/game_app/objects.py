@@ -101,8 +101,29 @@ class Fish(Mappable):
   def nextTurn(self):
     pass
   ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
+
   def move(self, x, y):
-    pass
+    if self.owner != self.game.playerID: #check that you own the fish
+      return "You cannot move the other player's fish." 
+    elif self.movementLeft <= 0: #check that there are moves left
+      return "Your fish has no moves left."
+    elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
+      return "Your fish cannot move off the map."
+    T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
+    elif T.trashAmount > 0:
+      return "You can't move on top of trash"
+    elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
+      for i in range(1, len(self.game.getFish(x,y)):
+        if self.game.getFish(x,y)[i].isStealthed == false:
+          return "You can't move onto a fish." 
+        else
+          print "Fringe case: moving onto a stealthed fish."
+          pass
+    #Working under the assumption that ground units can move anywhere
+    movementLeft -= 1
+    self.x = x
+    self.y = y
+    return "Succesful movement. Congrats."
   
   ### TODO: pick up trash from a tile 1 space away, can't exceec carrying cap, does damage on pickup,
   ### based off how trash was picked up, damage can't exceed health, can't pick up 0 trash
