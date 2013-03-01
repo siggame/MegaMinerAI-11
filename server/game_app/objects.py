@@ -144,7 +144,7 @@ class Fish(Mappable):
       return "Cannot carry more weight than the fish's carry cap."
     elif weight == 0:
       return "Cannot pick up a weight of 0."
-    elif self.game.grid[x][y].trashAmount < weight:
+    elif getTile(x,y).trashAmount < weight:
       return "You can't pick up more trash then there is trash present."
     
     #don't need to bother checking for fish because a space with a 
@@ -165,7 +165,7 @@ class Fish(Mappable):
       self.game.grid[x][y].remove(self.game.getObject(x,y))
       return "Your fish died trying to pick up the trash."
     #reduce weight of tile
-    self.game.grid[x][y].trashAmount -= weight
+    getTile(x,y).trashAmount -= weight
     #add weight to fish
     self.carryingWeight += weight
     pass
