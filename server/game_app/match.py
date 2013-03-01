@@ -104,7 +104,7 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
-  '''
+      
   def spawnTrash(self):
     print("START spawnTrash(self)")
     #Set coves on left side
@@ -118,34 +118,36 @@ class Match(DefaultGameWorld):
 
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
-    print("START RANDOM TRASH GENERATION")
-    trashCur = 0
-    trashMax = 50
-    while(trashCur < trashMax):
+    print "START RANDOM TRASH GENERATION"
+    trashCur = 0 #Current number of trash created
+    #self.trashAmount Total amount of trash
+    while(trashCur < self.trashAmount):
       #Create random X and random Y
-      print("CREATE RANDOM X AND Y")
-      print(trashCur)
-      randX = random.randint(0, (self.mapWidth)//2)
-      randY = random.randint(0, (self.mapWidth)//2)
+      print "CREATE RANDOM X AND Y"
+      print "CURRENT TRASH NUMBER: %i"%trashCur
+      randX = random.randint(0, (self.mapWidth/2)//2)
+      randY = random.randint(0, (self.mapHeight)//2)
 
       #Find tile at random X and random Y position
-      randTile = None
-      for tile in self.objects.tiles:
-        if isinstance(tile, Tile):
-          randTile = tile
+      randTile = self.getTile(randX, randY)[0]
+      oppTile = self.getTile(self.mapWidth-randX-1, randY)[0]
       
       if randTile is None:
         return "Error in getting randTile"    
       
       #Don't spawn on a cove
-      if randTile.isCove is true:
+      if randTile.isCove is True:
+        print "Trash tried to be spawn on a cove."
         trashCur -= 1
-      #Don't spawn if grea
-       
+      #Spawn trash otherwise
+      else:
+        print "Trash was spawned"
+        randTile.isCove = True
+        oppTile.isCove = True
+      trashCur += 1
       
     print("END RANDOM TRASH GENERATION")
     return True
-  '''
      
   def start(self):
     print("GAME STARTED")
@@ -157,7 +159,7 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    #self.spawnTrash()
+    self.spawnTrash()
 
     self.nextTurn()
     return True
