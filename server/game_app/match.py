@@ -69,7 +69,8 @@ class Match(DefaultGameWorld):
     if type == "player":
       self.players.append(connection)
       try:
-        self.addObject(Player, [connection.screenName, self.startTime])
+        #500 and 0 are place holder values for default initial reef health and initial reef food
+        self.addObject(Player, [connection.screenName, self.startTime, 500, 0 ])
       except TypeError:
         raise TypeError("Someone forgot to add the extra attributes to the Player object initialization")
     elif type == "spectator":
