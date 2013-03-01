@@ -52,11 +52,19 @@ class Match(DefaultGameWorld):
     #Make grid
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
 
-  def getObject(self, x, y):
-    if len(self.grid[x][y]) > 1:
-      return self.grid[x][y][1]
-    else:
-      return None
+  #getTile RETURN [TILE]
+  def getTile(self, x, y):
+    return [ self.grid[x][y][0] ]
+  
+  #getFish RETURN LIST OF FISH
+  def getFish(self, x, y):
+    return self.grid[x][y][1:]
+
+  #def getObject(self, x, y):
+  #  if len(self.grid[x][y]) > 1:
+  #    return self.grid[x][y][1]
+  #  else:
+  #    return None
 
   #this is here to be wrapped
   def __del__(self):
