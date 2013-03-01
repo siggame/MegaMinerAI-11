@@ -2,14 +2,10 @@ from base import *
 from matchUtils import *
 from objects import *
 import networking.config.config
-from collections import defaultdict
-from networking.sexpr.sexpr import *
-import os
+import networking.sexpr.sexpr
 import itertools
 import scribe
 import jsonLogger
-import random
-import math
 
 Scribe = scribe.Scribe
 
@@ -25,7 +21,7 @@ class Match(DefaultGameWorld):
     self.controller = controller
     DefaultGameWorld.__init__(self)
     self.scribe = Scribe(self.logPath())
-    if( self.logJson ):
+    if self.logJson:
       self.jsonLogger = jsonLogger.JsonLogger(self.logPath())
       self.jsonAnimations = []
       self.dictLog = dict(gameName = "Reef", turns = [])
@@ -92,7 +88,7 @@ class Match(DefaultGameWorld):
     elif type == "spectator":
       self.spectators.append(connection)
       #If the game has already started, send them the ident message
-      if (self.turn is not None):
+      if self.turn is not None:
         self.sendIdent([connection])
     return True
 
@@ -163,7 +159,7 @@ class Match(DefaultGameWorld):
     return True
 
   def nextTurn(self):
-    print "TURN NUMBER: %i"%(self.turnNumber)
+    print "TURN NUMBER: %i"% self.turnNumber
     self.turnNumber += 1
     if self.turn == self.players[0]:
       self.turn = self.players[1]
@@ -184,7 +180,7 @@ class Match(DefaultGameWorld):
     else:
       self.sendStatus(self.spectators)
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog['turns'].append(
         dict(
           initialFood = self.initialFood,
@@ -269,7 +265,7 @@ class Match(DefaultGameWorld):
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog["winnerID"] =  self.getPlayerIndex(self.winner)
       self.dictLog["winReason"] = reason
       self.jsonLogger.writeLog( self.dictLog )
@@ -340,16 +336,15 @@ class Match(DefaultGameWorld):
 
 
   def status(self):
-    msg = ["status"]
+    msg = ["status", ["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn,
+                      self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth,
+                      self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY]]
 
-    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY])
-
-    typeLists = []
-    typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies])
-    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
-    typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
+    typeLists = [["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable],
+                 ["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies],
+                 ["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile],
+                 ["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish],
+                 ["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player]]
 
     msg.extend(typeLists)
 
@@ -359,7 +354,7 @@ class Match(DefaultGameWorld):
     # generate the sexp
     self.animations.append(anim.toList())
     # generate the json
-    if( self.logJson ):
+    if self.logJson:
       self.jsonAnimations.append(anim.toJson())
   
 
