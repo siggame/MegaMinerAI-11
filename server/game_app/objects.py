@@ -158,12 +158,41 @@ class Fish(Mappable):
     return True 
 
   def attack(self, x, y):
-    if abs(self.x-x) + abs(self.y=y) > self.range
+  
+    target=self.game.getFish(x,y)
+  
+    #I feel like stealth units are going to mess up this function
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish."
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "You can't attack off the map."
+    elif abs(self.x-x) + abs(self.y-y) > self.range:
       return "You can't attack further than your fish's range."
-    if self.attacksLeft == 0
+    elif self.attacksLeft == 0:
       return "This fish has no attacks left."
-    if self.game.getFish(x,y) == []:
+    elif target == []:
       return "You can't attack nothing!"
+    elif target.isVisible == False and target.owner != self.game.playerID:
+      return "You aren't even supposed to see invisible fish, let alone attack them."
+    elif target.owner != self.game.playerID and self.attackPower < 0:
+      return "You can't heal the opponent's fish."
+    elif target.owner == self.game.playerID and self.attackPower > 0:
+      return "You can't attack your own fish."
+    
+    #hurt the other fish
+    target.currentHealth -= self.attackPower
+    #make the other fish visible; in case an invisible fish is being healed
+    target.isVisible = True
+    
+    #check if dead
+    if target.currentHealth <= 0:
+      self.game.grid[x][y].remove(target)
+      self.game.remove(target)
+      
+    #don't allow infinite health bugs to create super fish
+    elif target.currentHealth > target.maxHealth:
+      target.currentHealth = target.maxHealth
+    
     pass
 
 
