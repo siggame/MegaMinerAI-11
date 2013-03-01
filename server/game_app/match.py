@@ -109,6 +109,7 @@ class Match(DefaultGameWorld):
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
     trashCur = 0
+    #"Dummy" value for the maximum amount of trash per tile
     trashMax = 500
     while(trashCur < self.trashAmount):
       #Create random X and random Y
@@ -155,13 +156,42 @@ class Match(DefaultGameWorld):
     self.nextTurn()
     return True
 
+  def getTrashLeft(self):
+    totalTrash = 0
+    #is this right?
+    for x in range(0,sharedLowerBound):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.grid[x][y].trashAmount
+    return totalTrash
+    
+  def getTrashShared(self):
+    totalTrash = 0
+    #I think these bounds are right?
+    for x in range(sharedLowerBound,sharedUpperBound):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.grid[x][y].trashAmount
+    return totalTrash
+    
+  def getTrashRight(self):
+    totalTrash = 0
+    #Comment to remind who so ever changes this to change all of the bounds
+    for x in range(sharedUpperBound,mapWidth):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.grid[x][y].trashAmount
+    return totalTrash
 
   def nextTurn(self):
     self.turnNumber += 1
     if self.turn == self.players[0]:
+      #deal damage to the left-side player
+      self.players[0].currentReefHealth -= (getTrashLeft() + getTrashShared()) * self.trashDamage
+      
       self.turn = self.players[1]
       self.playerID = 1
     elif self.turn == self.players[1]:
+      #deal damage to the right-side player
+      self.players[1].currentReefHealth -= (getTrashRight() + getTrashShared()) * self.trashDamage
+      
       self.turn = self.players[0]
       self.playerID = 0
 
