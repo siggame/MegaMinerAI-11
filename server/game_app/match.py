@@ -6,6 +6,7 @@ import networking.sexpr.sexpr
 import itertools
 import scribe
 import jsonLogger
+import random
 
 Scribe = scribe.Scribe
 
