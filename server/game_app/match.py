@@ -49,14 +49,30 @@ class Match(DefaultGameWorld):
     self.coveX = self.coveX
     self.coveY = self.coveY
 
-    #Make grid
-    self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
+    # Helper function
+    def getTileOwner(x)
+      if x < self.sharedLowerBound:
+        return 1
+      elif x > self.sharedUpperBound:
+        return 2
+      else:
+        return 3
+    #Make grid		
+    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    
+  #getTile RETURN [TILE]
+  def getTile(self, x, y):
+    return [ self.grid[x][y][0] ]
+  
+  #getFish RETURN LIST OF FISH
+  def getFish(self, x, y):
+    return self.grid[x][y][1:]
 
-  def getObject(self, x, y):
-    if len(self.grid[x][y]) > 1:
-      return self.grid[x][y][1]
-    else:
-      return None
+  #def getObject(self, x, y):
+  #  if len(self.grid[x][y]) > 1:
+  #    return self.grid[x][y][1]
+  #  else:
+  #    return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -90,15 +106,6 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
 
   def spawnTrash(self):
-    #Put a tile in every location
-    #Location of grid starts at 0 and goes to self.mapWidth-1
-    for x in range(self.mapWidth):
-      for y in range(self.mapHeight):
-        #x, y, trashAmount, owner, isCove
-        self.addObject(Tile, [x, y, 0, 3, False])
-    for tile in self.objects.tiles:
-      self.grid[tile.x][tile.y] = [tile]
-
     #Set coves on left side
     for tile in self.objects.tiles:
       if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
