@@ -179,17 +179,17 @@ class Fish(Mappable):
       return "Can only drop onto adjacent locations"
     elif weight > self.carryingWeight:
       return "You cannot drop more than you're carrying"
-    elif isinstance(self.game.getObject(x,y), Fish):
+    elif self.game.getFish(x,y) != []:
       return "Cannot drop onto a fish"
-    #do locations have a max trash?
-    #drop behavior for stealth fish?
 
-    if not self.Visible:
-      self.Visible = True
-      #unstealth the fish as he drops... is this right?
-    self.game.grid[x][y].trashAmount += weight
+    if not self.isVisible:
+      self.isVisible = True #unstealth while dropping
+    
+    #TODO: what happens when dropping onto a stealth fish?
+    
+    self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
-    pass
+    return True 
 
   def attack(self, x, y):
     pass
