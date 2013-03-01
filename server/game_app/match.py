@@ -49,16 +49,17 @@ class Match(DefaultGameWorld):
     self.coveX = self.coveX
     self.coveY = self.coveY
 
-    # Helper function
-    def getTileOwner(x)
-      if x < self.sharedLowerBound:
-        return 1
-      elif x > self.sharedUpperBound:
-        return 2
-      else:
-        return 3
-    #Make grid		
+    #Make grid
     self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+
+  # Helper function
+  def getTileOwner(x):
+    if x < self.sharedLowerBound:
+      return 1
+    elif x > self.sharedUpperBound:
+      return 2
+    else:
+      return 3
     
   #getTile RETURN [TILE]
   def getTile(self, x, y):
@@ -163,12 +164,12 @@ class Match(DefaultGameWorld):
     self.nextTurn()
     return True
 
-	def getTrashLeft(self):
+  def getTrashLeft(self):
     totalTrash = 0
     #is this right?
     for x in range(0,sharedLowerBound):
       for y in range(0,mapHeight):
-        totalTrash += self.game.grid[x][y].trashAmount
+        totalTrash += getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashShared(self):
@@ -176,7 +177,7 @@ class Match(DefaultGameWorld):
     #I think these bounds are right?
     for x in range(sharedLowerBound,sharedUpperBound):
       for y in range(0,mapHeight):
-        totalTrash += self.game.grid[x][y].trashAmount
+        totalTrash += getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashRight(self):
@@ -184,21 +185,21 @@ class Match(DefaultGameWorld):
     #Comment to remind who so ever changes this to change all of the bounds
     for x in range(sharedUpperBound,mapWidth):
       for y in range(0,mapHeight):
-        totalTrash += self.game.grid[x][y].trashAmount
+        totalTrash += getTile(x,y).trashAmount
     return totalTrash
-	
+
   def nextTurn(self):
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
       self.players[0].currentReefHealth -= (getTrashLeft() + getTrashShared()) * self.trashDamage
-	  
+
       self.turn = self.players[1]
       self.playerID = 1
     elif self.turn == self.players[1]:
       #deal damage to the left-side player
       self.players[1].currentReefHealth -= (getTrashRight() + getTrashShared()) * self.trashDamage
-	  
+
       self.turn = self.players[0]
       self.playerID = 0
 
