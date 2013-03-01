@@ -50,7 +50,7 @@ class Match(DefaultGameWorld):
     self.coveY = self.coveY
 
     # Helper function
-    def getTileOwner(x)
+    def getTileOwner(x):
       if x < self.sharedLowerBound:
         return 1
       elif x > self.sharedUpperBound:
