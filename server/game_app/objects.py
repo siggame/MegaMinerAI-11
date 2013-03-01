@@ -112,7 +112,7 @@ class Fish(Mappable):
         return "You can only control your own fish"
     elif (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
         return "Cannot move off of the map"
-    elif self.movemmentLeft <= 0:
+    elif self.movementLeft <= 0:
         return "You have no moves left"
     elif abs(self.x-x) + abs(self.y-y) != 1:
         return "Can only move to adjacent locations"

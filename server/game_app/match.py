@@ -2,14 +2,10 @@ from base import *
 from matchUtils import *
 from objects import *
 import networking.config.config
-from collections import defaultdict
-from networking.sexpr.sexpr import *
-import os
+import networking.sexpr.sexpr
 import itertools
 import scribe
 import jsonLogger
-import random
-import math
 
 Scribe = scribe.Scribe
 
@@ -25,7 +21,7 @@ class Match(DefaultGameWorld):
     self.controller = controller
     DefaultGameWorld.__init__(self)
     self.scribe = Scribe(self.logPath())
-    if( self.logJson ):
+    if self.logJson:
       self.jsonLogger = jsonLogger.JsonLogger(self.logPath())
       self.jsonAnimations = []
       self.dictLog = dict(gameName = "Reef", turns = [])
@@ -58,7 +54,7 @@ class Match(DefaultGameWorld):
       else:
         return 3
     #Make grid		
-    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile, [x, y, 0, getTileOwner(x), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
   #getTile RETURN [TILE]
   def getTile(self, x, y):
@@ -92,7 +88,7 @@ class Match(DefaultGameWorld):
     elif type == "spectator":
       self.spectators.append(connection)
       #If the game has already started, send them the ident message
-      if (self.turn is not None):
+      if self.turn is not None:
         self.sendIdent([connection])
     return True
 
@@ -104,8 +100,9 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
-
+  '''
   def spawnTrash(self):
+    print("START spawnTrash(self)")
     #Set coves on left side
     for tile in self.objects.tiles:
       if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
@@ -117,10 +114,13 @@ class Match(DefaultGameWorld):
 
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
+    print("START RANDOM TRASH GENERATION")
     trashCur = 0
-    trashMax = 500
-    while(trashCur < self.trashAmount):
+    trashMax = 50
+    while(trashCur < trashMax):
       #Create random X and random Y
+      print("CREATE RANDOM X AND Y")
+      print(trashCur)
       randX = random.randint(0, (self.mapWidth)//2)
       randY = random.randint(0, (self.mapWidth)//2)
 
@@ -133,23 +133,18 @@ class Match(DefaultGameWorld):
       if randTile is None:
         return "Error in getting randTile"    
       
-      #If tile isCove
-      if randTile.isCove is True:
-        #Rerun loop (subtract/add one to index)
-        continue
-      #Else if tile trashAmount >= trashMax
-      elif randTile.trashAmount >= trashMax:
-        #Rerun loop (subtract/add one to index)
-        continue
-      #Else
-      else:
-        #Increment trashAmount by 1
-        randTile.trashAmount += 1
-        trashCur += 1
-
+      #Don't spawn on a cove
+      if randTile.isCove is true:
+        trashCur -= 1
+      #Don't spawn if grea
+       
+      
+    print("END RANDOM TRASH GENERATION")
     return True
-    
+  '''
+     
   def start(self):
+    print("GAME STARTED")
     if len(self.players) < 2:
       return "Game is not full"
     if self.winner is not None or self.turn is not None:
@@ -158,13 +153,13 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    self.spawnTrash()
+    #self.spawnTrash()
 
     self.nextTurn()
     return True
 
-
   def nextTurn(self):
+    print "TURN NUMBER: %i"% self.turnNumber
     self.turnNumber += 1
     if self.turn == self.players[0]:
       self.turn = self.players[1]
@@ -185,7 +180,7 @@ class Match(DefaultGameWorld):
     else:
       self.sendStatus(self.spectators)
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog['turns'].append(
         dict(
           initialFood = self.initialFood,
@@ -270,7 +265,7 @@ class Match(DefaultGameWorld):
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog["winnerID"] =  self.getPlayerIndex(self.winner)
       self.dictLog["winReason"] = reason
       self.jsonLogger.writeLog( self.dictLog )
@@ -341,16 +336,15 @@ class Match(DefaultGameWorld):
 
 
   def status(self):
-    msg = ["status"]
+    msg = ["status", ["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn,
+                      self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth,
+                      self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY]]
 
-    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY])
-
-    typeLists = []
-    typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies])
-    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
-    typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
+    typeLists = [["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable],
+                 ["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies],
+                 ["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile],
+                 ["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish],
+                 ["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player]]
 
     msg.extend(typeLists)
 
@@ -360,7 +354,7 @@ class Match(DefaultGameWorld):
     # generate the sexp
     self.animations.append(anim.toList())
     # generate the json
-    if( self.logJson ):
+    if self.logJson:
       self.jsonAnimations.append(anim.toJson())
   
 
