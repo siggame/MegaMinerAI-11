@@ -117,27 +117,27 @@ class Fish(Mappable):
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
       return "Your fish cannot move off the map."
     elif abs(self.x-x) > 1 or abs(self.y - y) > 1 or (abs(self.x-x) == 1 and abs(self.y - y) == 1):
-      return "You can only move to adjascent locations."
+      return "You can only move to adjacent locations."
     T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
     elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
       for i in range(1, len(self.game.getFish(x,y))):
-        if self.game.getFish(x,y)[i].isStealthed == false:
+        if not self.game.getFish(x, y)[i].isStealthed:
           return "You can't move onto a fish." 
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
-    elif self.game.getTile(x,y)[0].isCove == true and self.game.getTile(x,y)[0].owner != self.owner:
+    elif self.game.getTile(x,y)[0].isCove == True and self.game.getTile(x,y)[0].owner != self.owner:
       return "Can't go into an opponent's cove."
     #Working under the assumption that ground units can move anywhere
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
             
-    movementLeft -= 1
+    self.movementLeft -= 1
     self.x = x
     self.y = y
-    return "Succesful movement. Congrats."
+    return "Successful movement. Congrats."
 
   def pickUp(self, x, y, weight):
     pass
