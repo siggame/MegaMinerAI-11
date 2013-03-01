@@ -5,6 +5,9 @@ codegen/output
 # shared objects don't go in the repository
 *.so
 
+# PyCharm data doesn't go in the repository
+.idea/
+
 #Game logs don't go in the repository
 *.gamelog
 *.glog

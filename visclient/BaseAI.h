@@ -56,8 +56,12 @@ public:
   int mapWidth();
   ///How high the map is
   int mapHeight();
-  ///amount of trash in the game
+  ///Amount of trash in the game
   int trashAmount();
+  ///X bound for the cove
+  int coveX();
+  ///Y bound for the cove
+  int coveY();
   
   BaseAI(Connection* c);
   virtual ~BaseAI();

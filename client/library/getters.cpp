@@ -48,10 +48,6 @@ DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr)
 {
   return ptr->maxAttacks;
 }
-DLLEXPORT int fishSpeciesGetCanStealth(_FishSpecies* ptr)
-{
-  return ptr->canStealth;
-}
 DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr)
 {
   return ptr->turnsTillAvailalbe;
@@ -75,6 +71,14 @@ DLLEXPORT int tileGetY(_Tile* ptr)
 DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
 {
   return ptr->trashAmount;
+}
+DLLEXPORT int tileGetOwner(_Tile* ptr)
+{
+  return ptr->owner;
+}
+DLLEXPORT int tileGetIsCove(_Tile* ptr)
+{
+  return ptr->isCove;
 }
 DLLEXPORT int fishGetId(_Fish* ptr)
 {

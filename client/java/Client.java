@@ -39,6 +39,8 @@ public interface Client extends Library {
   int getMapWidth(Pointer connection);
   int getMapHeight(Pointer connection);
   int getTrashAmount(Pointer connection);
+  int getCoveX(Pointer connection);
+  int getCoveY(Pointer connection);
 
   Pointer getMappable(Pointer connection, int num);
   int getMappableCount(Pointer connection);
@@ -66,7 +68,6 @@ public interface Client extends Library {
   int fishSpeciesGetAttackPower(Pointer ptr);
   int fishSpeciesGetRange(Pointer ptr);
   int fishSpeciesGetMaxAttacks(Pointer ptr);
-  int fishSpeciesGetCanStealth(Pointer ptr);
   int fishSpeciesGetTurnsTillAvailalbe(Pointer ptr);
   int fishSpeciesGetTurnsTillUnavailable(Pointer ptr);
 
@@ -74,6 +75,8 @@ public interface Client extends Library {
   int tileGetX(Pointer ptr);
   int tileGetY(Pointer ptr);
   int tileGetTrashAmount(Pointer ptr);
+  int tileGetOwner(Pointer ptr);
+  int tileGetIsCove(Pointer ptr);
 
   int fishGetId(Pointer ptr);
   int fishGetX(Pointer ptr);

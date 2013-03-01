@@ -22,6 +22,10 @@ class Tile : public Mappable {
   int y();
   ///The amount of trash on this tile
   int trashAmount();
+  ///The owner of the tile if it is part of a cove
+  int owner();
+  ///If the current tile is part of a cove
+  int isCove();
 
   // Actions
 

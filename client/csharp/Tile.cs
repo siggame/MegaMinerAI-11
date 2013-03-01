@@ -82,5 +82,27 @@ public class Tile: Mappable
     }
   }
 
+  ///The owner of the tile if it is part of a cove
+  public int Owner
+  {
+    get
+    {
+      validify();
+      int value = Client.tileGetOwner(ptr);
+      return value;
+    }
+  }
+
+  ///If the current tile is part of a cove
+  public int IsCove
+  {
+    get
+    {
+      validify();
+      int value = Client.tileGetIsCove(ptr);
+      return value;
+    }
+  }
+
 }
 

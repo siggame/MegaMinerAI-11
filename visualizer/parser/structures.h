@@ -42,7 +42,6 @@ struct FishSpecies
   int attackPower;
   int range;
   int maxAttacks;
-  int canStealth;
   int turnsTillAvailalbe;
   int turnsTillUnavailable;
 
@@ -52,6 +51,8 @@ struct FishSpecies
 struct Tile: public Mappable 
 {
   int trashAmount;
+  int owner;
+  int isCove;
 
   friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
@@ -182,6 +183,8 @@ struct GameState
   int mapWidth;
   int mapHeight;
   int trashAmount;
+  int coveX;
+  int coveY;
 
   std::map< int, std::vector< SmartPointer< Animation > > > animations;
   friend std::ostream& operator<<(std::ostream& stream, GameState obj);

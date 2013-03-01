@@ -155,14 +155,6 @@ static bool parseFishSpecies(FishSpecies& object, sexp_t* expression)
     return false;
   }
 
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseFishSpecies.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
   object.turnsTillAvailalbe = atoi(sub->val);
   sub = sub->next;
 
@@ -218,6 +210,24 @@ static bool parseTile(Tile& object, sexp_t* expression)
   }
 
   object.trashAmount = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.owner = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.isCove = atoi(sub->val);
   sub = sub->next;
 
   return true;
@@ -705,6 +715,12 @@ static bool parseSexp(Game& game, sexp_t* expression)
           sub = sub->next;
           if ( !sub ) return false;
           gs.trashAmount = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.coveX = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.coveY = atoi(sub->val);
           sub = sub->next;
       }
       else if(string(sub->val) == "Mappable")

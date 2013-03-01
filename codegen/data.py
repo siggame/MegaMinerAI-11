@@ -38,13 +38,17 @@ globals = [
   Variable('trashDamage',int,'How much damage trash does'),
   Variable('mapWidth', int, 'How wide the map is'),
   Variable('mapHeight', int, 'How high the map is'),
-  Variable('trashAmount',int, 'amount of trash in the game')
+  Variable('trashAmount',int, 'Amount of trash in the game'),
+  Variable('coveX', int, 'X bound for the cove' ),
+  Variable('coveY', int, 'Y bound for the cove' ),
   ]
 
 Tile = Model('Tile',
   parent = Mappable,
-  data=[
+  data = [
     Variable('trashAmount', int, 'The amount of trash on this tile'),
+    Variable('owner', int , 'The owner of the tile if it is part of a cove'),
+    Variable('isCove', int, 'If the current tile is part of a cove'),
     ],
   doc='Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3',
   )
@@ -59,7 +63,6 @@ FishSpecies = Model('FishSpecies',
     Variable('attackPower', int, 'The power of the fish\'s attack'),
     Variable('range',int,'The attack arrange of the fish'),
     Variable('maxAttacks',int,'Maximum number of times this unit can attack per turn'),
-    Variable('canStealth', bool, 'If this species is able to use stealth'),
     Variable('turnsTillAvailalbe',int, 'How many turns until you can spawn this fish species'),
     Variable('turnsTillUnavailable', int, 'How many turns until you can no longer spawn this fish species'),
     ],
@@ -86,7 +89,7 @@ Fish = Model('Fish',
     Variable('species',str,'The fish species'),
     ],
   functions=[
-    Function('move', [Variable('x', int), Variable('y', int)], 
+    Function('move', [Variable('x', int), Variable('y', int)],
     doc='Command a fish to move to a specified position'),
     Function('pickUp', [Variable('x', int), Variable('y', int), Variable('weight', int)],
     doc='Command a fish to pick up some trash at a specified position'),

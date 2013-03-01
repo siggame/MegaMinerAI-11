@@ -1,6 +1,6 @@
 INCLUDEPATH +=  ../interfaces                 ../common/                 ./parser/
 
-DEPENDPATH += ../common/ 
+DEPENDPATH += ../common/
 
 TEMPLATE = lib
 TARGET = reef
@@ -8,7 +8,7 @@ SOURCES = *.cpp           ./parser/*.cpp           ./parser/sexp/*.cpp          
 
 HEADERS +=  *.h             ./parser/*.h             ./parser/sexp/*.h
 
-CONFIG += config plugin dll 
+CONFIG += config plugin dll
 debug:DEFINES += __DEBUG__
 #QMAKE_CFLAGS_DEBUG += -pg
 #QMAKE_CXXFLAGS_DEBUG += -pg

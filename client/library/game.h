@@ -44,6 +44,8 @@ struct Connection
   int mapWidth;
   int mapHeight;
   int trashAmount;
+  int coveX;
+  int coveY;
 
   _Mappable* Mappables;
   int MappableCount;
@@ -107,6 +109,8 @@ DLLEXPORT int getTrashDamage(Connection* c);
 DLLEXPORT int getMapWidth(Connection* c);
 DLLEXPORT int getMapHeight(Connection* c);
 DLLEXPORT int getTrashAmount(Connection* c);
+DLLEXPORT int getCoveX(Connection* c);
+DLLEXPORT int getCoveY(Connection* c);
 
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);

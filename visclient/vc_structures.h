@@ -34,7 +34,6 @@ struct _FishSpecies
   int attackPower;
   int range;
   int maxAttacks;
-  int canStealth;
   int turnsTillAvailalbe;
   int turnsTillUnavailable;
 };
@@ -45,6 +44,8 @@ struct _Tile
   int x;
   int y;
   int trashAmount;
+  int owner;
+  int isCove;
 };
 struct _Fish
 {

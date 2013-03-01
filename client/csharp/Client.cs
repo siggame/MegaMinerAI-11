@@ -64,6 +64,10 @@ public class Client {
   public static extern int getMapHeight(IntPtr connection);
   [DllImport("client")]
   public static extern int getTrashAmount(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getCoveX(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getCoveY(IntPtr connection);
 
   [DllImport("client")]
   public static extern IntPtr getMappable(IntPtr connection, int num);
@@ -114,8 +118,6 @@ public class Client {
   [DllImport("client")]
   public static extern int fishSpeciesGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
-  public static extern int fishSpeciesGetCanStealth(IntPtr ptr);
-  [DllImport("client")]
   public static extern int fishSpeciesGetTurnsTillAvailalbe(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishSpeciesGetTurnsTillUnavailable(IntPtr ptr);
@@ -128,6 +130,10 @@ public class Client {
   public static extern int tileGetY(IntPtr ptr);
   [DllImport("client")]
   public static extern int tileGetTrashAmount(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetOwner(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetIsCove(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int fishGetId(IntPtr ptr);

@@ -65,6 +65,8 @@ DLLEXPORT Connection* createConnection()
   c->mapWidth = 0;
   c->mapHeight = 0;
   c->trashAmount = 0;
+  c->coveX = 0;
+  c->coveY = 0;
   c->Mappables = NULL;
   c->MappableCount = 0;
   c->FishSpeciess = NULL;
@@ -348,7 +350,6 @@ void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
-  sub = sub->next;
   object->turnsTillAvailalbe = atoi(sub->val);
   sub = sub->next;
   object->turnsTillUnavailable = atoi(sub->val);
@@ -369,6 +370,10 @@ void parseTile(Connection* c, _Tile* object, sexp_t* expression)
   object->y = atoi(sub->val);
   sub = sub->next;
   object->trashAmount = atoi(sub->val);
+  sub = sub->next;
+  object->owner = atoi(sub->val);
+  sub = sub->next;
+  object->isCove = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -542,6 +547,12 @@ DLLEXPORT int networkLoop(Connection* c)
           sub = sub->next;
 
           c->trashAmount = atoi(sub->val);
+          sub = sub->next;
+
+          c->coveX = atoi(sub->val);
+          sub = sub->next;
+
+          c->coveY = atoi(sub->val);
           sub = sub->next;
 
         }
@@ -744,6 +755,14 @@ DLLEXPORT int getMapHeight(Connection* c)
 DLLEXPORT int getTrashAmount(Connection* c)
 {
   return c->trashAmount;
+}
+DLLEXPORT int getCoveX(Connection* c)
+{
+  return c->coveX;
+}
+DLLEXPORT int getCoveY(Connection* c)
+{
+  return c->coveY;
 }
 
 }

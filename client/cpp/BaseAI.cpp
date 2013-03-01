@@ -57,6 +57,14 @@ int BaseAI::trashAmount()
 {
   return getTrashAmount(c);
 }
+int BaseAI::coveX()
+{
+  return getCoveX(c);
+}
+int BaseAI::coveY()
+{
+  return getCoveY(c);
+}
 
 bool BaseAI::startTurn()
 {

@@ -1,3 +1,11 @@
+import networking.config.config
+
+#Initializes cfgSpecies
+cfgSpecies = networking.config.config.readConfig("config/species.cfg")
+for key in cfgSpecies.keys():
+  cfgSpecies[key]['type'] = key
+
+
 class Mappable:
   def __init__(self, game, id, x, y):
     self.game = game
@@ -7,18 +15,18 @@ class Mappable:
 
   def toList(self):
     return [self.id, self.x, self.y, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, )
-  
+
   def nextTurn(self):
     pass
 
 
 
 class FishSpecies:
-  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, canStealth, turnsTillAvailalbe, turnsTillUnavailable):
+  def __init__(self, game, id, species, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, turnsTillAvailalbe, turnsTillUnavailable):
     self.game = game
     self.id = id
     self.species = species
@@ -29,42 +37,41 @@ class FishSpecies:
     self.attackPower = attackPower
     self.range = range
     self.maxAttacks = maxAttacks
-    self.canStealth = canStealth
     self.turnsTillAvailalbe = turnsTillAvailalbe
     self.turnsTillUnavailable = turnsTillUnavailable
 
   def toList(self):
-    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.canStealth, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
-  
+    return [self.id, self.species, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.turnsTillAvailalbe, self.turnsTillUnavailable, ]
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, canStealth = self.canStealth, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
-  
+    return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
+
   def nextTurn(self):
     pass
 
-  
-  ###TODO: Spawn logic. Parse through species.conf file and give each species the correct stats. turnsTill logic will need to be implmented. 
   def spawn(self, x, y):
     pass
 
 
 
 class Tile(Mappable):
-  def __init__(self, game, id, x, y, trashAmount):
+  def __init__(self, game, id, x, y, trashAmount, owner, isCove):
     self.game = game
     self.id = id
     self.x = x
     self.y = y
     self.trashAmount = trashAmount
+    self.owner = owner
+    self.isCove = isCove
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, ]
-  
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.isCove, ]
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, )
-  
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, isCove = self.isCove, )
+
   def nextTurn(self):
     pass
 
@@ -92,14 +99,14 @@ class Fish(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
-  
-  ### TODO: Reset movement, attack, possible stealth, damage if carrying trash, possibly more
+
   def nextTurn(self):
     pass
+
   ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
 
   def move(self, x, y):
@@ -109,6 +116,8 @@ class Fish(Mappable):
       return "Your fish has no moves left."
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
       return "Your fish cannot move off the map."
+    elif abs(self.x-x >1) or abs(self.y - y >1) or (abs(self.x-x) == 1 and abs(self.y - y) == 1)
+      return "You can only move to adjascent locations."
     T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
     elif T.trashAmount > 0:
       return "You can't move on top of trash"
@@ -119,19 +128,40 @@ class Fish(Mappable):
         else
           print "Fringe case: moving onto a stealthed fish."
           pass
+    elif self.game.getTile(x,y)[0].isCove == true and self.game.getTile(x,y)[0].owner != self.owner:
+      return "Can't go into an opponent's cove."
     #Working under the assumption that ground units can move anywhere
+    self.game.grid[self.x][self.y].remove(self)
+    self.game.grid[x][y].append(self)
+            
     movementLeft -= 1
     self.x = x
     self.y = y
     return "Succesful movement. Congrats."
-  
-  ### TODO: pick up trash from a tile 1 space away, can't exceec carrying cap, does damage on pickup,
-  ### based off how trash was picked up, damage can't exceed health, can't pick up 0 trash
+>>>>>>> 3f794204513e3963f2eaebb84e49670fc4c0760e
   def pickUp(self, x, y, weight):
     pass
- 
+
   def drop(self, x, y, weight):
-    pass
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish"
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "Cannot drop off the map"
+    elif abs(self.x-x) + abs(self.y-y) != 1:
+      return "Can only drop onto adjacent locations"
+    elif weight > self.carryingWeight:
+      return "You cannot drop more than you're carrying"
+    elif self.game.getFish(x,y) != []:
+      return "Cannot drop onto a fish"
+
+    if not self.isVisible:
+      self.isVisible = True #unstealth while dropping
+    
+    #TODO: what happens when dropping onto a stealth fish?
+    
+    self.game.getTile(x,y).trashAmount += weight
+    self.carryingWeight -= weight
+    return True 
 
   def attack(self, x, y):
     pass
@@ -146,17 +176,14 @@ class Player:
     self.time = time
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
-    self.spawning = []
-    
+
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
-  
-  
-  ### TODO: Have trash to damage based off location, give food, spawn new fish
+
   def nextTurn(self):
     pass
 
