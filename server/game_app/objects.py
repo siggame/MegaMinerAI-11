@@ -158,6 +158,12 @@ class Fish(Mappable):
     return True 
 
   def attack(self, x, y):
+    if abs(self.x-x) + abs(self.y=y) > self.range
+      return "You can't attack further than your fish's range."
+    if self.attacksLeft == 0
+      return "This fish has no attacks left."
+    if self.game.getFish(x,y) == []:
+      return "You can't attack nothing!"
     pass
 
 
