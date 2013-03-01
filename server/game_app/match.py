@@ -51,15 +51,15 @@ class Match(DefaultGameWorld):
 
     # Helper function
     def getTileOwner(x)
-		if x < self.sharedLowerBound:
-			return 1
-		elif x > self.sharedUpperBound:
-			return 2
-		else:
-			return 3
-	#Make grid		
+      if x < self.sharedLowerBound:
+        return 1
+      elif x > self.sharedUpperBound:
+        return 2
+      else:
+        return 3
+    #Make grid		
     self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
-
+    
   #getTile RETURN [TILE]
   def getTile(self, x, y):
     return [ self.grid[x][y][0] ]
