@@ -164,7 +164,7 @@ class Match(DefaultGameWorld):
     #is this right?
     for x in range(0,sharedLowerBound):
       for y in range(0,mapHeight):
-        totalTrash += getTile(x,y).trashAmount
+        totalTrash += self.game.getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashShared(self):
@@ -172,7 +172,7 @@ class Match(DefaultGameWorld):
     #I think these bounds are right?
     for x in range(sharedLowerBound,sharedUpperBound):
       for y in range(0,mapHeight):
-        totalTrash += getTile(x,y).trashAmount
+        totalTrash += self.game.getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashRight(self):
@@ -180,7 +180,7 @@ class Match(DefaultGameWorld):
     #Comment to remind who so ever changes this to change all of the bounds
     for x in range(sharedUpperBound,mapWidth):
       for y in range(0,mapHeight):
-        totalTrash += getTile(x,y).trashAmount
+        totalTrash += self.game.getTile(x,y).trashAmount
     return totalTrash
 
   def nextTurn(self):
