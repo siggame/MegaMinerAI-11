@@ -159,7 +159,6 @@ class Match(DefaultGameWorld):
     self.nextTurn()
     return True
 
-<<<<<<< HEAD
   def getTrashLeft(self):
     totalTrash = 0
     #is this right?
@@ -184,8 +183,6 @@ class Match(DefaultGameWorld):
         totalTrash += getTile(x,y).trashAmount
     return totalTrash
 
-=======
->>>>>>> master
   def nextTurn(self):
     print "TURN NUMBER: %i"% self.turnNumber
     self.turnNumber += 1
