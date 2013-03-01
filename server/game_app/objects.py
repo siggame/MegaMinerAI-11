@@ -134,6 +134,40 @@ class Fish(Mappable):
     pass
 
   def pickUp(self, x, y, weight):
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish."
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "Cannot pick up trash off the map."
+    elif abs(self.x-x) + abs(self.y-y) !=1:
+      return "Can only pick up adjacent trash."
+    elif (self.carryingWeight + weight) > self.carryCap:
+      return "Cannot carry more weight than the fish's carry cap."
+    elif weight == 0:
+      return "Cannot pick up a weight of 0."
+    elif self.game.grid[x][y].trashAmount < weight:
+      return "You can't pick up more trash then there is trash present."
+    
+    #don't need to bother checking for fish because a space with a 
+    #fish shouldn't have any trash, right?
+    
+    #unstealth fish... because that's what drop did
+    if not self.Visible:
+       self.Visible = True;
+    
+    #TODO: Check for the fish that's immune to trash damage (?)
+    #TODO: Determine damage taken
+    #take damage
+    self.currentHealth -= self.trashDamage*weight
+    #check if dead
+    if self.currentHealth < 0:
+      #remove object
+      self.game.removeObject(self.game.getObject(x,y))
+      self.game.grid[x][y].remove(self.game.getObject(x,y))
+      return "Your fish died trying to pick up the trash."
+    #reduce weight of tile
+    self.game.grid[x][y].trashAmount -= weight
+    #add weight to fish
+    self.carryingWeight += weight
     pass
 
   def drop(self, x, y, weight):
