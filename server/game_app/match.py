@@ -49,14 +49,30 @@ class Match(DefaultGameWorld):
     self.coveX = self.coveX
     self.coveY = self.coveY
 
-    #Make grid
-    self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
+    # Helper function
+    def getTileOwner(x)
+      if x < self.sharedLowerBound:
+        return 1
+      elif x > self.sharedUpperBound:
+        return 2
+      else:
+        return 3
+    #Make grid		
+    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    
+  #getTile RETURN [TILE]
+  def getTile(self, x, y):
+    return [ self.grid[x][y][0] ]
+  
+  #getFish RETURN LIST OF FISH
+  def getFish(self, x, y):
+    return self.grid[x][y][1:]
 
-  def getObject(self, x, y):
-    if len(self.grid[x][y]) > 1:
-      return self.grid[x][y][1]
-    else:
-      return None
+  #def getObject(self, x, y):
+  #  if len(self.grid[x][y]) > 1:
+  #    return self.grid[x][y][1]
+  #  else:
+  #    return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -69,7 +85,8 @@ class Match(DefaultGameWorld):
     if type == "player":
       self.players.append(connection)
       try:
-        self.addObject(Player, [connection.screenName, self.startTime])
+        #500 and 0 are place holder values for default initial reef health and initial reef food
+        self.addObject(Player, [connection.screenName, self.startTime, 500, 0 ])
       except TypeError:
         raise TypeError("Someone forgot to add the extra attributes to the Player object initialization")
     elif type == "spectator":
@@ -89,14 +106,6 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
 
   def spawnTrash(self):
-    #Put a tile in every location
-    #Location of grid starts at 0 and goes to self.mapWidth-1
-    for x in range(self.mapWidth):
-      for y in range(self.mapHeight):
-        self.addObject(Tile, [x, y, 3, False])
-    for tile in self.objects.tiles:
-      self.grid[tile.x][tile.y] = [tile]
-
     #Set coves on left side
     for tile in self.objects.tiles:
       if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
@@ -109,7 +118,6 @@ class Match(DefaultGameWorld):
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
     trashCur = 0
-    #"Dummy" value for the maximum amount of trash per tile
     trashMax = 500
     while(trashCur < self.trashAmount):
       #Create random X and random Y
@@ -118,7 +126,7 @@ class Match(DefaultGameWorld):
 
       #Find tile at random X and random Y position
       randTile = None
-      for tile in self.object.tiles:
+      for tile in self.objects.tiles:
         if isinstance(tile, Tile):
           randTile = tile
       
@@ -150,13 +158,12 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    if self.spawnTrash() is False:
-      return "Error in spawning trash."
+    self.spawnTrash()
 
     self.nextTurn()
     return True
 
-  def getTrashLeft(self):
+	def getTrashLeft(self):
     totalTrash = 0
     #is this right?
     for x in range(0,sharedLowerBound):
@@ -179,19 +186,19 @@ class Match(DefaultGameWorld):
       for y in range(0,mapHeight):
         totalTrash += self.game.grid[x][y].trashAmount
     return totalTrash
-
+	
   def nextTurn(self):
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
       self.players[0].currentReefHealth -= (getTrashLeft() + getTrashShared()) * self.trashDamage
-      
+	  
       self.turn = self.players[1]
       self.playerID = 1
     elif self.turn == self.players[1]:
-      #deal damage to the right-side player
+      #deal damage to the left-side player
       self.players[1].currentReefHealth -= (getTrashRight() + getTrashShared()) * self.trashDamage
-      
+	  
       self.turn = self.players[0]
       self.playerID = 0
 
@@ -388,4 +395,3 @@ class Match(DefaultGameWorld):
 
 
 loadClassDefaults()
-
