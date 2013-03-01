@@ -94,7 +94,8 @@ class Match(DefaultGameWorld):
     #Location of grid starts at 0 and goes to self.mapWidth-1
     for x in range(self.mapWidth):
       for y in range(self.mapHeight):
-        self.addObject(Tile, [x, y, 3, False])
+        #x, y, trashAmount, owner, isCove
+        self.addObject(Tile, [x, y, 0, 3, False])
     for tile in self.objects.tiles:
       self.grid[tile.x][tile.y] = [tile]
 
@@ -118,7 +119,7 @@ class Match(DefaultGameWorld):
 
       #Find tile at random X and random Y position
       randTile = None
-      for tile in self.object.tiles:
+      for tile in self.objects.tiles:
         if isinstance(tile, Tile):
           randTile = tile
       
@@ -150,8 +151,7 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    if self.spawnTrash() is False:
-      return "Error in spawning trash."
+    self.spawnTrash()
 
     self.nextTurn()
     return True
