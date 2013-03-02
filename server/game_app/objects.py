@@ -218,7 +218,7 @@ class Fish(Mappable):
       return "You can't heal the opponent's fish."
     elif target.owner == self.game.playerID and self.attackPower > 0:
       return "You can't attack your own fish."
-    elif self.isVisible == False and self.attackPower < target.currentHealth
+    elif self.isVisible == False and self.attackPower < target.currentHealth:
       return "A stealthed unit can't attack a fish above it if it can't kill it."
     
     #hurt the other fish
@@ -232,7 +232,7 @@ class Fish(Mappable):
     if target.currentHealth <= 0:
       #drop trash on tile
       self.game.getTile(x,y).trashAmount += target.carryingWeight
-      if x == self.x and y == self.y
+      if x == self.x and y == self.y:
         #stealth fish on same tile must pick up garbage
         #TODO: The stealth fish won't be able to pick the weight up currently
         #      if the weight is creater than the carry capacity
