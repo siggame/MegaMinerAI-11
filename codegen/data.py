@@ -45,6 +45,7 @@ Tile = Model('Tile',
     Variable('owner', int , 'The owner of the tile if it is part of a cove'),
     ],
   doc='Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).',
+  permanent = True,
   )
 
 Species = Model('Species',
