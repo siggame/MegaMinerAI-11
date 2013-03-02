@@ -350,7 +350,30 @@ class Match(DefaultGameWorld):
       i.writeSExpr(self.status())
       i.writeSExpr(self.animations)
     return True
-
+    
+  def initSpeciesAvailibility(self):
+    # spec_int will be config constant
+    x = self.spec_int #TODO: change spec_int to correct variable
+    temp = range(len(self.objects.FishSpecies) - 4)
+    temp2 = list(temp)
+    
+    ta = [0, 0, 0, 0] #till available
+    for i in temp:
+      temp[i] = (i + 1)*x
+    ta.extend(temp)
+    
+    tu = [x, 2*x, 3*x, 4*x] #till unavailable
+    for j in temp2:
+      temp2[j] = 0
+    tu.extend(temp2)
+    #Shuffled position list for which specific initialization values each fish species will correspond to
+    pos = range(len(self.objects.FishSpecies))
+    random.shuffle(pos)
+    
+    for num in range (len(self.objects.FishSpecies)):
+      self.objects.FishSpecies[num].turnsTillAvailable = ta[pos[num]]
+      self.objects.FishSpecies[num].turnsTillUnavailable = tu[pos[num]]
+    return True
 
   def status(self):
     msg = ["status"]
