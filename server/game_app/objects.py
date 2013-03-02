@@ -57,7 +57,7 @@ class Species:
         if spec.turnsTillUnavailable > 0:
           spec.turnsTillUnavailable = spec.turnsTillUnavailable - 1
           if spec.turnsTillUnavailable == spec.turnsTillAvailable:
-            spec.turnsTillAvailable = ((len(self.objects.FishSpecies) - 4)*x
+            spec.turnsTillAvailable = ((len(self.objects.FishSpecies) - 4)*x)
     return True
 
   def spawn(self, x, y):
