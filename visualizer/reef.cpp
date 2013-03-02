@@ -45,15 +45,7 @@ namespace visualizer
 
   void Reef::postDraw()
   {
-    if( renderer->fboSupport() )
-    {
-#if 0
-      renderer->useShader( programs["post"] ); 
-      renderer->swapFBO();
-      renderer->useShader( 0 );
-#endif
 
-    }
   }
 
 
@@ -112,8 +104,8 @@ namespace visualizer
 
     // Setup the renderer as a 4 x 4 map by default
     // TODO: Change board size to something useful
-    renderer->setCamera( 0, 0, 4, 4 );
-    renderer->setGridDimensions( 4, 4 );
+    renderer->setCamera( 0, 0, m_game->states[0].mapWidth, m_game->states[0].mapHeight );
+    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight );
  
     start();
   } // Reef::loadGamelog()

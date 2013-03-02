@@ -11,11 +11,63 @@
 namespace visualizer
 {
 
-    struct Tile : public Animatable
+    // class that stores the info about how a map is rendered
+    class Map : public Animatable
     {
-        int trashAmount; // trash to be rendered
-        int owner;       // needed?
-        int isCove; // teh cove, need to make it look nice
+      public:
+
+        struct Tile
+        {
+            Tile() : trashAmount(0), isCove(0)
+            {
+            }
+
+            Tile(int ta, int ic) : trashAmount(ta), isCove(ic)
+            {
+            }
+
+            int trashAmount; // trash to be rendered, this value would change based off of the game being played
+            int isCove; // teh cove, need to make it look nice, this value does not change between frames
+
+           // int turn;
+           // todo: add more?
+        };
+
+        Map(int w, int h, int hud, float pc, float mc, float xp) : m_tiles(w*h), width(w), height(h), hudHeight(hud), prevMapColor(pc), mapColor(mc), xPos(xp)
+        {
+        }
+
+        // todo: need to create a better interface
+        Tile& operator()(unsigned int r, unsigned int c)
+        {
+          return m_tiles[c + r*width];
+        }
+
+        const Tile& operator()(unsigned int r, unsigned int c) const
+        {
+          return m_tiles[c + r*width];
+        }
+
+        int GetWidth() const { return width; }
+        int GetHeight() const { return height; }
+        float GetPrevMapColor() const { return prevMapColor; }
+        float GetxPos() const { return xPos; }
+        float GetMapColor() const { return mapColor; }
+        int GetHUDHeight() const { return hudHeight; }
+
+    private:
+
+      std::vector<Tile> m_tiles;
+      int width;
+      int height;
+      int hudHeight;
+
+      //todo: lighting
+      float prevMapColor;
+      float mapColor;
+      float xPos;
+
+        // todo: add more?
     };
 
     struct Fish : public Animatable
