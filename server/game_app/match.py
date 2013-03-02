@@ -2,14 +2,11 @@ from base import *
 from matchUtils import *
 from objects import *
 import networking.config.config
-from collections import defaultdict
-from networking.sexpr.sexpr import *
-import os
+import networking.sexpr.sexpr
 import itertools
 import scribe
 import jsonLogger
 import random
-import math
 
 Scribe = scribe.Scribe
 
@@ -25,7 +22,7 @@ class Match(DefaultGameWorld):
     self.controller = controller
     DefaultGameWorld.__init__(self)
     self.scribe = Scribe(self.logPath())
-    if( self.logJson ):
+    if self.logJson:
       self.jsonLogger = jsonLogger.JsonLogger(self.logPath())
       self.jsonAnimations = []
       self.dictLog = dict(gameName = "Reef", turns = [])
@@ -49,16 +46,17 @@ class Match(DefaultGameWorld):
     self.coveX = self.coveX
     self.coveY = self.coveY
 
-    # Helper function
-    def getTileOwner(x):
-      if x < self.sharedLowerBound:
-        return 1
-      elif x > self.sharedUpperBound:
-        return 2
-      else:
-        return 3
-    #Make grid		
-    self.grid = [[[self.addObject(Tile, [x, y, 0, getTileOwner(x), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    #Make grid
+    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+
+  # Helper function
+  def getTileOwner(x):
+    if x < self.sharedLowerBound:
+      return 1
+    elif x > self.sharedUpperBound:
+      return 2
+    else:
+      return 3
     
   #getTile RETURN [TILE]
   def getTile(self, x, y):
@@ -92,7 +90,7 @@ class Match(DefaultGameWorld):
     elif type == "spectator":
       self.spectators.append(connection)
       #If the game has already started, send them the ident message
-      if (self.turn is not None):
+      if self.turn is not None:
         self.sendIdent([connection])
     return True
 
@@ -104,7 +102,7 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
-  '''
+      
   def spawnTrash(self):
     print("START spawnTrash(self)")
     #Set coves on left side
@@ -118,34 +116,36 @@ class Match(DefaultGameWorld):
 
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
-    print("START RANDOM TRASH GENERATION")
-    trashCur = 0
-    trashMax = 50
-    while(trashCur < trashMax):
+    print "START RANDOM TRASH GENERATION"
+    trashCur = 0 #Current number of trash created
+    #self.trashAmount Total amount of trash
+    while(trashCur < self.trashAmount):
       #Create random X and random Y
-      print("CREATE RANDOM X AND Y")
-      print(trashCur)
-      randX = random.randint(0, (self.mapWidth)//2)
-      randY = random.randint(0, (self.mapWidth)//2)
+      print "CREATE RANDOM X AND Y"
+      print "CURRENT TRASH NUMBER: %i"%trashCur
+      randX = random.randint(0, (self.mapWidth/2)//2)
+      randY = random.randint(0, (self.mapHeight)//2)
 
       #Find tile at random X and random Y position
-      randTile = None
-      for tile in self.objects.tiles:
-        if isinstance(tile, Tile):
-          randTile = tile
+      randTile = self.getTile(randX, randY)[0]
+      oppTile = self.getTile(self.mapWidth-randX-1, randY)[0]
       
       if randTile is None:
         return "Error in getting randTile"    
       
       #Don't spawn on a cove
-      if randTile.isCove is true:
+      if randTile.isCove is True:
+        print "Trash tried to be spawn on a cove."
         trashCur -= 1
-      #Don't spawn if grea
-       
+      #Spawn trash otherwise
+      else:
+        print "Trash was spawned"
+        randTile.isCove = True
+        oppTile.isCove = True
+      trashCur += 1
       
     print("END RANDOM TRASH GENERATION")
     return True
-  '''
      
   def start(self):
     print("GAME STARTED")
@@ -157,18 +157,48 @@ class Match(DefaultGameWorld):
     #TODO: START STUFF
     self.turn = self.players[-1]
     self.turnNumber = -1
-    #self.spawnTrash()
+    self.spawnTrash()
 
     self.nextTurn()
     return True
 
+  def getTrashLeft(self):
+    totalTrash = 0
+    #is this right?
+    for x in range(0,sharedLowerBound):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.getTile(x,y).trashAmount
+    return totalTrash
+    
+  def getTrashShared(self):
+    totalTrash = 0
+    #I think these bounds are right?
+    for x in range(sharedLowerBound,sharedUpperBound):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.getTile(x,y).trashAmount
+    return totalTrash
+    
+  def getTrashRight(self):
+    totalTrash = 0
+    #Comment to remind who so ever changes this to change all of the bounds
+    for x in range(sharedUpperBound,mapWidth):
+      for y in range(0,mapHeight):
+        totalTrash += self.game.getTile(x,y).trashAmount
+    return totalTrash
+
   def nextTurn(self):
-    print "TURN NUMBER: %i"%(self.turnNumber)
+    print "TURN NUMBER: %i"% self.turnNumber
     self.turnNumber += 1
     if self.turn == self.players[0]:
+      #deal damage to the left-side player
+      self.players[0].currentReefHealth -= (getTrashLeft() + getTrashShared()) * self.trashDamage
+
       self.turn = self.players[1]
       self.playerID = 1
     elif self.turn == self.players[1]:
+      #deal damage to the left-side player
+      self.players[1].currentReefHealth -= (getTrashRight() + getTrashShared()) * self.trashDamage
+
       self.turn = self.players[0]
       self.playerID = 0
 
@@ -184,7 +214,7 @@ class Match(DefaultGameWorld):
     else:
       self.sendStatus(self.spectators)
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog['turns'].append(
         dict(
           initialFood = self.initialFood,
@@ -269,7 +299,7 @@ class Match(DefaultGameWorld):
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
     
-    if( self.logJson ):
+    if self.logJson:
       self.dictLog["winnerID"] =  self.getPlayerIndex(self.winner)
       self.dictLog["winReason"] = reason
       self.jsonLogger.writeLog( self.dictLog )
@@ -363,16 +393,15 @@ class Match(DefaultGameWorld):
     return True
 
   def status(self):
-    msg = ["status"]
+    msg = ["status", ["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn,
+                      self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth,
+                      self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY]]
 
-    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY])
-
-    typeLists = []
-    typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies])
-    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
-    typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
+    typeLists = [["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable],
+                 ["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies],
+                 ["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile],
+                 ["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish],
+                 ["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player]]
 
     msg.extend(typeLists)
 
@@ -382,10 +411,9 @@ class Match(DefaultGameWorld):
     # generate the sexp
     self.animations.append(anim.toList())
     # generate the json
-    if( self.logJson ):
+    if self.logJson:
       self.jsonAnimations.append(anim.toJson())
   
 
 
 loadClassDefaults()
-

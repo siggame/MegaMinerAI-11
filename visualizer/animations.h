@@ -12,18 +12,22 @@ namespace visualizer
         void animate( const float& t, AnimData *d, IGame* game );
 
     };
+
+    class DrawAnimation : public Anim
+    {
+    public:
+        DrawAnimation( SpriteAnimation* animation ) : m_animation(animation) {}
+        void animate( const float& t, AnimData* d, IGame* game );
+
+    private:
+        SpriteAnimation* m_animation;
+    };
   
     class DrawSomething: public Anim
     {
         public:
             DrawSomething( Something* something ) { m_Something = something; }
             void animate( const float& t, AnimData* d, IGame* game );
-
-            float controlDuration() const
-            { return 0; }
-
-            float totalDuration() const
-            { return 0; }
         
         private:
             Something *m_Something;

@@ -118,33 +118,73 @@ class Fish(Mappable):
   def nextTurn(self):
     pass
 
-  def move(self, x, y):
-    if self.owner != self.game.playerID:
-        return "You can only control your own fish"
-    elif (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-        return "Cannot move off of the map"
-    elif self.movemmentLeft <= 0:
-        return "You have no moves left"
-    elif abs(self.x-x) + abs(self.y-y) != 1:
-        return "Can only move to adjacent locations"
-    elif self.game.grid[x][y].trashAmount > 0:
-        return "Cannot move onto a tile containing trash"
-    elif isinstance(self.game.getObject(x,y), Fish):
-        return "Another fish is occupying that tile"
-        #stealth unit?
-    elif self.game.grid[x][y].isCove:
-        return "Cannot move into enemy's cove"
-    #how to test for moving above a certain y value?
+  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
 
-    #updating map
+  def move(self, x, y):
+    if self.owner != self.game.playerID: #check that you own the fish
+      return "You cannot move the other player's fish." 
+    elif self.movementLeft <= 0: #check that there are moves left
+      return "Your fish has no moves left."
+    elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
+      return "Your fish cannot move off the map."
+    elif abs(self.x-x) > 1 or abs(self.y - y) > 1 or (abs(self.x-x) == 1 and abs(self.y - y) == 1):
+      return "You can only move to adjacent locations."
+    T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
+    if T.trashAmount > 0:
+      return "You can't move on top of trash"
+    elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
+      for i in range(1, len(self.game.getFish(x,y))):
+        if not self.game.getFish(x, y)[i].isStealthed:
+          return "You can't move onto a fish." 
+        else:
+          print "Fringe case: moving onto a stealthed fish."
+          pass
+    elif self.game.getTile(x,y)[0].isCove == True and self.game.getTile(x,y)[0].owner != self.owner:
+      return "Can't go into an opponent's cove."
+    #Working under the assumption that ground units can move anywhere
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
+            
+    self.movementLeft -= 1
     self.x = x
     self.y = y
-    self.movementLeft -= 1
-    pass
+    return "Successful movement. Congrats."
 
   def pickUp(self, x, y, weight):
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish."
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "Cannot pick up trash off the map."
+    elif abs(self.x-x) + abs(self.y-y) !=1:
+      return "Can only pick up adjacent trash."
+    elif (self.carryingWeight + weight) > self.carryCap:
+      return "Cannot carry more weight than the fish's carry cap."
+    elif weight == 0:
+      return "Cannot pick up a weight of 0."
+    elif self.game.getTile(x,y).trashAmount < weight:
+      return "You can't pick up more trash then there is trash present."
+    
+    #don't need to bother checking for fish because a space with a 
+    #fish shouldn't have any trash, right?
+    
+    #unstealth fish... because that's what drop did
+    if not self.Visible:
+       self.Visible = True;
+    
+    #TODO: Check for the fish that's immune to trash damage (?)
+    #TODO: Determine damage taken
+    #take damage
+    self.currentHealth -= self.trashDamage*weight
+    #check if dead
+    if self.currentHealth < 0:
+      #remove object
+      self.game.removeObject(self.game.getObject(x,y))
+      self.game.grid[x][y].remove(self.game.getObject(x,y))
+      return "Your fish died trying to pick up the trash."
+    #reduce weight of tile
+    self.game.getTile(x,y).trashAmount -= weight
+    #add weight to fish
+    self.carryingWeight += weight
     pass
 
   def drop(self, x, y, weight):
@@ -169,6 +209,52 @@ class Fish(Mappable):
     return True 
 
   def attack(self, x, y):
+  
+    target=self.game.getFish(x,y)
+  
+    #I feel like stealth units are going to mess up this function
+    if self.owner != self.game.playerID:
+      return "You can only control your own fish."
+    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
+      return "You can't attack off the map."
+    elif abs(self.x-x) + abs(self.y-y) > self.range:
+      return "You can't attack further than your fish's range."
+    elif self.attacksLeft == 0:
+      return "This fish has no attacks left."
+    elif target == []:
+      return "You can't attack nothing!"
+    elif target.isVisible == False and target.owner != self.game.playerID:
+      return "You aren't even supposed to see invisible fish, let alone attack them."
+    elif target.owner != self.game.playerID and self.attackPower < 0:
+      return "You can't heal the opponent's fish."
+    elif target.owner == self.game.playerID and self.attackPower > 0:
+      return "You can't attack your own fish."
+    elif self.isVisible == False and self.attackPower < target.currentHealth:
+      return "A stealthed unit can't attack a fish above it if it can't kill it."
+    
+    #hurt the other fish
+    target.currentHealth -= self.attackPower
+    #make the other fish visible; in case an invisible fish is being healed
+    target.isVisible = True
+    #make the attacking fish visible
+    self.isVisible = True
+    
+    #check if dead
+    if target.currentHealth <= 0:
+      #drop trash on tile
+      self.game.getTile(x,y).trashAmount += target.carryingWeight
+      if x == self.x and y == self.y:
+        #stealth fish on same tile must pick up garbage
+        #TODO: The stealth fish won't be able to pick the weight up currently
+        #      if the weight is creater than the carry capacity
+        self.pickUp(x,y,target.carryingWeight)
+      self.game.grid[x][y].remove(target)
+      self.game.remove(target)
+      
+    #don't allow infinite health bugs to create super fish
+    elif target.currentHealth > target.maxHealth:
+      target.currentHealth = target.maxHealth
+    
     pass
 
 
