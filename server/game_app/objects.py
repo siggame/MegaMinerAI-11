@@ -48,7 +48,18 @@ class FishSpecies:
     return dict(id = self.id, species = self.species, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, turnsTillAvailalbe = self.turnsTillAvailalbe, turnsTillUnavailable = self.turnsTillUnavailable, )
 
   def nextTurn(self):
-    pass
+    if self.game.playerID == self.id:
+      x = self.spec_int #spec_int is a config constant not yet made
+      for spec in self.objects.FishSpecies:
+        if spec.turnsTillAvailable > 0:
+          spec.turnsTillAvailable = spec.turnsTillAvailable - 1
+          if spec.turnsTillAvailable == spec.turnsTillUnavailable: #i.e., turns till available = turns till unavailable = 0
+            spec.turnsTillUnavailable = 4*x
+        if spec.turnsTillUnavailable > 0:
+          spec.turnsTillUnavailable = spec.turnsTillUnavailable - 1
+          if spec.turnsTillUnavailable == spec.turnsTillAvailable:
+            spec.turnsTillAvailable = ((len(self.objects.FishSpecies) - 4)*x
+    return True
 
   def spawn(self, x, y):
     pass
