@@ -12,49 +12,45 @@ DLLEXPORT int mappableGetY(_Mappable* ptr)
 {
   return ptr->y;
 }
-DLLEXPORT int fishSpeciesGetId(_FishSpecies* ptr)
+DLLEXPORT int speciesGetId(_Species* ptr)
 {
   return ptr->id;
 }
-DLLEXPORT char* fishSpeciesGetSpecies(_FishSpecies* ptr)
+DLLEXPORT char* speciesGetName(_Species* ptr)
 {
-  return ptr->species;
+  return ptr->name;
 }
-DLLEXPORT int fishSpeciesGetCost(_FishSpecies* ptr)
+DLLEXPORT int speciesGetCost(_Species* ptr)
 {
   return ptr->cost;
 }
-DLLEXPORT int fishSpeciesGetMaxHealth(_FishSpecies* ptr)
+DLLEXPORT int speciesGetMaxHealth(_Species* ptr)
 {
   return ptr->maxHealth;
 }
-DLLEXPORT int fishSpeciesGetMaxMovement(_FishSpecies* ptr)
+DLLEXPORT int speciesGetMaxMovement(_Species* ptr)
 {
   return ptr->maxMovement;
 }
-DLLEXPORT int fishSpeciesGetCarryCap(_FishSpecies* ptr)
+DLLEXPORT int speciesGetCarryCap(_Species* ptr)
 {
   return ptr->carryCap;
 }
-DLLEXPORT int fishSpeciesGetAttackPower(_FishSpecies* ptr)
+DLLEXPORT int speciesGetAttackPower(_Species* ptr)
 {
   return ptr->attackPower;
 }
-DLLEXPORT int fishSpeciesGetRange(_FishSpecies* ptr)
+DLLEXPORT int speciesGetRange(_Species* ptr)
 {
   return ptr->range;
 }
-DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr)
+DLLEXPORT int speciesGetMaxAttacks(_Species* ptr)
 {
   return ptr->maxAttacks;
 }
-DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr)
+DLLEXPORT int speciesGetSeason(_Species* ptr)
 {
-  return ptr->turnsTillAvailalbe;
-}
-DLLEXPORT int fishSpeciesGetTurnsTillUnavailable(_FishSpecies* ptr)
-{
-  return ptr->turnsTillUnavailable;
+  return ptr->season;
 }
 DLLEXPORT int tileGetId(_Tile* ptr)
 {
@@ -75,10 +71,6 @@ DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
 DLLEXPORT int tileGetOwner(_Tile* ptr)
 {
   return ptr->owner;
-}
-DLLEXPORT int tileGetIsCove(_Tile* ptr)
-{
-  return ptr->isCove;
 }
 DLLEXPORT int fishGetId(_Fish* ptr)
 {

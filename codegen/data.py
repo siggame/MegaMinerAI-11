@@ -26,36 +26,30 @@ Mappable = Model('Mappable',
 )
 
 globals = [
-  Variable('initialFood', int, 'How much spawn food a player starts the game with'),
-  Variable('sharedLowerBound', int, 'The lower x-value of the shared zone'),
-  Variable('sharedUpperBound', int, 'The upper x-value of the shared zone'),
-  Variable('spawnFoodPerTurn', int, 'How much spawn food a player receives each turn'),
+  Variable('boundLength', int, 'How far the shared zone extends from the center'),
   Variable('turnNumber', int, 'How many turns it has been since the beginning of the game'),
   Variable('playerID', int, 'Player Number; either 0 or 1'),
   Variable('gameNumber', int, 'What number game this is for the server'),
-  Variable('turnsTillSpawn',int, 'Turns until you can spawn new fish'),
-  Variable('maxReefHealth',int,'How much health a reef has initially'),
   Variable('trashDamage',int,'How much damage trash does'),
   Variable('mapWidth', int, 'How wide the map is'),
   Variable('mapHeight', int, 'How high the map is'),
   Variable('trashAmount',int, 'Amount of trash in the game'),
-  Variable('coveX', int, 'X bound for the cove' ),
-  Variable('coveY', int, 'Y bound for the cove' ),
-  ]
+  Variable('currentSeason', int, 'Determines what season it is. Species availability will change with passing season'),
+  Variable('seasonLength',int, 'Describes how long a season lasts')
+]
 
 Tile = Model('Tile',
   parent = Mappable,
   data = [
     Variable('trashAmount', int, 'The amount of trash on this tile'),
     Variable('owner', int , 'The owner of the tile if it is part of a cove'),
-    Variable('isCove', int, 'If the current tile is part of a cove'),
     ],
-  doc='Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3',
+  doc='Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).',
   )
 
-FishSpecies = Model('FishSpecies',
+Species = Model('Species',
   data = [
-    Variable('species', str, 'The fish species'),
+    Variable('name', str, 'The name of this species'),
     Variable('cost', int, 'The amount of food it takes to raise this fish'),
     Variable('maxHealth', int, 'The maximum health of this fish'),
     Variable('maxMovement', int, 'The maximum number of movements in a turn'),
@@ -63,13 +57,14 @@ FishSpecies = Model('FishSpecies',
     Variable('attackPower', int, 'The power of the fish\'s attack'),
     Variable('range',int,'The attack arrange of the fish'),
     Variable('maxAttacks',int,'Maximum number of times this unit can attack per turn'),
-    Variable('turnsTillAvailalbe',int, 'How many turns until you can spawn this fish species'),
-    Variable('turnsTillUnavailable', int, 'How many turns until you can no longer spawn this fish species'),
+    Variable('season',int, 'Determines what season this species will be spawnable in'),
     ],
   functions=[
     Function('spawn',[Variable('x',int),Variable('y',int)],
     doc='Have a new fish spawn and join the fight!'),
     ],
+  doc='This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. ',
+  plural='Species',
   )
   
 Fish = Model('Fish',
@@ -95,10 +90,14 @@ Fish = Model('Fish',
     doc='Command a fish to pick up some trash at a specified position'),
     Function('drop', [Variable('x', int), Variable('y', int), Variable('weight', int)],
     doc='Command a fish to drop some trash at a specified position'),
-    Function('attack', [Variable('x', int), Variable('y', int)],
-    doc='Command a fish to attack another fish at a specified position'),
-   ]
-  )
+   ],
+  doc='This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species',
+  plural = 'Fishes'
+ )
+
+Fish.addFunctions([Function('attack',[Variable('target',Fish)],
+  doc='Command a fish to attack a target'
+  )])
 
 move = Animation('move',
   data=[
@@ -147,6 +146,14 @@ drop = Animation('drop',
     Variable('y', int),
     Variable('actingID', int),
     Variable('amount',int),
+  ],
+)
+
+cove = Animation('drop',
+  data=[
+    Variable('x',int),
+    Variable('y',int),
+    Variable('owner',int)
   ],
 )
 

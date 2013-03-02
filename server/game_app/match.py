@@ -31,46 +31,41 @@ class Match(DefaultGameWorld):
     #TODO: INITIALIZE THESE!
     self.turnNumber = -1
     self.playerID = -1
-    self.gameNumber = id
-    
+    self.gameNumber = id 
     self.initialFood = self.initialFood
-    self.sharedLowerBound = self.sharedLowerBound
-    self.sharedUpperBound = self.sharedUpperBound
     self.spawnFoodPerTurn = self.spawnFoodPerTurn
-    self.turnsTillSpawn = self.turnsTillSpawn
     self.maxReefHealth = self.maxReefHealth
     self.trashDamage = self.trashDamage
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
-    self.coveX = self.coveX
-    self.coveY = self.coveY
+    self.boundLength = self.boundLength
+    self.currentSeason = self.currentSeason
+    self.seasonLength = self.seasonLength
 
     #Make grid
-    self.grid = [[[self.addObject(Tile, x, y, 0, getTileOwner(x), False)] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x,y)])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    
+    #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount. 
+    self.trashDict = []
 
   # Helper function
-  def getTileOwner(x):
-    if x < self.sharedLowerBound:
+  #since ownership only matter on cove tiles, we're making an owned tile a cove. 
+  def getTileOwner(self,x,y):
+    if x < 3 and y<3:
       return 1
-    elif x > self.sharedUpperBound:
+    elif x>self.mapWidth-3 and y<3:
       return 2
     else:
       return 3
     
   #getTile RETURN [TILE]
   def getTile(self, x, y):
-    return [ self.grid[x][y][0] ]
+    return  self.grid[x][y][0] 
   
   #getFish RETURN LIST OF FISH
   def getFish(self, x, y):
     return self.grid[x][y][1:]
-
-  #def getObject(self, x, y):
-  #  if len(self.grid[x][y]) > 1:
-  #    return self.grid[x][y][1]
-  #  else:
-  #    return None
 
   #this is here to be wrapped
   def __del__(self):
@@ -83,8 +78,8 @@ class Match(DefaultGameWorld):
     if type == "player":
       self.players.append(connection)
       try:
-        #500 and 0 are place holder values for default initial reef health and initial reef food
-        self.addObject(Player, [connection.screenName, self.startTime, 500, 0 ])
+        #Add Player and Player attributes  
+        self.addObject(Player, [connection.screenName, self.startTime, self.initialFood, self.maxReefHealth ])
       except TypeError:
         raise TypeError("Someone forgot to add the extra attributes to the Player object initialization")
     elif type == "spectator":
@@ -105,44 +100,30 @@ class Match(DefaultGameWorld):
       
   def spawnTrash(self):
     print("START spawnTrash(self)")
-    #Set coves on left side
-    for tile in self.objects.tiles:
-      if tile.x < self.coveX and tile.y > self.mapHeight- self.coveY:
-        tile.isCove = True
-    #Set coves on right side
-    for tile in self.objects.tiles:
-      if tile.x > self.mapWidth-self.coveX and tile.y > self.mapHeight-self.coveY:
-        tile.isCove = True
-
     #RANDOM ALGORITHM
     #Loop trashAmount number of times
     print "START RANDOM TRASH GENERATION"
     trashCur = 0 #Current number of trash created
     #self.trashAmount Total amount of trash
-    while(trashCur < self.trashAmount):
+    trashMax = self.trashAmount
+    while(self.trashAmount>0):
       #Create random X and random Y
-      print "CREATE RANDOM X AND Y"
-      print "CURRENT TRASH NUMBER: %i"%trashCur
+      print ("CREATE RANDOM X AND Y")
       randX = random.randint(0, (self.mapWidth/2)//2)
       randY = random.randint(0, (self.mapHeight)//2)
 
       #Find tile at random X and random Y position
-      randTile = self.getTile(randX, randY)[0]
-      oppTile = self.getTile(self.mapWidth-randX-1, randY)[0]
+      randTile = self.getTile(randX, randY)
+      oppTile = self.getTile(self.mapWidth-randX-1, randY)
       
-      if randTile is None:
-        return "Error in getting randTile"    
-      
-      #Don't spawn on a cove
-      if randTile.isCove is True:
-        print "Trash tried to be spawn on a cove."
-        trashCur -= 1
-      #Spawn trash otherwise
-      else:
-        print "Trash was spawned"
-        randTile.isCove = True
-        oppTile.isCove = True
-      trashCur += 1
+      if isinstance(randTile,Tile) and randTile.owner==3:
+          print "Trash was spawned"
+          val=random.randint(1,self.trashAmount)
+          randTile.trashAmount+=val
+          oppTile.trashAmount+=val
+          self.trashAmount-=val
+           #TODO UPDATE TRASH DICT
+          print 'val = %i , and self.trashAmount = %i '%(val,self.trashAmount)
       
     print("END RANDOM TRASH GENERATION")
     return True
@@ -164,40 +145,44 @@ class Match(DefaultGameWorld):
 
   def getTrashLeft(self):
     totalTrash = 0
-    #is this right?
-    for x in range(0,sharedLowerBound):
-      for y in range(0,mapHeight):
-        totalTrash += self.game.getTile(x,y).trashAmount
+    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently. I'll bring this up or make an issue, for now this works.  
+    for x in range(0,self.mapWidth/2-self.boundLength):
+      for y in range(0,self.mapHeight):
+        totalTrash += self.getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashShared(self):
     totalTrash = 0
     #I think these bounds are right?
-    for x in range(sharedLowerBound,sharedUpperBound):
-      for y in range(0,mapHeight):
-        totalTrash += self.game.getTile(x,y).trashAmount
+    for x in range(self.mapWidth/2-self.boundLength,self.mapWidth/2+self.boundLength):
+      for y in range(0,self.mapHeight):
+        totalTrash += self.getTile(x,y).trashAmount
     return totalTrash
     
   def getTrashRight(self):
     totalTrash = 0
     #Comment to remind who so ever changes this to change all of the bounds
-    for x in range(sharedUpperBound,mapWidth):
-      for y in range(0,mapHeight):
-        totalTrash += self.game.getTile(x,y).trashAmount
+    for x in range(self.mapWidth/2+self.boundLength,self.mapWidth):
+      for y in range(0,self.mapHeight):
+        totalTrash += self.getTile(x,y).trashAmount
     return totalTrash
 
   def nextTurn(self):
     print "TURN NUMBER: %i"% self.turnNumber
+    print self.playerID
     self.turnNumber += 1
+    print "---------------------------"
+    print self.objects.players
+    print "-------------------------"
     if self.turn == self.players[0]:
       #deal damage to the left-side player
-      self.players[0].currentReefHealth -= (getTrashLeft() + getTrashShared()) * self.trashDamage
+      self.objects.players[0].currentReefHealth -= (self.getTrashLeft() + self.getTrashShared()) * self.trashDamage
 
       self.turn = self.players[1]
       self.playerID = 1
     elif self.turn == self.players[1]:
       #deal damage to the left-side player
-      self.players[1].currentReefHealth -= (getTrashRight() + getTrashShared()) * self.trashDamage
+      self.objects.players[1].currentReefHealth -= (self.getTrashRight() + self.getTrashShared()) * self.trashDamage
 
       self.turn = self.players[0]
       self.playerID = 0
@@ -217,23 +202,18 @@ class Match(DefaultGameWorld):
     if self.logJson:
       self.dictLog['turns'].append(
         dict(
-          initialFood = self.initialFood,
-          sharedLowerBound = self.sharedLowerBound,
-          sharedUpperBound = self.sharedUpperBound,
-          spawnFoodPerTurn = self.spawnFoodPerTurn,
+          boundLength = self.boundLength,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
           gameNumber = self.gameNumber,
-          turnsTillSpawn = self.turnsTillSpawn,
-          maxReefHealth = self.maxReefHealth,
           trashDamage = self.trashDamage,
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
           trashAmount = self.trashAmount,
-          coveX = self.coveX,
-          coveY = self.coveY,
+          currentSeason = self.currentSeason,
+          seasonLength = self.seasonLength,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
-          FishSpeciess = [i.toJson() for i in self.objects.values() if i.__class__ is FishSpecies],
+          Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
           Fishs = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
           Players = [i.toJson() for i in self.objects.values() if i.__class__ is Player],
@@ -247,6 +227,9 @@ class Match(DefaultGameWorld):
 
   def checkWinner(self):
     # Get the players
+    print "----------------------------"
+    print self.objects.players
+    print "----------------------"
     player1 = self.objects.players[0]
     player2 = self.objects.players[1]
     # Get the current reef healths
@@ -321,7 +304,7 @@ class Match(DefaultGameWorld):
   def logPath(self):
     return "logs/" + str(self.id)
 
-  @derefArgs(FishSpecies, None, None)
+  @derefArgs(Species, None, None)
   def spawn(self, object, x, y):
     return object.spawn(x, y, )
 
@@ -337,9 +320,9 @@ class Match(DefaultGameWorld):
   def drop(self, object, x, y, weight):
     return object.drop(x, y, weight, )
 
-  @derefArgs(Fish, None, None)
-  def attack(self, object, x, y):
-    return object.attack(x, y, )
+  @derefArgs(Fish, Fish)
+  def attack(self, object, target):
+    return object.attack(target, )
 
   @derefArgs(Player, None)
   def talk(self, object, message):
@@ -370,15 +353,16 @@ class Match(DefaultGameWorld):
 
 
   def status(self):
-    msg = ["status", ["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn,
-                      self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth,
-                      self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY]]
+    msg = ["status"]
 
-    typeLists = [["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable],
-                 ["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies],
-                 ["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile],
-                 ["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish],
-                 ["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player]]
+    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength])
+
+    typeLists = []
+    typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
+    typeLists.append(["Species"] + [i.toList() for i in self.objects.values() if i.__class__ is Species])
+    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
+    typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
 

@@ -2,32 +2,32 @@ using System;
 using System.Runtime.InteropServices;
 
 
-///
-public class FishSpecies
+///This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+public class Species
 {
   public IntPtr ptr;
   protected int ID;
   protected int iteration;
 
-  public FishSpecies()
+  public Species()
   {
   }
 
-  public FishSpecies(IntPtr p)
+  public Species(IntPtr p)
   {
     ptr = p;
-    ID = Client.fishSpeciesGetId(ptr);
+    ID = Client.speciesGetId(ptr);
     iteration = BaseAI.iteration;
   }
 
   public bool validify()
   {
     if(iteration == BaseAI.iteration) return true;
-    for(int i = 0; i < BaseAI.fishSpeciess.Length; i++)
+    for(int i = 0; i < BaseAI.species.Length; i++)
     {
-      if(BaseAI.fishSpeciess[i].ID == ID)
+      if(BaseAI.species[i].ID == ID)
       {
-        ptr = BaseAI.fishSpeciess[i].ptr;
+        ptr = BaseAI.species[i].ptr;
         iteration = BaseAI.iteration;
         return true;
       }
@@ -41,7 +41,7 @@ public class FishSpecies
   public bool spawn(int x, int y)
   {
     validify();
-    return (Client.fishSpeciesSpawn(ptr, x, y) == 0) ? false : true;
+    return (Client.speciesSpawn(ptr, x, y) == 0) ? false : true;
   }
 
     //getters
@@ -53,18 +53,18 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetId(ptr);
+      int value = Client.speciesGetId(ptr);
       return value;
     }
   }
 
-  ///The fish species
-  public string Species
+  ///The name of this species
+  public string Name
   {
     get
     {
       validify();
-      IntPtr value = Client.fishSpeciesGetSpecies(ptr);
+      IntPtr value = Client.speciesGetName(ptr);
       return Marshal.PtrToStringAuto(value);
     }
   }
@@ -75,7 +75,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetCost(ptr);
+      int value = Client.speciesGetCost(ptr);
       return value;
     }
   }
@@ -86,7 +86,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetMaxHealth(ptr);
+      int value = Client.speciesGetMaxHealth(ptr);
       return value;
     }
   }
@@ -97,7 +97,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetMaxMovement(ptr);
+      int value = Client.speciesGetMaxMovement(ptr);
       return value;
     }
   }
@@ -108,7 +108,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetCarryCap(ptr);
+      int value = Client.speciesGetCarryCap(ptr);
       return value;
     }
   }
@@ -119,7 +119,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetAttackPower(ptr);
+      int value = Client.speciesGetAttackPower(ptr);
       return value;
     }
   }
@@ -130,7 +130,7 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetRange(ptr);
+      int value = Client.speciesGetRange(ptr);
       return value;
     }
   }
@@ -141,29 +141,18 @@ public class FishSpecies
     get
     {
       validify();
-      int value = Client.fishSpeciesGetMaxAttacks(ptr);
+      int value = Client.speciesGetMaxAttacks(ptr);
       return value;
     }
   }
 
-  ///How many turns until you can spawn this fish species
-  public int TurnsTillAvailalbe
+  ///Determines what season this species will be spawnable in
+  public int Season
   {
     get
     {
       validify();
-      int value = Client.fishSpeciesGetTurnsTillAvailalbe(ptr);
-      return value;
-    }
-  }
-
-  ///How many turns until you can no longer spawn this fish species
-  public int TurnsTillUnavailable
-  {
-    get
-    {
-      validify();
-      int value = Client.fishSpeciesGetTurnsTillUnavailable(ptr);
+      int value = Client.speciesGetSeason(ptr);
       return value;
     }
   }

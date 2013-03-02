@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 
 
-///
+///This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species
 public class Fish: Mappable
 {
 
@@ -20,11 +20,11 @@ public class Fish: Mappable
   public override bool validify()
   {
     if(iteration == BaseAI.iteration) return true;
-    for(int i = 0; i < BaseAI.fishs.Length; i++)
+    for(int i = 0; i < BaseAI.fishes.Length; i++)
     {
-      if(BaseAI.fishs[i].ID == ID)
+      if(BaseAI.fishes[i].ID == ID)
       {
-        ptr = BaseAI.fishs[i].ptr;
+        ptr = BaseAI.fishes[i].ptr;
         iteration = BaseAI.iteration;
         return true;
       }
@@ -52,11 +52,12 @@ public class Fish: Mappable
     validify();
     return (Client.fishDrop(ptr, x, y, weight) == 0) ? false : true;
   }
-  ///Command a fish to attack another fish at a specified position
-  public bool attack(int x, int y)
+  ///Command a fish to attack a target
+  public bool attack(Fish target)
   {
     validify();
-    return (Client.fishAttack(ptr, x, y) == 0) ? false : true;
+    target.validify();
+    return (Client.fishAttack(ptr, target.ptr) == 0) ? false : true;
   }
 
     //getters

@@ -117,11 +117,11 @@ class GameApp(AccountsAppMixin, BaseApp):
   @errorBuffer
   @requireTurn
   @requireTypes(None, int, int, int)
-  def gameSpawn(self, fishSpecies, x, y):
+  def gameSpawn(self, species, x, y):
     """Have a new fish spawn and join the fight!"""
     if self.game.turn is not self:
       return "Not your turn."
-    return self.game.spawn(fishSpecies, x, y)
+    return self.game.spawn(species, x, y)
 
   @protocolmethod
   @errorBuffer
@@ -156,12 +156,12 @@ class GameApp(AccountsAppMixin, BaseApp):
   @protocolmethod
   @errorBuffer
   @requireTurn
-  @requireTypes(None, int, int, int)
-  def gameAttack(self, fish, x, y):
-    """Command a fish to attack another fish at a specified position"""
+  @requireTypes(None, int, int)
+  def gameAttack(self, fish, target):
+    """Command a fish to attack a target"""
     if self.game.turn is not self:
       return "Not your turn."
-    return self.game.attack(fish, x, y)
+    return self.game.attack(fish, target)
 
   @protocolmethod
   @errorBuffer

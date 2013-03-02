@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 public abstract class BaseAI
 {
   public static Mappable[] mappables;
-  public static FishSpecies[] fishSpeciess;
+  public static Species[] species;
   public static Tile[] tiles;
-  public static Fish[] fishs;
+  public static Fish[] fishes;
   public static Player[] players;
   IntPtr connection;
   public static int iteration;
@@ -52,11 +52,11 @@ public abstract class BaseAI
     {
       mappables[i] = new Mappable(Client.getMappable(connection, i));
     }
-    count = Client.getFishSpeciesCount(connection);
-    fishSpeciess = new FishSpecies[count];
+    count = Client.getSpeciesCount(connection);
+    species = new Species[count];
     for(int i = 0; i < count; i++)
     {
-      fishSpeciess[i] = new FishSpecies(Client.getFishSpecies(connection, i));
+      species[i] = new Species(Client.getSpecies(connection, i));
     }
     count = Client.getTileCount(connection);
     tiles = new Tile[count];
@@ -65,10 +65,10 @@ public abstract class BaseAI
       tiles[i] = new Tile(Client.getTile(connection, i));
     }
     count = Client.getFishCount(connection);
-    fishs = new Fish[count];
+    fishes = new Fish[count];
     for(int i = 0; i < count; i++)
     {
-      fishs[i] = new Fish(Client.getFish(connection, i));
+      fishes[i] = new Fish(Client.getFish(connection, i));
     }
     count = Client.getPlayerCount(connection);
     players = new Player[count];
@@ -86,28 +86,10 @@ public abstract class BaseAI
   }
 
 
-  ///How much spawn food a player starts the game with
-  public int initialFood()
+  ///How far the shared zone extends from the center
+  public int boundLength()
   {
-    int value = Client.getInitialFood(connection);
-    return value;
-  }
-  ///The lower x-value of the shared zone
-  public int sharedLowerBound()
-  {
-    int value = Client.getSharedLowerBound(connection);
-    return value;
-  }
-  ///The upper x-value of the shared zone
-  public int sharedUpperBound()
-  {
-    int value = Client.getSharedUpperBound(connection);
-    return value;
-  }
-  ///How much spawn food a player receives each turn
-  public int spawnFoodPerTurn()
-  {
-    int value = Client.getSpawnFoodPerTurn(connection);
+    int value = Client.getBoundLength(connection);
     return value;
   }
   ///How many turns it has been since the beginning of the game
@@ -126,18 +108,6 @@ public abstract class BaseAI
   public int gameNumber()
   {
     int value = Client.getGameNumber(connection);
-    return value;
-  }
-  ///Turns until you can spawn new fish
-  public int turnsTillSpawn()
-  {
-    int value = Client.getTurnsTillSpawn(connection);
-    return value;
-  }
-  ///How much health a reef has initially
-  public int maxReefHealth()
-  {
-    int value = Client.getMaxReefHealth(connection);
     return value;
   }
   ///How much damage trash does
@@ -164,16 +134,16 @@ public abstract class BaseAI
     int value = Client.getTrashAmount(connection);
     return value;
   }
-  ///X bound for the cove
-  public int coveX()
+  ///Determines what season it is. Species availability will change with passing season
+  public int currentSeason()
   {
-    int value = Client.getCoveX(connection);
+    int value = Client.getCurrentSeason(connection);
     return value;
   }
-  ///Y bound for the cove
-  public int coveY()
+  ///Describes how long a season lasts
+  public int seasonLength()
   {
-    int value = Client.getCoveY(connection);
+    int value = Client.getSeasonLength(connection);
     return value;
   }
 }

@@ -12,7 +12,7 @@ namespace client
 {
 
 
-///Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
+///Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
 class Tile : public Mappable {
   public:
   Tile(_Tile* ptr = NULL);
@@ -28,8 +28,6 @@ class Tile : public Mappable {
   int trashAmount();
   ///The owner of the tile if it is part of a cove
   int owner();
-  ///If the current tile is part of a cove
-  int isCove();
 
   // Actions
 
