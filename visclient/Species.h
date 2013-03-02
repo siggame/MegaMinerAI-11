@@ -1,7 +1,7 @@
 // -*-c++-*-
 
-#ifndef FISHSPECIES_H
-#define FISHSPECIES_H
+#ifndef SPECIES_H
+#define SPECIES_H
 
 #include <iostream>
 #include "vc_structures.h"
@@ -11,16 +11,17 @@ namespace client
 {
 
 
-class FishSpecies {
+///This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+class Species {
   public:
   void* ptr;
-  FishSpecies(_FishSpecies* ptr = NULL);
+  Species(_Species* ptr = NULL);
 
   // Accessors
   ///Unique Identifier
   int id();
-  ///The fish species
-  char* species();
+  ///The name of this species
+  char* name();
   ///The amount of food it takes to raise this fish
   int cost();
   ///The maximum health of this fish
@@ -35,10 +36,8 @@ class FishSpecies {
   int range();
   ///Maximum number of times this unit can attack per turn
   int maxAttacks();
-  ///How many turns until you can spawn this fish species
-  int turnsTillAvailalbe();
-  ///How many turns until you can no longer spawn this fish species
-  int turnsTillUnavailable();
+  ///Determines what season this species will be spawnable in
+  int season();
 
   // Actions
   ///Have a new fish spawn and join the fight!
@@ -47,7 +46,7 @@ class FishSpecies {
   // Properties
 
 
-  friend std::ostream& operator<<(std::ostream& stream, FishSpecies ob);
+  friend std::ostream& operator<<(std::ostream& stream, Species ob);
 };
 
 }
