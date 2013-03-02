@@ -34,11 +34,6 @@ int Tile::owner()
   return ((_Tile*)ptr)->owner;
 }
 
-int Tile::isCove()
-{
-  return ((_Tile*)ptr)->isCove;
-}
-
 
 
 
@@ -49,6 +44,5 @@ std::ostream& operator<<(std::ostream& stream,Tile ob)
   stream << "y: " << ((_Tile*)ob.ptr)->y  <<'\n';
   stream << "trashAmount: " << ((_Tile*)ob.ptr)->trashAmount  <<'\n';
   stream << "owner: " << ((_Tile*)ob.ptr)->owner  <<'\n';
-  stream << "isCove: " << ((_Tile*)ob.ptr)->isCove  <<'\n';
   return stream;
 }

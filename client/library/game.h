@@ -31,29 +31,24 @@ struct Connection
   pthread_mutex_t mutex;
   #endif
   
-  int initialFood;
-  int sharedLowerBound;
-  int sharedUpperBound;
-  int spawnFoodPerTurn;
+  int boundLength;
   int turnNumber;
   int playerID;
   int gameNumber;
-  int turnsTillSpawn;
-  int maxReefHealth;
   int trashDamage;
   int mapWidth;
   int mapHeight;
   int trashAmount;
-  int coveX;
-  int coveY;
+  int currentSeason;
+  int seasonLength;
 
   _Mappable* Mappables;
   int MappableCount;
-  _FishSpecies* FishSpeciess;
-  int FishSpeciesCount;
+  _Species* Species;
+  int SpeciesCount;
   _Tile* Tiles;
   int TileCount;
-  _Fish* Fishs;
+  _Fish* Fishes;
   int FishCount;
   _Player* Players;
   int PlayerCount;
@@ -78,15 +73,15 @@ extern "C"
 //commands
 
   ///Have a new fish spawn and join the fight!
-  DLLEXPORT int fishSpeciesSpawn(_FishSpecies* object, int x, int y);
+  DLLEXPORT int speciesSpawn(_Species* object, int x, int y);
   ///Command a fish to move to a specified position
   DLLEXPORT int fishMove(_Fish* object, int x, int y);
   ///Command a fish to pick up some trash at a specified position
   DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight);
   ///Command a fish to drop some trash at a specified position
   DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight);
-  ///Command a fish to attack another fish at a specified position
-  DLLEXPORT int fishAttack(_Fish* object, int x, int y);
+  ///Command a fish to attack a target
+  DLLEXPORT int fishAttack(_Fish* object, _Fish* target);
   ///Allows a player to display messages on the screen
   DLLEXPORT int playerTalk(_Player* object, char* message);
 
@@ -96,27 +91,22 @@ extern "C"
 
 //accessors
 
-DLLEXPORT int getInitialFood(Connection* c);
-DLLEXPORT int getSharedLowerBound(Connection* c);
-DLLEXPORT int getSharedUpperBound(Connection* c);
-DLLEXPORT int getSpawnFoodPerTurn(Connection* c);
+DLLEXPORT int getBoundLength(Connection* c);
 DLLEXPORT int getTurnNumber(Connection* c);
 DLLEXPORT int getPlayerID(Connection* c);
 DLLEXPORT int getGameNumber(Connection* c);
-DLLEXPORT int getTurnsTillSpawn(Connection* c);
-DLLEXPORT int getMaxReefHealth(Connection* c);
 DLLEXPORT int getTrashDamage(Connection* c);
 DLLEXPORT int getMapWidth(Connection* c);
 DLLEXPORT int getMapHeight(Connection* c);
 DLLEXPORT int getTrashAmount(Connection* c);
-DLLEXPORT int getCoveX(Connection* c);
-DLLEXPORT int getCoveY(Connection* c);
+DLLEXPORT int getCurrentSeason(Connection* c);
+DLLEXPORT int getSeasonLength(Connection* c);
 
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);
 
-DLLEXPORT _FishSpecies* getFishSpecies(Connection* c, int num);
-DLLEXPORT int getFishSpeciesCount(Connection* c);
+DLLEXPORT _Species* getSpecies(Connection* c, int num);
+DLLEXPORT int getSpeciesCount(Connection* c);
 
 DLLEXPORT _Tile* getTile(Connection* c, int num);
 DLLEXPORT int getTileCount(Connection* c);

@@ -16,22 +16,22 @@ class BaseAI:
   connection = None
   #\endcond
   mappables = []
-  fishSpeciess = []
+  species = []
   tiles = []
-  fishs = []
+  fishes = []
   players = []
   #\cond
   def startTurn(self):
     from GameObject import Mappable
-    from GameObject import FishSpecies
+    from GameObject import Species
     from GameObject import Tile
     from GameObject import Fish
     from GameObject import Player
 
     BaseAI.mappables = [Mappable(library.getMappable(self.connection, i)) for i in xrange(library.getMappableCount(self.connection))]
-    BaseAI.fishSpeciess = [FishSpecies(library.getFishSpecies(self.connection, i)) for i in xrange(library.getFishSpeciesCount(self.connection))]
+    BaseAI.species = [Species(library.getSpecies(self.connection, i)) for i in xrange(library.getSpeciesCount(self.connection))]
     BaseAI.tiles = [Tile(library.getTile(self.connection, i)) for i in xrange(library.getTileCount(self.connection))]
-    BaseAI.fishs = [Fish(library.getFish(self.connection, i)) for i in xrange(library.getFishCount(self.connection))]
+    BaseAI.fishes = [Fish(library.getFish(self.connection, i)) for i in xrange(library.getFishCount(self.connection))]
     BaseAI.players = [Player(library.getPlayer(self.connection, i)) for i in xrange(library.getPlayerCount(self.connection))]
 
     if not self.initialized:
@@ -50,25 +50,10 @@ class BaseAI:
     return r
   #\endcond
   #\cond
-  def getInitialFood(self):
-    return library.getInitialFood(self.connection)
+  def getBoundLength(self):
+    return library.getBoundLength(self.connection)
   #\endcond
-  initialFood = property(getInitialFood)
-  #\cond
-  def getSharedLowerBound(self):
-    return library.getSharedLowerBound(self.connection)
-  #\endcond
-  sharedLowerBound = property(getSharedLowerBound)
-  #\cond
-  def getSharedUpperBound(self):
-    return library.getSharedUpperBound(self.connection)
-  #\endcond
-  sharedUpperBound = property(getSharedUpperBound)
-  #\cond
-  def getSpawnFoodPerTurn(self):
-    return library.getSpawnFoodPerTurn(self.connection)
-  #\endcond
-  spawnFoodPerTurn = property(getSpawnFoodPerTurn)
+  boundLength = property(getBoundLength)
   #\cond
   def getTurnNumber(self):
     return library.getTurnNumber(self.connection)
@@ -84,16 +69,6 @@ class BaseAI:
     return library.getGameNumber(self.connection)
   #\endcond
   gameNumber = property(getGameNumber)
-  #\cond
-  def getTurnsTillSpawn(self):
-    return library.getTurnsTillSpawn(self.connection)
-  #\endcond
-  turnsTillSpawn = property(getTurnsTillSpawn)
-  #\cond
-  def getMaxReefHealth(self):
-    return library.getMaxReefHealth(self.connection)
-  #\endcond
-  maxReefHealth = property(getMaxReefHealth)
   #\cond
   def getTrashDamage(self):
     return library.getTrashDamage(self.connection)
@@ -115,14 +90,14 @@ class BaseAI:
   #\endcond
   trashAmount = property(getTrashAmount)
   #\cond
-  def getCoveX(self):
-    return library.getCoveX(self.connection)
+  def getCurrentSeason(self):
+    return library.getCurrentSeason(self.connection)
   #\endcond
-  coveX = property(getCoveX)
+  currentSeason = property(getCurrentSeason)
   #\cond
-  def getCoveY(self):
-    return library.getCoveY(self.connection)
+  def getSeasonLength(self):
+    return library.getSeasonLength(self.connection)
   #\endcond
-  coveY = property(getCoveY)
+  seasonLength = property(getSeasonLength)
   def __init__(self, connection):
     self.connection = connection

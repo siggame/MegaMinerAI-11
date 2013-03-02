@@ -5,21 +5,9 @@
 #include "BaseAI.h"
 #include "game.h"
 
-int BaseAI::initialFood()
+int BaseAI::boundLength()
 {
-  return getInitialFood(c);
-}
-int BaseAI::sharedLowerBound()
-{
-  return getSharedLowerBound(c);
-}
-int BaseAI::sharedUpperBound()
-{
-  return getSharedUpperBound(c);
-}
-int BaseAI::spawnFoodPerTurn()
-{
-  return getSpawnFoodPerTurn(c);
+  return getBoundLength(c);
 }
 int BaseAI::turnNumber()
 {
@@ -32,14 +20,6 @@ int BaseAI::playerID()
 int BaseAI::gameNumber()
 {
   return getGameNumber(c);
-}
-int BaseAI::turnsTillSpawn()
-{
-  return getTurnsTillSpawn(c);
-}
-int BaseAI::maxReefHealth()
-{
-  return getMaxReefHealth(c);
 }
 int BaseAI::trashDamage()
 {
@@ -57,13 +37,13 @@ int BaseAI::trashAmount()
 {
   return getTrashAmount(c);
 }
-int BaseAI::coveX()
+int BaseAI::currentSeason()
 {
-  return getCoveX(c);
+  return getCurrentSeason(c);
 }
-int BaseAI::coveY()
+int BaseAI::seasonLength()
 {
-  return getCoveY(c);
+  return getSeasonLength(c);
 }
 
 bool BaseAI::startTurn()
@@ -78,12 +58,12 @@ bool BaseAI::startTurn()
     mappables[i] = Mappable(getMappable(c, i));
   }
 
-  count = getFishSpeciesCount(c);
-  fishSpeciess.clear();
-  fishSpeciess.resize(count);
+  count = getSpeciesCount(c);
+  species.clear();
+  species.resize(count);
   for(int i = 0; i < count; i++)
   {
-    fishSpeciess[i] = FishSpecies(getFishSpecies(c, i));
+    species[i] = Species(getSpecies(c, i));
   }
 
   count = getTileCount(c);
@@ -95,11 +75,11 @@ bool BaseAI::startTurn()
   }
 
   count = getFishCount(c);
-  fishs.clear();
-  fishs.resize(count);
+  fishes.clear();
+  fishes.resize(count);
   for(int i = 0; i < count; i++)
   {
-    fishs[i] = Fish(getFish(c, i));
+    fishes[i] = Fish(getFish(c, i));
   }
 
   count = getPlayerCount(c);

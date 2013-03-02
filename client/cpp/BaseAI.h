@@ -9,7 +9,7 @@
 #include "game.h"
 
 #include "Mappable.h"
-#include "FishSpecies.h"
+#include "Species.h"
 #include "Tile.h"
 #include "Fish.h"
 #include "Player.h"
@@ -24,29 +24,19 @@ class BaseAI
 protected:
   Connection* c;
   std::vector<Mappable> mappables;
-  std::vector<FishSpecies> fishSpeciess;
+  std::vector<Species> species;
   std::vector<Tile> tiles;
-  std::vector<Fish> fishs;
+  std::vector<Fish> fishes;
   std::vector<Player> players;
 public:
-  ///How much spawn food a player starts the game with
-  int initialFood();
-  ///The lower x-value of the shared zone
-  int sharedLowerBound();
-  ///The upper x-value of the shared zone
-  int sharedUpperBound();
-  ///How much spawn food a player receives each turn
-  int spawnFoodPerTurn();
+  ///How far the shared zone extends from the center
+  int boundLength();
   ///How many turns it has been since the beginning of the game
   int turnNumber();
   ///Player Number; either 0 or 1
   int playerID();
   ///What number game this is for the server
   int gameNumber();
-  ///Turns until you can spawn new fish
-  int turnsTillSpawn();
-  ///How much health a reef has initially
-  int maxReefHealth();
   ///How much damage trash does
   int trashDamage();
   ///How wide the map is
@@ -55,10 +45,10 @@ public:
   int mapHeight();
   ///Amount of trash in the game
   int trashAmount();
-  ///X bound for the cove
-  int coveX();
-  ///Y bound for the cove
-  int coveY();
+  ///Determines what season it is. Species availability will change with passing season
+  int currentSeason();
+  ///Describes how long a season lasts
+  int seasonLength();
   
   BaseAI(Connection* c);
   virtual ~BaseAI();

@@ -41,8 +41,8 @@ library.networkLoop.restype = c_int
 library.networkLoop.argtypes = [c_void_p]
 
 #Functions
-library.fishSpeciesSpawn.restype = c_int
-library.fishSpeciesSpawn.argtypes = [c_void_p, c_int, c_int]
+library.speciesSpawn.restype = c_int
+library.speciesSpawn.argtypes = [c_void_p, c_int, c_int]
 
 library.fishMove.restype = c_int
 library.fishMove.argtypes = [c_void_p, c_int, c_int]
@@ -54,7 +54,7 @@ library.fishDrop.restype = c_int
 library.fishDrop.argtypes = [c_void_p, c_int, c_int, c_int]
 
 library.fishAttack.restype = c_int
-library.fishAttack.argtypes = [c_void_p, c_int, c_int]
+library.fishAttack.argtypes = [c_void_p, c_void_p]
 
 library.playerTalk.restype = c_int
 library.playerTalk.argtypes = [c_void_p, c_char_p]
@@ -62,17 +62,8 @@ library.playerTalk.argtypes = [c_void_p, c_char_p]
 # accessors
 
 #Globals
-library.getInitialFood.restype = c_int
-library.getInitialFood.argtypes = [c_void_p]
-
-library.getSharedLowerBound.restype = c_int
-library.getSharedLowerBound.argtypes = [c_void_p]
-
-library.getSharedUpperBound.restype = c_int
-library.getSharedUpperBound.argtypes = [c_void_p]
-
-library.getSpawnFoodPerTurn.restype = c_int
-library.getSpawnFoodPerTurn.argtypes = [c_void_p]
+library.getBoundLength.restype = c_int
+library.getBoundLength.argtypes = [c_void_p]
 
 library.getTurnNumber.restype = c_int
 library.getTurnNumber.argtypes = [c_void_p]
@@ -82,12 +73,6 @@ library.getPlayerID.argtypes = [c_void_p]
 
 library.getGameNumber.restype = c_int
 library.getGameNumber.argtypes = [c_void_p]
-
-library.getTurnsTillSpawn.restype = c_int
-library.getTurnsTillSpawn.argtypes = [c_void_p]
-
-library.getMaxReefHealth.restype = c_int
-library.getMaxReefHealth.argtypes = [c_void_p]
 
 library.getTrashDamage.restype = c_int
 library.getTrashDamage.argtypes = [c_void_p]
@@ -101,11 +86,11 @@ library.getMapHeight.argtypes = [c_void_p]
 library.getTrashAmount.restype = c_int
 library.getTrashAmount.argtypes = [c_void_p]
 
-library.getCoveX.restype = c_int
-library.getCoveX.argtypes = [c_void_p]
+library.getCurrentSeason.restype = c_int
+library.getCurrentSeason.argtypes = [c_void_p]
 
-library.getCoveY.restype = c_int
-library.getCoveY.argtypes = [c_void_p]
+library.getSeasonLength.restype = c_int
+library.getSeasonLength.argtypes = [c_void_p]
 
 library.getMappable.restype = c_void_p
 library.getMappable.argtypes = [c_void_p, c_int]
@@ -113,11 +98,11 @@ library.getMappable.argtypes = [c_void_p, c_int]
 library.getMappableCount.restype = c_int
 library.getMappableCount.argtypes = [c_void_p]
 
-library.getFishSpecies.restype = c_void_p
-library.getFishSpecies.argtypes = [c_void_p, c_int]
+library.getSpecies.restype = c_void_p
+library.getSpecies.argtypes = [c_void_p, c_int]
 
-library.getFishSpeciesCount.restype = c_int
-library.getFishSpeciesCount.argtypes = [c_void_p]
+library.getSpeciesCount.restype = c_int
+library.getSpeciesCount.argtypes = [c_void_p]
 
 library.getTile.restype = c_void_p
 library.getTile.argtypes = [c_void_p, c_int]
@@ -149,38 +134,35 @@ library.mappableGetX.argtypes = [c_void_p]
 library.mappableGetY.restype = c_int
 library.mappableGetY.argtypes = [c_void_p]
 
-library.fishSpeciesGetId.restype = c_int
-library.fishSpeciesGetId.argtypes = [c_void_p]
+library.speciesGetId.restype = c_int
+library.speciesGetId.argtypes = [c_void_p]
 
-library.fishSpeciesGetSpecies.restype = c_char_p
-library.fishSpeciesGetSpecies.argtypes = [c_void_p]
+library.speciesGetName.restype = c_char_p
+library.speciesGetName.argtypes = [c_void_p]
 
-library.fishSpeciesGetCost.restype = c_int
-library.fishSpeciesGetCost.argtypes = [c_void_p]
+library.speciesGetCost.restype = c_int
+library.speciesGetCost.argtypes = [c_void_p]
 
-library.fishSpeciesGetMaxHealth.restype = c_int
-library.fishSpeciesGetMaxHealth.argtypes = [c_void_p]
+library.speciesGetMaxHealth.restype = c_int
+library.speciesGetMaxHealth.argtypes = [c_void_p]
 
-library.fishSpeciesGetMaxMovement.restype = c_int
-library.fishSpeciesGetMaxMovement.argtypes = [c_void_p]
+library.speciesGetMaxMovement.restype = c_int
+library.speciesGetMaxMovement.argtypes = [c_void_p]
 
-library.fishSpeciesGetCarryCap.restype = c_int
-library.fishSpeciesGetCarryCap.argtypes = [c_void_p]
+library.speciesGetCarryCap.restype = c_int
+library.speciesGetCarryCap.argtypes = [c_void_p]
 
-library.fishSpeciesGetAttackPower.restype = c_int
-library.fishSpeciesGetAttackPower.argtypes = [c_void_p]
+library.speciesGetAttackPower.restype = c_int
+library.speciesGetAttackPower.argtypes = [c_void_p]
 
-library.fishSpeciesGetRange.restype = c_int
-library.fishSpeciesGetRange.argtypes = [c_void_p]
+library.speciesGetRange.restype = c_int
+library.speciesGetRange.argtypes = [c_void_p]
 
-library.fishSpeciesGetMaxAttacks.restype = c_int
-library.fishSpeciesGetMaxAttacks.argtypes = [c_void_p]
+library.speciesGetMaxAttacks.restype = c_int
+library.speciesGetMaxAttacks.argtypes = [c_void_p]
 
-library.fishSpeciesGetTurnsTillAvailalbe.restype = c_int
-library.fishSpeciesGetTurnsTillAvailalbe.argtypes = [c_void_p]
-
-library.fishSpeciesGetTurnsTillUnavailable.restype = c_int
-library.fishSpeciesGetTurnsTillUnavailable.argtypes = [c_void_p]
+library.speciesGetSeason.restype = c_int
+library.speciesGetSeason.argtypes = [c_void_p]
 
 library.tileGetId.restype = c_int
 library.tileGetId.argtypes = [c_void_p]
@@ -196,9 +178,6 @@ library.tileGetTrashAmount.argtypes = [c_void_p]
 
 library.tileGetOwner.restype = c_int
 library.tileGetOwner.argtypes = [c_void_p]
-
-library.tileGetIsCove.restype = c_int
-library.tileGetIsCove.argtypes = [c_void_p]
 
 library.fishGetId.restype = c_int
 library.fishGetId.argtypes = [c_void_p]

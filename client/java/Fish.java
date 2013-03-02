@@ -1,6 +1,6 @@
 import com.sun.jna.Pointer;
 
-///
+///This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species
 class Fish extends Mappable
 {
   public Fish(Pointer p)
@@ -10,11 +10,11 @@ class Fish extends Mappable
   boolean validify()
   {
     if(iteration == BaseAI.iteration) return true;
-    for(int i = 0; i < BaseAI.fishs.length; i++)
+    for(int i = 0; i < BaseAI.fishes.length; i++)
     {
-      if(BaseAI.fishs[i].ID == ID)
+      if(BaseAI.fishes[i].ID == ID)
       {
-        ptr = BaseAI.fishs[i].ptr;
+        ptr = BaseAI.fishes[i].ptr;
         iteration = BaseAI.iteration;
         return true;
       }
@@ -42,11 +42,12 @@ class Fish extends Mappable
     validify();
     return (Client.INSTANCE.fishDrop(ptr, x, y, weight) == 0) ? false : true;
   }
-  ///Command a fish to attack another fish at a specified position
-  boolean attack(int x, int y)
+  ///Command a fish to attack a target
+  boolean attack(Fish target)
   {
     validify();
-    return (Client.INSTANCE.fishAttack(ptr, x, y) == 0) ? false : true;
+    target.validify();
+    return (Client.INSTANCE.fishAttack(ptr, target.ptr) == 0) ? false : true;
   }
 
     //getters

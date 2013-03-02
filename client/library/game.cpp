@@ -54,28 +54,23 @@ DLLEXPORT Connection* createConnection()
   pthread_mutex_init(&c->mutex, NULL);
   #endif
 
-  c->initialFood = 0;
-  c->sharedLowerBound = 0;
-  c->sharedUpperBound = 0;
-  c->spawnFoodPerTurn = 0;
+  c->boundLength = 0;
   c->turnNumber = 0;
   c->playerID = 0;
   c->gameNumber = 0;
-  c->turnsTillSpawn = 0;
-  c->maxReefHealth = 0;
   c->trashDamage = 0;
   c->mapWidth = 0;
   c->mapHeight = 0;
   c->trashAmount = 0;
-  c->coveX = 0;
-  c->coveY = 0;
+  c->currentSeason = 0;
+  c->seasonLength = 0;
   c->Mappables = NULL;
   c->MappableCount = 0;
-  c->FishSpeciess = NULL;
-  c->FishSpeciesCount = 0;
+  c->Species = NULL;
+  c->SpeciesCount = 0;
   c->Tiles = NULL;
   c->TileCount = 0;
-  c->Fishs = NULL;
+  c->Fishes = NULL;
   c->FishCount = 0;
   c->Players = NULL;
   c->PlayerCount = 0;
@@ -94,13 +89,13 @@ DLLEXPORT void destroyConnection(Connection* c)
     }
     delete[] c->Mappables;
   }
-  if(c->FishSpeciess)
+  if(c->Species)
   {
-    for(int i = 0; i < c->FishSpeciesCount; i++)
+    for(int i = 0; i < c->SpeciesCount; i++)
     {
-      delete[] c->FishSpeciess[i].species;
+      delete[] c->Species[i].name;
     }
-    delete[] c->FishSpeciess;
+    delete[] c->Species;
   }
   if(c->Tiles)
   {
@@ -109,13 +104,13 @@ DLLEXPORT void destroyConnection(Connection* c)
     }
     delete[] c->Tiles;
   }
-  if(c->Fishs)
+  if(c->Fishes)
   {
     for(int i = 0; i < c->FishCount; i++)
     {
-      delete[] c->Fishs[i].species;
+      delete[] c->Fishes[i].species;
     }
-    delete[] c->Fishs;
+    delete[] c->Fishes;
   }
   if(c->Players)
   {
@@ -234,7 +229,7 @@ DLLEXPORT void getStatus(Connection* c)
 
 
 
-DLLEXPORT int fishSpeciesSpawn(_FishSpecies* object, int x, int y)
+DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
 {
   stringstream expr;
   expr << "(game-spawn " << object->id
@@ -290,12 +285,11 @@ DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
   return 1;
 }
 
-DLLEXPORT int fishAttack(_Fish* object, int x, int y)
+DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
 {
   stringstream expr;
   expr << "(game-attack " << object->id
-       << " " << x
-       << " " << y
+      << " " << target->id
        << ")";
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
@@ -333,7 +327,7 @@ void parseMappable(Connection* c, _Mappable* object, sexp_t* expression)
   sub = sub->next;
 
 }
-void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
+void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
 {
   sexp_t* sub;
   sub = expression->list;
@@ -342,9 +336,9 @@ void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
 
   object->id = atoi(sub->val);
   sub = sub->next;
-  object->species = new char[strlen(sub->val)+1];
-  strncpy(object->species, sub->val, strlen(sub->val));
-  object->species[strlen(sub->val)] = 0;
+  object->name = new char[strlen(sub->val)+1];
+  strncpy(object->name, sub->val, strlen(sub->val));
+  object->name[strlen(sub->val)] = 0;
   sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
@@ -360,9 +354,7 @@ void parseFishSpecies(Connection* c, _FishSpecies* object, sexp_t* expression)
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
-  object->turnsTillAvailalbe = atoi(sub->val);
-  sub = sub->next;
-  object->turnsTillUnavailable = atoi(sub->val);
+  object->season = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -382,8 +374,6 @@ void parseTile(Connection* c, _Tile* object, sexp_t* expression)
   object->trashAmount = atoi(sub->val);
   sub = sub->next;
   object->owner = atoi(sub->val);
-  sub = sub->next;
-  object->isCove = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -520,16 +510,7 @@ DLLEXPORT int networkLoop(Connection* c)
         if(string(sub->val) == "game")
         {
           sub = sub->next;
-          c->initialFood = atoi(sub->val);
-          sub = sub->next;
-
-          c->sharedLowerBound = atoi(sub->val);
-          sub = sub->next;
-
-          c->sharedUpperBound = atoi(sub->val);
-          sub = sub->next;
-
-          c->spawnFoodPerTurn = atoi(sub->val);
+          c->boundLength = atoi(sub->val);
           sub = sub->next;
 
           c->turnNumber = atoi(sub->val);
@@ -539,12 +520,6 @@ DLLEXPORT int networkLoop(Connection* c)
           sub = sub->next;
 
           c->gameNumber = atoi(sub->val);
-          sub = sub->next;
-
-          c->turnsTillSpawn = atoi(sub->val);
-          sub = sub->next;
-
-          c->maxReefHealth = atoi(sub->val);
           sub = sub->next;
 
           c->trashDamage = atoi(sub->val);
@@ -559,10 +534,10 @@ DLLEXPORT int networkLoop(Connection* c)
           c->trashAmount = atoi(sub->val);
           sub = sub->next;
 
-          c->coveX = atoi(sub->val);
+          c->currentSeason = atoi(sub->val);
           sub = sub->next;
 
-          c->coveY = atoi(sub->val);
+          c->seasonLength = atoi(sub->val);
           sub = sub->next;
 
         }
@@ -583,22 +558,22 @@ DLLEXPORT int networkLoop(Connection* c)
             parseMappable(c, c->Mappables+i, sub);
           }
         }
-        else if(string(sub->val) == "FishSpecies")
+        else if(string(sub->val) == "Species")
         {
-          if(c->FishSpeciess)
+          if(c->Species)
           {
-            for(int i = 0; i < c->FishSpeciesCount; i++)
+            for(int i = 0; i < c->SpeciesCount; i++)
             {
-              delete[] c->FishSpeciess[i].species;
+              delete[] c->Species[i].name;
             }
-            delete[] c->FishSpeciess;
+            delete[] c->Species;
           }
-          c->FishSpeciesCount =  sexp_list_length(expression)-1; //-1 for the header
-          c->FishSpeciess = new _FishSpecies[c->FishSpeciesCount];
-          for(int i = 0; i < c->FishSpeciesCount; i++)
+          c->SpeciesCount =  sexp_list_length(expression)-1; //-1 for the header
+          c->Species = new _Species[c->SpeciesCount];
+          for(int i = 0; i < c->SpeciesCount; i++)
           {
             sub = sub->next;
-            parseFishSpecies(c, c->FishSpeciess+i, sub);
+            parseSpecies(c, c->Species+i, sub);
           }
         }
         else if(string(sub->val) == "Tile")
@@ -620,20 +595,20 @@ DLLEXPORT int networkLoop(Connection* c)
         }
         else if(string(sub->val) == "Fish")
         {
-          if(c->Fishs)
+          if(c->Fishes)
           {
             for(int i = 0; i < c->FishCount; i++)
             {
-              delete[] c->Fishs[i].species;
+              delete[] c->Fishes[i].species;
             }
-            delete[] c->Fishs;
+            delete[] c->Fishes;
           }
           c->FishCount =  sexp_list_length(expression)-1; //-1 for the header
-          c->Fishs = new _Fish[c->FishCount];
+          c->Fishes = new _Fish[c->FishCount];
           for(int i = 0; i < c->FishCount; i++)
           {
             sub = sub->next;
-            parseFish(c, c->Fishs+i, sub);
+            parseFish(c, c->Fishes+i, sub);
           }
         }
         else if(string(sub->val) == "Player")
@@ -677,13 +652,13 @@ DLLEXPORT int getMappableCount(Connection* c)
   return c->MappableCount;
 }
 
-DLLEXPORT _FishSpecies* getFishSpecies(Connection* c, int num)
+DLLEXPORT _Species* getSpecies(Connection* c, int num)
 {
-  return c->FishSpeciess + num;
+  return c->Species + num;
 }
-DLLEXPORT int getFishSpeciesCount(Connection* c)
+DLLEXPORT int getSpeciesCount(Connection* c)
 {
-  return c->FishSpeciesCount;
+  return c->SpeciesCount;
 }
 
 DLLEXPORT _Tile* getTile(Connection* c, int num)
@@ -697,7 +672,7 @@ DLLEXPORT int getTileCount(Connection* c)
 
 DLLEXPORT _Fish* getFish(Connection* c, int num)
 {
-  return c->Fishs + num;
+  return c->Fishes + num;
 }
 DLLEXPORT int getFishCount(Connection* c)
 {
@@ -714,21 +689,9 @@ DLLEXPORT int getPlayerCount(Connection* c)
 }
 
 
-DLLEXPORT int getInitialFood(Connection* c)
+DLLEXPORT int getBoundLength(Connection* c)
 {
-  return c->initialFood;
-}
-DLLEXPORT int getSharedLowerBound(Connection* c)
-{
-  return c->sharedLowerBound;
-}
-DLLEXPORT int getSharedUpperBound(Connection* c)
-{
-  return c->sharedUpperBound;
-}
-DLLEXPORT int getSpawnFoodPerTurn(Connection* c)
-{
-  return c->spawnFoodPerTurn;
+  return c->boundLength;
 }
 DLLEXPORT int getTurnNumber(Connection* c)
 {
@@ -741,14 +704,6 @@ DLLEXPORT int getPlayerID(Connection* c)
 DLLEXPORT int getGameNumber(Connection* c)
 {
   return c->gameNumber;
-}
-DLLEXPORT int getTurnsTillSpawn(Connection* c)
-{
-  return c->turnsTillSpawn;
-}
-DLLEXPORT int getMaxReefHealth(Connection* c)
-{
-  return c->maxReefHealth;
 }
 DLLEXPORT int getTrashDamage(Connection* c)
 {
@@ -766,11 +721,11 @@ DLLEXPORT int getTrashAmount(Connection* c)
 {
   return c->trashAmount;
 }
-DLLEXPORT int getCoveX(Connection* c)
+DLLEXPORT int getCurrentSeason(Connection* c)
 {
-  return c->coveX;
+  return c->currentSeason;
 }
-DLLEXPORT int getCoveY(Connection* c)
+DLLEXPORT int getSeasonLength(Connection* c)
 {
-  return c->coveY;
+  return c->seasonLength;
 }

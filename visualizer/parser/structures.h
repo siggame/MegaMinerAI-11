@@ -16,11 +16,12 @@ namespace parser
 
 const int SPAWN = 0;
 const int MOVE = 1;
-const int PICKUP = 2;
-const int DEATH = 3;
-const int DROP = 4;
-const int ATTACK = 5;
-const int PLAYERTALK = 6;
+const int DROP = 2;
+const int PICKUP = 3;
+const int DEATH = 4;
+const int DROP = 5;
+const int ATTACK = 6;
+const int PLAYERTALK = 7;
 
 struct Mappable
 {
@@ -31,10 +32,10 @@ struct Mappable
   friend std::ostream& operator<<(std::ostream& stream, Mappable obj);
 };
 
-struct FishSpecies
+struct Species
 {
   int id;
-  char* species;
+  char* name;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -42,17 +43,15 @@ struct FishSpecies
   int attackPower;
   int range;
   int maxAttacks;
-  int turnsTillAvailalbe;
-  int turnsTillUnavailable;
+  int season;
 
-  friend std::ostream& operator<<(std::ostream& stream, FishSpecies obj);
+  friend std::ostream& operator<<(std::ostream& stream, Species obj);
 };
 
 struct Tile: public Mappable 
 {
   int trashAmount;
   int owner;
-  int isCove;
 
   friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
@@ -113,6 +112,15 @@ struct move : public Animation
   friend std::ostream& operator<<(std::ostream& stream, move obj);
 };
 
+struct drop : public Animation
+{
+  int x;
+  int y;
+  int owner;
+
+  friend std::ostream& operator<<(std::ostream& stream, drop obj);
+};
+
 struct pickUp : public Animation
 {
   int x;
@@ -165,26 +173,21 @@ struct AnimOwner: public Animation
 struct GameState
 {
   std::map<int,Mappable> mappables;
-  std::map<int,FishSpecies> fishSpeciess;
+  std::map<int,Species> species;
   std::map<int,Tile> tiles;
-  std::map<int,Fish> fishs;
+  std::map<int,Fish> fishes;
   std::map<int,Player> players;
 
-  int initialFood;
-  int sharedLowerBound;
-  int sharedUpperBound;
-  int spawnFoodPerTurn;
+  int boundLength;
   int turnNumber;
   int playerID;
   int gameNumber;
-  int turnsTillSpawn;
-  int maxReefHealth;
   int trashDamage;
   int mapWidth;
   int mapHeight;
   int trashAmount;
-  int coveX;
-  int coveY;
+  int currentSeason;
+  int seasonLength;
 
   std::map< int, std::vector< SmartPointer< Animation > > > animations;
   friend std::ostream& operator<<(std::ostream& stream, GameState obj);

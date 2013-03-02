@@ -1,6 +1,6 @@
 import com.sun.jna.Pointer;
 
-///Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
+///Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
 class Tile extends Mappable
 {
   public Tile(Pointer p)
@@ -56,12 +56,6 @@ class Tile extends Mappable
   {
     validify();
     return Client.INSTANCE.tileGetOwner(ptr);
-  }
-  ///If the current tile is part of a cove
-  public int getIsCove()
-  {
-    validify();
-    return Client.INSTANCE.tileGetIsCove(ptr);
   }
 
 }

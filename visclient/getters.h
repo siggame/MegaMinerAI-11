@@ -20,17 +20,16 @@ DLLEXPORT int mappableGetX(_Mappable* ptr);
 DLLEXPORT int mappableGetY(_Mappable* ptr);
 
 
-DLLEXPORT int fishSpeciesGetId(_FishSpecies* ptr);
-DLLEXPORT char* fishSpeciesGetSpecies(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetCost(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetMaxHealth(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetMaxMovement(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetCarryCap(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetAttackPower(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetRange(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetMaxAttacks(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetTurnsTillAvailalbe(_FishSpecies* ptr);
-DLLEXPORT int fishSpeciesGetTurnsTillUnavailable(_FishSpecies* ptr);
+DLLEXPORT int speciesGetId(_Species* ptr);
+DLLEXPORT char* speciesGetName(_Species* ptr);
+DLLEXPORT int speciesGetCost(_Species* ptr);
+DLLEXPORT int speciesGetMaxHealth(_Species* ptr);
+DLLEXPORT int speciesGetMaxMovement(_Species* ptr);
+DLLEXPORT int speciesGetCarryCap(_Species* ptr);
+DLLEXPORT int speciesGetAttackPower(_Species* ptr);
+DLLEXPORT int speciesGetRange(_Species* ptr);
+DLLEXPORT int speciesGetMaxAttacks(_Species* ptr);
+DLLEXPORT int speciesGetSeason(_Species* ptr);
 
 
 DLLEXPORT int tileGetId(_Tile* ptr);
@@ -38,7 +37,6 @@ DLLEXPORT int tileGetX(_Tile* ptr);
 DLLEXPORT int tileGetY(_Tile* ptr);
 DLLEXPORT int tileGetTrashAmount(_Tile* ptr);
 DLLEXPORT int tileGetOwner(_Tile* ptr);
-DLLEXPORT int tileGetIsCove(_Tile* ptr);
 
 
 DLLEXPORT int fishGetId(_Fish* ptr);

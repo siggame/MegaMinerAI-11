@@ -3,6 +3,7 @@
 #include "Fish.h"
 #include "game.h"
 
+#include "Fish.h"
 
 namespace client
 {
@@ -108,9 +109,9 @@ int Fish::drop(int x, int y, int weight)
   return fishDrop( (_Fish*)ptr, x, y, weight);
 }
 
-int Fish::attack(int x, int y)
+int Fish::attack(Fish& target)
 {
-  return fishAttack( (_Fish*)ptr, x, y);
+  return fishAttack( (_Fish*)ptr, (_Fish*) target.ptr);
 }
 
 

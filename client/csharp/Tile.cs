@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 
 
-///Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
+///Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
 public class Tile: Mappable
 {
 
@@ -89,17 +89,6 @@ public class Tile: Mappable
     {
       validify();
       int value = Client.tileGetOwner(ptr);
-      return value;
-    }
-  }
-
-  ///If the current tile is part of a cove
-  public int IsCove
-  {
-    get
-    {
-      validify();
-      int value = Client.tileGetIsCove(ptr);
       return value;
     }
   }

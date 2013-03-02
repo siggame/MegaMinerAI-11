@@ -9,7 +9,7 @@ namespace client
 
 struct Connection;
 struct _Mappable;
-struct _FishSpecies;
+struct _Species;
 struct _Tile;
 struct _Fish;
 struct _Player;
@@ -22,11 +22,11 @@ struct _Mappable
   int x;
   int y;
 };
-struct _FishSpecies
+struct _Species
 {
   Connection* _c;
   int id;
-  char* species;
+  char* name;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -34,8 +34,7 @@ struct _FishSpecies
   int attackPower;
   int range;
   int maxAttacks;
-  int turnsTillAvailalbe;
-  int turnsTillUnavailable;
+  int season;
 };
 struct _Tile
 {
@@ -45,7 +44,6 @@ struct _Tile
   int y;
   int trashAmount;
   int owner;
-  int isCove;
 };
 struct _Fish
 {

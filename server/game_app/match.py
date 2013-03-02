@@ -30,21 +30,16 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
-    self.initialFood = None
-    self.sharedLowerBound = None
-    self.sharedUpperBound = None
-    self.spawnFoodPerTurn = None
+    self.boundLength = None
     self.turnNumber = None
     self.playerID = None
     self.gameNumber = id
-    self.turnsTillSpawn = None
-    self.maxReefHealth = None
     self.trashDamage = None
     self.mapWidth = None
     self.mapHeight = None
     self.trashAmount = None
-    self.coveX = None
-    self.coveY = None
+    self.currentSeason = None
+    self.seasonLength = None
 
   #this is here to be wrapped
   def __del__(self):
@@ -114,23 +109,18 @@ class Match(DefaultGameWorld):
     if( self.logJson ):
       self.dictLog['turns'].append(
         dict(
-          initialFood = self.initialFood,
-          sharedLowerBound = self.sharedLowerBound,
-          sharedUpperBound = self.sharedUpperBound,
-          spawnFoodPerTurn = self.spawnFoodPerTurn,
+          boundLength = self.boundLength,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
           gameNumber = self.gameNumber,
-          turnsTillSpawn = self.turnsTillSpawn,
-          maxReefHealth = self.maxReefHealth,
           trashDamage = self.trashDamage,
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
           trashAmount = self.trashAmount,
-          coveX = self.coveX,
-          coveY = self.coveY,
+          currentSeason = self.currentSeason,
+          seasonLength = self.seasonLength,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
-          FishSpeciess = [i.toJson() for i in self.objects.values() if i.__class__ is FishSpecies],
+          Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
           Fishs = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
           Players = [i.toJson() for i in self.objects.values() if i.__class__ is Player],
@@ -176,7 +166,7 @@ class Match(DefaultGameWorld):
   def logPath(self):
     return "logs/" + str(self.id)
 
-  @derefArgs(FishSpecies, None, None)
+  @derefArgs(Species, None, None)
   def spawn(self, object, x, y):
     return object.spawn(x, y, )
 
@@ -192,9 +182,9 @@ class Match(DefaultGameWorld):
   def drop(self, object, x, y, weight):
     return object.drop(x, y, weight, )
 
-  @derefArgs(Fish, None, None)
-  def attack(self, object, x, y):
-    return object.attack(x, y, )
+  @derefArgs(Fish, Fish)
+  def attack(self, object, target):
+    return object.attack(target, )
 
   @derefArgs(Player, None)
   def talk(self, object, message):
@@ -227,11 +217,11 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.initialFood, self.sharedLowerBound, self.sharedUpperBound, self.spawnFoodPerTurn, self.turnNumber, self.playerID, self.gameNumber, self.turnsTillSpawn, self.maxReefHealth, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.coveX, self.coveY])
+    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["FishSpecies"] + [i.toList() for i in self.objects.values() if i.__class__ is FishSpecies])
+    typeLists.append(["Species"] + [i.toList() for i in self.objects.values() if i.__class__ is Species])
     typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
     typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])

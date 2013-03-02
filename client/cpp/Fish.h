@@ -7,7 +7,9 @@
 #include "structures.h"
 
 #include "Mappable.h"
+class Fish;
 
+///This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species
 class Fish : public Mappable {
   public:
   Fish(_Fish* ptr = NULL);
@@ -53,8 +55,8 @@ class Fish : public Mappable {
   bool pickUp(int x, int y, int weight);
   ///Command a fish to drop some trash at a specified position
   bool drop(int x, int y, int weight);
-  ///Command a fish to attack another fish at a specified position
-  bool attack(int x, int y);
+  ///Command a fish to attack a target
+  bool attack(Fish& target);
 
   // Properties
 

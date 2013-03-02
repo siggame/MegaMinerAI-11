@@ -66,13 +66,13 @@ class Mappable(GameObject):
     ret += "y: %s\n" % self.getY()
     return ret
 
-##
-class FishSpecies(GameObject):
+##This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+class Species(GameObject):
   def __init__(self, ptr):
     from BaseAI import BaseAI
     self._ptr = ptr
     self._iteration = BaseAI.iteration
-    self._id = library.fishSpeciesGetId(ptr)
+    self._id = library.speciesGetId(ptr)
 
   #\cond
   def validify(self):
@@ -81,7 +81,7 @@ class FishSpecies(GameObject):
     #somewhere else in memory now
     if self._iteration == BaseAI.iteration:
       return True
-    for i in BaseAI.fishSpeciess:
+    for i in BaseAI.species:
       if i._id == self._id:
         self._ptr = i._ptr
         self._iteration = BaseAI.iteration
@@ -91,28 +91,28 @@ class FishSpecies(GameObject):
   ##Have a new fish spawn and join the fight!
   def spawn(self, x, y):
     self.validify()
-    return library.fishSpeciesSpawn(self._ptr, x, y)
+    return library.speciesSpawn(self._ptr, x, y)
 
   #\cond
   def getId(self):
     self.validify()
-    return library.fishSpeciesGetId(self._ptr)
+    return library.speciesGetId(self._ptr)
   #\endcond
   ##Unique Identifier
   id = property(getId)
 
   #\cond
-  def getSpecies(self):
+  def getName(self):
     self.validify()
-    return library.fishSpeciesGetSpecies(self._ptr)
+    return library.speciesGetName(self._ptr)
   #\endcond
-  ##The fish species
-  species = property(getSpecies)
+  ##The name of this species
+  name = property(getName)
 
   #\cond
   def getCost(self):
     self.validify()
-    return library.fishSpeciesGetCost(self._ptr)
+    return library.speciesGetCost(self._ptr)
   #\endcond
   ##The amount of food it takes to raise this fish
   cost = property(getCost)
@@ -120,7 +120,7 @@ class FishSpecies(GameObject):
   #\cond
   def getMaxHealth(self):
     self.validify()
-    return library.fishSpeciesGetMaxHealth(self._ptr)
+    return library.speciesGetMaxHealth(self._ptr)
   #\endcond
   ##The maximum health of this fish
   maxHealth = property(getMaxHealth)
@@ -128,7 +128,7 @@ class FishSpecies(GameObject):
   #\cond
   def getMaxMovement(self):
     self.validify()
-    return library.fishSpeciesGetMaxMovement(self._ptr)
+    return library.speciesGetMaxMovement(self._ptr)
   #\endcond
   ##The maximum number of movements in a turn
   maxMovement = property(getMaxMovement)
@@ -136,7 +136,7 @@ class FishSpecies(GameObject):
   #\cond
   def getCarryCap(self):
     self.validify()
-    return library.fishSpeciesGetCarryCap(self._ptr)
+    return library.speciesGetCarryCap(self._ptr)
   #\endcond
   ##The total weight the fish can carry
   carryCap = property(getCarryCap)
@@ -144,7 +144,7 @@ class FishSpecies(GameObject):
   #\cond
   def getAttackPower(self):
     self.validify()
-    return library.fishSpeciesGetAttackPower(self._ptr)
+    return library.speciesGetAttackPower(self._ptr)
   #\endcond
   ##The power of the fish's attack
   attackPower = property(getAttackPower)
@@ -152,7 +152,7 @@ class FishSpecies(GameObject):
   #\cond
   def getRange(self):
     self.validify()
-    return library.fishSpeciesGetRange(self._ptr)
+    return library.speciesGetRange(self._ptr)
   #\endcond
   ##The attack arrange of the fish
   range = property(getRange)
@@ -160,33 +160,25 @@ class FishSpecies(GameObject):
   #\cond
   def getMaxAttacks(self):
     self.validify()
-    return library.fishSpeciesGetMaxAttacks(self._ptr)
+    return library.speciesGetMaxAttacks(self._ptr)
   #\endcond
   ##Maximum number of times this unit can attack per turn
   maxAttacks = property(getMaxAttacks)
 
   #\cond
-  def getTurnsTillAvailalbe(self):
+  def getSeason(self):
     self.validify()
-    return library.fishSpeciesGetTurnsTillAvailalbe(self._ptr)
+    return library.speciesGetSeason(self._ptr)
   #\endcond
-  ##How many turns until you can spawn this fish species
-  turnsTillAvailalbe = property(getTurnsTillAvailalbe)
-
-  #\cond
-  def getTurnsTillUnavailable(self):
-    self.validify()
-    return library.fishSpeciesGetTurnsTillUnavailable(self._ptr)
-  #\endcond
-  ##How many turns until you can no longer spawn this fish species
-  turnsTillUnavailable = property(getTurnsTillUnavailable)
+  ##Determines what season this species will be spawnable in
+  season = property(getSeason)
 
 
   def __str__(self):
     self.validify()
     ret = ""
     ret += "id: %s\n" % self.getId()
-    ret += "species: %s\n" % self.getSpecies()
+    ret += "name: %s\n" % self.getName()
     ret += "cost: %s\n" % self.getCost()
     ret += "maxHealth: %s\n" % self.getMaxHealth()
     ret += "maxMovement: %s\n" % self.getMaxMovement()
@@ -194,11 +186,10 @@ class FishSpecies(GameObject):
     ret += "attackPower: %s\n" % self.getAttackPower()
     ret += "range: %s\n" % self.getRange()
     ret += "maxAttacks: %s\n" % self.getMaxAttacks()
-    ret += "turnsTillAvailalbe: %s\n" % self.getTurnsTillAvailalbe()
-    ret += "turnsTillUnavailable: %s\n" % self.getTurnsTillUnavailable()
+    ret += "season: %s\n" % self.getSeason()
     return ret
 
-##Represents a single tile on the map, can contain some amount of trash. Example: 5 trash can be split to 2 and 3
+##Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
 class Tile(Mappable):
   def __init__(self, ptr):
     from BaseAI import BaseAI
@@ -260,14 +251,6 @@ class Tile(Mappable):
   ##The owner of the tile if it is part of a cove
   owner = property(getOwner)
 
-  #\cond
-  def getIsCove(self):
-    self.validify()
-    return library.tileGetIsCove(self._ptr)
-  #\endcond
-  ##If the current tile is part of a cove
-  isCove = property(getIsCove)
-
 
   def __str__(self):
     self.validify()
@@ -277,10 +260,9 @@ class Tile(Mappable):
     ret += "y: %s\n" % self.getY()
     ret += "trashAmount: %s\n" % self.getTrashAmount()
     ret += "owner: %s\n" % self.getOwner()
-    ret += "isCove: %s\n" % self.getIsCove()
     return ret
 
-##
+##This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species
 class Fish(Mappable):
   def __init__(self, ptr):
     from BaseAI import BaseAI
@@ -295,7 +277,7 @@ class Fish(Mappable):
     #somewhere else in memory now
     if self._iteration == BaseAI.iteration:
       return True
-    for i in BaseAI.fishs:
+    for i in BaseAI.fishes:
       if i._id == self._id:
         self._ptr = i._ptr
         self._iteration = BaseAI.iteration
@@ -317,10 +299,13 @@ class Fish(Mappable):
     self.validify()
     return library.fishDrop(self._ptr, x, y, weight)
 
-  ##Command a fish to attack another fish at a specified position
-  def attack(self, x, y):
+  ##Command a fish to attack a target
+  def attack(self, target):
     self.validify()
-    return library.fishAttack(self._ptr, x, y)
+    if not isinstance(target, Fish):
+      raise TypeError('target should be of [Fish]')
+    target.validify()
+    return library.fishAttack(self._ptr, target._ptr)
 
   #\cond
   def getId(self):
