@@ -57,22 +57,23 @@ class Species(object):
       object.__setattr__(self, name, value)
 
 class Tile(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner']
-  def __init__(self, game, id, x, y, trashAmount, owner):
+  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
+  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
     self.game = game
     self.id = id
     self.x = x
     self.y = y
     self.trashAmount = trashAmount
     self.owner = owner
+    self.hasEgg = hasEgg
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, self.owner, ]
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, )
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
   
   def nextTurn(self):
     pass

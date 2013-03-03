@@ -48,6 +48,10 @@ int BaseAI::seasonLength()
 {
   return getSeasonLength(c);
 }
+int BaseAI::healPercent()
+{
+  return getHealPercent(c);
+}
 
 bool BaseAI::startTurn()
 {

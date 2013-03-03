@@ -212,6 +212,15 @@ static bool parseTile(Tile& object, sexp_t* expression)
   object.owner = atoi(sub->val);
   sub = sub->next;
 
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.hasEgg = atoi(sub->val);
+  sub = sub->next;
+
   return true;
 
 }
@@ -718,6 +727,9 @@ static bool parseSexp(Game& game, sexp_t* expression)
           sub = sub->next;
           if ( !sub ) return false;
           gs.seasonLength = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.healPercent = atoi(sub->val);
           sub = sub->next;
       }
       else if(string(sub->val) == "Mappable")

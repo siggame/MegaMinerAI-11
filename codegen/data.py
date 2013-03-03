@@ -35,7 +35,8 @@ globals = [
   Variable('mapHeight', int, 'How high the map is'),
   Variable('trashAmount',int, 'Amount of trash in the game'),
   Variable('currentSeason', int, 'Determines what season it is. Species availability will change with passing season'),
-  Variable('seasonLength',int, 'Describes how long a season lasts')
+  Variable('seasonLength',int, 'Describes how long a season lasts'),
+  Variable('healPercent', int, 'Percentage of max health a fish gets back whenever it is healed, by either cove or other fish'),
 ]
 
 Tile = Model('Tile',
@@ -43,6 +44,7 @@ Tile = Model('Tile',
   data = [
     Variable('trashAmount', int, 'The amount of trash on this tile'),
     Variable('owner', int , 'The owner of the tile if it is part of a cove'),
+    Variable('hasEgg',int, 'Determines of a fish is set to spawn on this cove'),
     ],
   doc='Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).',
   permanent = True,

@@ -146,4 +146,10 @@ public abstract class BaseAI
     int value = Client.getSeasonLength(connection);
     return value;
   }
+  ///Percentage of max health a fish gets back whenever it is healed, by either cove or other fish
+  public int healPercent()
+  {
+    int value = Client.getHealPercent(connection);
+    return value;
+  }
 }

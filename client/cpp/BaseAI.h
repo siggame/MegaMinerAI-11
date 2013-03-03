@@ -49,6 +49,8 @@ public:
   int currentSeason();
   ///Describes how long a season lasts
   int seasonLength();
+  ///Percentage of max health a fish gets back whenever it is healed, by either cove or other fish
+  int healPercent();
   
   BaseAI(Connection* c);
   virtual ~BaseAI();

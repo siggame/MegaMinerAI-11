@@ -37,6 +37,11 @@ int Tile::owner()
   return ((_Tile*)ptr)->owner;
 }
 
+int Tile::hasEgg()
+{
+  return ((_Tile*)ptr)->hasEgg;
+}
+
 
 
 
@@ -47,6 +52,7 @@ std::ostream& operator<<(std::ostream& stream,Tile ob)
   stream << "y: " << ((_Tile*)ob.ptr)->y  <<'\n';
   stream << "trashAmount: " << ((_Tile*)ob.ptr)->trashAmount  <<'\n';
   stream << "owner: " << ((_Tile*)ob.ptr)->owner  <<'\n';
+  stream << "hasEgg: " << ((_Tile*)ob.ptr)->hasEgg  <<'\n';
   return stream;
 }
 

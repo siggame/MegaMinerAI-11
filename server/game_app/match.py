@@ -40,6 +40,7 @@ class Match(DefaultGameWorld):
     self.trashAmount = None
     self.currentSeason = None
     self.seasonLength = None
+    self.healPercent = None
 
   #this is here to be wrapped
   def __del__(self):
@@ -119,6 +120,7 @@ class Match(DefaultGameWorld):
           trashAmount = self.trashAmount,
           currentSeason = self.currentSeason,
           seasonLength = self.seasonLength,
+          healPercent = self.healPercent,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
           Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
@@ -217,7 +219,7 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength])
+    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])

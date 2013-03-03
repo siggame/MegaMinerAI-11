@@ -57,5 +57,11 @@ class Tile extends Mappable
     validify();
     return Client.INSTANCE.tileGetOwner(ptr);
   }
+  ///Determines of a fish is set to spawn on this cove
+  public int getHasEgg()
+  {
+    validify();
+    return Client.INSTANCE.tileGetHasEgg(ptr);
+  }
 
 }

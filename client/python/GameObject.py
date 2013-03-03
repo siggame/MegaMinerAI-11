@@ -251,6 +251,14 @@ class Tile(Mappable):
   ##The owner of the tile if it is part of a cove
   owner = property(getOwner)
 
+  #\cond
+  def getHasEgg(self):
+    self.validify()
+    return library.tileGetHasEgg(self._ptr)
+  #\endcond
+  ##Determines of a fish is set to spawn on this cove
+  hasEgg = property(getHasEgg)
+
 
   def __str__(self):
     self.validify()
@@ -260,6 +268,7 @@ class Tile(Mappable):
     ret += "y: %s\n" % self.getY()
     ret += "trashAmount: %s\n" % self.getTrashAmount()
     ret += "owner: %s\n" % self.getOwner()
+    ret += "hasEgg: %s\n" % self.getHasEgg()
     return ret
 
 ##This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species

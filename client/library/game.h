@@ -41,6 +41,7 @@ struct Connection
   int trashAmount;
   int currentSeason;
   int seasonLength;
+  int healPercent;
 
   _Mappable* Mappables;
   int MappableCount;
@@ -101,6 +102,7 @@ DLLEXPORT int getMapHeight(Connection* c);
 DLLEXPORT int getTrashAmount(Connection* c);
 DLLEXPORT int getCurrentSeason(Connection* c);
 DLLEXPORT int getSeasonLength(Connection* c);
+DLLEXPORT int getHealPercent(Connection* c);
 
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);

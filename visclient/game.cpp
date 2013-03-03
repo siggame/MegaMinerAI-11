@@ -62,6 +62,7 @@ DLLEXPORT Connection* createConnection()
   c->trashAmount = 0;
   c->currentSeason = 0;
   c->seasonLength = 0;
+  c->healPercent = 0;
   c->Mappables = NULL;
   c->MappableCount = 0;
   c->Species = NULL;
@@ -365,6 +366,8 @@ void parseTile(Connection* c, _Tile* object, sexp_t* expression)
   sub = sub->next;
   object->owner = atoi(sub->val);
   sub = sub->next;
+  object->hasEgg = atoi(sub->val);
+  sub = sub->next;
 
 }
 void parseFish(Connection* c, _Fish* object, sexp_t* expression)
@@ -528,6 +531,9 @@ DLLEXPORT int networkLoop(Connection* c)
           sub = sub->next;
 
           c->seasonLength = atoi(sub->val);
+          sub = sub->next;
+
+          c->healPercent = atoi(sub->val);
           sub = sub->next;
 
         }
@@ -718,6 +724,10 @@ DLLEXPORT int getCurrentSeason(Connection* c)
 DLLEXPORT int getSeasonLength(Connection* c)
 {
   return c->seasonLength;
+}
+DLLEXPORT int getHealPercent(Connection* c)
+{
+  return c->healPercent;
 }
 
 }

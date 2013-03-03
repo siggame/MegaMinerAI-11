@@ -93,5 +93,16 @@ public class Tile: Mappable
     }
   }
 
+  ///Determines of a fish is set to spawn on this cove
+  public int HasEgg
+  {
+    get
+    {
+      validify();
+      int value = Client.tileGetHasEgg(ptr);
+      return value;
+    }
+  }
+
 }
 
