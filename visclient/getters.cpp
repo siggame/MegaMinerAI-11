@@ -15,6 +15,30 @@ DLLEXPORT int mappableGetY(_Mappable* ptr)
 {
   return ptr->y;
 }
+DLLEXPORT int tileGetId(_Tile* ptr)
+{
+  return ptr->id;
+}
+DLLEXPORT int tileGetX(_Tile* ptr)
+{
+  return ptr->x;
+}
+DLLEXPORT int tileGetY(_Tile* ptr)
+{
+  return ptr->y;
+}
+DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
+{
+  return ptr->trashAmount;
+}
+DLLEXPORT int tileGetOwner(_Tile* ptr)
+{
+  return ptr->owner;
+}
+DLLEXPORT int tileGetHasEgg(_Tile* ptr)
+{
+  return ptr->hasEgg;
+}
 DLLEXPORT int speciesGetId(_Species* ptr)
 {
   return ptr->id;
@@ -54,30 +78,6 @@ DLLEXPORT int speciesGetMaxAttacks(_Species* ptr)
 DLLEXPORT int speciesGetSeason(_Species* ptr)
 {
   return ptr->season;
-}
-DLLEXPORT int tileGetId(_Tile* ptr)
-{
-  return ptr->id;
-}
-DLLEXPORT int tileGetX(_Tile* ptr)
-{
-  return ptr->x;
-}
-DLLEXPORT int tileGetY(_Tile* ptr)
-{
-  return ptr->y;
-}
-DLLEXPORT int tileGetTrashAmount(_Tile* ptr)
-{
-  return ptr->trashAmount;
-}
-DLLEXPORT int tileGetOwner(_Tile* ptr)
-{
-  return ptr->owner;
-}
-DLLEXPORT int tileGetHasEgg(_Tile* ptr)
-{
-  return ptr->hasEgg;
 }
 DLLEXPORT int fishGetId(_Fish* ptr)
 {

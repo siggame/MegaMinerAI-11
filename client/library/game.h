@@ -45,10 +45,10 @@ struct Connection
 
   _Mappable* Mappables;
   int MappableCount;
-  _Species* Species;
-  int SpeciesCount;
   _Tile* Tiles;
   int TileCount;
+  _Species* Species;
+  int SpeciesCount;
   _Fish* Fishes;
   int FishCount;
   _Player* Players;
@@ -107,11 +107,11 @@ DLLEXPORT int getHealPercent(Connection* c);
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);
 
-DLLEXPORT _Species* getSpecies(Connection* c, int num);
-DLLEXPORT int getSpeciesCount(Connection* c);
-
 DLLEXPORT _Tile* getTile(Connection* c, int num);
 DLLEXPORT int getTileCount(Connection* c);
+
+DLLEXPORT _Species* getSpecies(Connection* c, int num);
+DLLEXPORT int getSpeciesCount(Connection* c);
 
 DLLEXPORT _Fish* getFish(Connection* c, int num);
 DLLEXPORT int getFishCount(Connection* c);

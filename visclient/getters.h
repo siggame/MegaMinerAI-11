@@ -20,6 +20,14 @@ DLLEXPORT int mappableGetX(_Mappable* ptr);
 DLLEXPORT int mappableGetY(_Mappable* ptr);
 
 
+DLLEXPORT int tileGetId(_Tile* ptr);
+DLLEXPORT int tileGetX(_Tile* ptr);
+DLLEXPORT int tileGetY(_Tile* ptr);
+DLLEXPORT int tileGetTrashAmount(_Tile* ptr);
+DLLEXPORT int tileGetOwner(_Tile* ptr);
+DLLEXPORT int tileGetHasEgg(_Tile* ptr);
+
+
 DLLEXPORT int speciesGetId(_Species* ptr);
 DLLEXPORT char* speciesGetName(_Species* ptr);
 DLLEXPORT int speciesGetCost(_Species* ptr);
@@ -30,14 +38,6 @@ DLLEXPORT int speciesGetAttackPower(_Species* ptr);
 DLLEXPORT int speciesGetRange(_Species* ptr);
 DLLEXPORT int speciesGetMaxAttacks(_Species* ptr);
 DLLEXPORT int speciesGetSeason(_Species* ptr);
-
-
-DLLEXPORT int tileGetId(_Tile* ptr);
-DLLEXPORT int tileGetX(_Tile* ptr);
-DLLEXPORT int tileGetY(_Tile* ptr);
-DLLEXPORT int tileGetTrashAmount(_Tile* ptr);
-DLLEXPORT int tileGetOwner(_Tile* ptr);
-DLLEXPORT int tileGetHasEgg(_Tile* ptr);
 
 
 DLLEXPORT int fishGetId(_Fish* ptr);

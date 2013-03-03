@@ -66,6 +66,88 @@ class Mappable(GameObject):
     ret += "y: %s\n" % self.getY()
     return ret
 
+##Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
+class Tile(Mappable):
+  def __init__(self, ptr):
+    from BaseAI import BaseAI
+    self._ptr = ptr
+    self._iteration = BaseAI.iteration
+    self._id = library.tileGetId(ptr)
+
+  #\cond
+  def validify(self):
+    from BaseAI import BaseAI
+    #if this class is pointing to an object from before the current turn it's probably
+    #somewhere else in memory now
+    if self._iteration == BaseAI.iteration:
+      return True
+    for i in BaseAI.tiles:
+      if i._id == self._id:
+        self._ptr = i._ptr
+        self._iteration = BaseAI.iteration
+        return True
+    raise ExistentialError()
+  #\endcond
+  #\cond
+  def getId(self):
+    self.validify()
+    return library.tileGetId(self._ptr)
+  #\endcond
+  ##Unique Identifier
+  id = property(getId)
+
+  #\cond
+  def getX(self):
+    self.validify()
+    return library.tileGetX(self._ptr)
+  #\endcond
+  ##X position of the object
+  x = property(getX)
+
+  #\cond
+  def getY(self):
+    self.validify()
+    return library.tileGetY(self._ptr)
+  #\endcond
+  ##Y position of the object
+  y = property(getY)
+
+  #\cond
+  def getTrashAmount(self):
+    self.validify()
+    return library.tileGetTrashAmount(self._ptr)
+  #\endcond
+  ##The amount of trash on this tile
+  trashAmount = property(getTrashAmount)
+
+  #\cond
+  def getOwner(self):
+    self.validify()
+    return library.tileGetOwner(self._ptr)
+  #\endcond
+  ##The owner of the tile if it is part of a cove
+  owner = property(getOwner)
+
+  #\cond
+  def getHasEgg(self):
+    self.validify()
+    return library.tileGetHasEgg(self._ptr)
+  #\endcond
+  ##Determines of a fish is set to spawn on this cove
+  hasEgg = property(getHasEgg)
+
+
+  def __str__(self):
+    self.validify()
+    ret = ""
+    ret += "id: %s\n" % self.getId()
+    ret += "x: %s\n" % self.getX()
+    ret += "y: %s\n" % self.getY()
+    ret += "trashAmount: %s\n" % self.getTrashAmount()
+    ret += "owner: %s\n" % self.getOwner()
+    ret += "hasEgg: %s\n" % self.getHasEgg()
+    return ret
+
 ##This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
 class Species(GameObject):
   def __init__(self, ptr):
@@ -187,88 +269,6 @@ class Species(GameObject):
     ret += "range: %s\n" % self.getRange()
     ret += "maxAttacks: %s\n" % self.getMaxAttacks()
     ret += "season: %s\n" % self.getSeason()
-    return ret
-
-##Represents a single tile on the map, can contain some amount of trash or be a cove (spawn point).
-class Tile(Mappable):
-  def __init__(self, ptr):
-    from BaseAI import BaseAI
-    self._ptr = ptr
-    self._iteration = BaseAI.iteration
-    self._id = library.tileGetId(ptr)
-
-  #\cond
-  def validify(self):
-    from BaseAI import BaseAI
-    #if this class is pointing to an object from before the current turn it's probably
-    #somewhere else in memory now
-    if self._iteration == BaseAI.iteration:
-      return True
-    for i in BaseAI.tiles:
-      if i._id == self._id:
-        self._ptr = i._ptr
-        self._iteration = BaseAI.iteration
-        return True
-    raise ExistentialError()
-  #\endcond
-  #\cond
-  def getId(self):
-    self.validify()
-    return library.tileGetId(self._ptr)
-  #\endcond
-  ##Unique Identifier
-  id = property(getId)
-
-  #\cond
-  def getX(self):
-    self.validify()
-    return library.tileGetX(self._ptr)
-  #\endcond
-  ##X position of the object
-  x = property(getX)
-
-  #\cond
-  def getY(self):
-    self.validify()
-    return library.tileGetY(self._ptr)
-  #\endcond
-  ##Y position of the object
-  y = property(getY)
-
-  #\cond
-  def getTrashAmount(self):
-    self.validify()
-    return library.tileGetTrashAmount(self._ptr)
-  #\endcond
-  ##The amount of trash on this tile
-  trashAmount = property(getTrashAmount)
-
-  #\cond
-  def getOwner(self):
-    self.validify()
-    return library.tileGetOwner(self._ptr)
-  #\endcond
-  ##The owner of the tile if it is part of a cove
-  owner = property(getOwner)
-
-  #\cond
-  def getHasEgg(self):
-    self.validify()
-    return library.tileGetHasEgg(self._ptr)
-  #\endcond
-  ##Determines of a fish is set to spawn on this cove
-  hasEgg = property(getHasEgg)
-
-
-  def __str__(self):
-    self.validify()
-    ret = ""
-    ret += "id: %s\n" % self.getId()
-    ret += "x: %s\n" % self.getX()
-    ret += "y: %s\n" % self.getY()
-    ret += "trashAmount: %s\n" % self.getTrashAmount()
-    ret += "owner: %s\n" % self.getOwner()
-    ret += "hasEgg: %s\n" % self.getHasEgg()
     return ret
 
 ##This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species

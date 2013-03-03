@@ -40,10 +40,10 @@ public interface Client extends Library {
 
   Pointer getMappable(Pointer connection, int num);
   int getMappableCount(Pointer connection);
-  Pointer getSpecies(Pointer connection, int num);
-  int getSpeciesCount(Pointer connection);
   Pointer getTile(Pointer connection, int num);
   int getTileCount(Pointer connection);
+  Pointer getSpecies(Pointer connection, int num);
+  int getSpeciesCount(Pointer connection);
   Pointer getFish(Pointer connection, int num);
   int getFishCount(Pointer connection);
   Pointer getPlayer(Pointer connection, int num);
@@ -55,6 +55,13 @@ public interface Client extends Library {
   int mappableGetX(Pointer ptr);
   int mappableGetY(Pointer ptr);
 
+  int tileGetId(Pointer ptr);
+  int tileGetX(Pointer ptr);
+  int tileGetY(Pointer ptr);
+  int tileGetTrashAmount(Pointer ptr);
+  int tileGetOwner(Pointer ptr);
+  int tileGetHasEgg(Pointer ptr);
+
   int speciesGetId(Pointer ptr);
   String speciesGetName(Pointer ptr);
   int speciesGetCost(Pointer ptr);
@@ -65,13 +72,6 @@ public interface Client extends Library {
   int speciesGetRange(Pointer ptr);
   int speciesGetMaxAttacks(Pointer ptr);
   int speciesGetSeason(Pointer ptr);
-
-  int tileGetId(Pointer ptr);
-  int tileGetX(Pointer ptr);
-  int tileGetY(Pointer ptr);
-  int tileGetTrashAmount(Pointer ptr);
-  int tileGetOwner(Pointer ptr);
-  int tileGetHasEgg(Pointer ptr);
 
   int fishGetId(Pointer ptr);
   int fishGetX(Pointer ptr);

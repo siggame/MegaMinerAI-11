@@ -9,8 +9,8 @@
 #include "game.h"
 
 #include "Mappable.h"
-#include "Species.h"
 #include "Tile.h"
+#include "Species.h"
 #include "Fish.h"
 #include "Player.h"
 
@@ -24,8 +24,8 @@ class BaseAI
 protected:
   Connection* c;
   std::vector<Mappable> mappables;
-  std::vector<Species> species;
   std::vector<Tile> tiles;
+  std::vector<Species> species;
   std::vector<Fish> fishes;
   std::vector<Player> players;
 public:
