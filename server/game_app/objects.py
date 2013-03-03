@@ -185,7 +185,34 @@ class Player:
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
 
   def nextTurn(self):
-    pass
+    # foodPerTurn logic
+    p1 = self.players[0]
+    p2 = self.objects.players[1]
+    fishWorth = [0, 0]
+    netWorth = [0, 0]
+    # Get current value of fish owned by each player
+    for fish in self.objects.fishs:
+      fishWorth[fish.owner] += cfgSpecies[fish.species]["cost"]
+    # Add value of fish to value of spawn food in respective players' banks to get net worth
+    netWorth[0] += (p1.spawnFood + fishWorth[0])
+    netWorth[1] += (p2.spawnFood + fishWorth[1])
+    # Compare players' net worths
+    deltaNetWorth = abs(netWorth[0] - netWorth[1])
+    # Calculate food both players get this turn based on whoever is closer to the cap
+    # As the fish value cap is approached, the food given to both players decreases
+    if fishWorth[0] > fishWorth[1] or fishWorth[0] == fishWorth[1]:
+      foodPlayersGetThisTurn = math.floor(self.initialFood * math.sqrt((fishValueCap - fishWorth[0]) / fishValueCap)) # Too fancy?
+    elif fishWorth[0] < fishWorth[1]:
+      foodPlayersGetThisTurn = math.floor(self.initialFood * math.sqrt((fishValueCap - fishWorth[1]) / fishValueCap))
+    p1.spawnFood += foodPlayersGetThisTurn
+    p2.spawnFood += foodPlayersGetThisTurn
+    # Give player with lower netWorth extra food based on relative error (make deltaNetWorth within a certain percent of the wealthier player's net worth)
+    if netWorth[0] > netWorth[1]:
+      p2.spawnFood +=
+    elif netWorth[1] > netWorth[0]:
+      p1.spawnFood +=
+    elif deltaNetWorth == 0:
+      pass
 
   def talk(self, message):
     pass
