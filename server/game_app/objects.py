@@ -67,7 +67,24 @@ class Species(object):
     return True
 
   def spawn(self, x, y):
-    pass
+    player = self.game.objects.players[self.game.playerID]
+    if x < 0 or x >= self.game.mapWidth:
+      return "You cannot spawn outside the breeding grounds."
+    elif y < 0:
+      return "You cannot spawn in the sky."
+    elif y >= self.game.mapHeight:
+      return "You cannot spawn in the ground."
+    elif self.game.getTile(x, y).owner is not self.game.playerID:
+      return "You can only spawn on a cove you own."
+    elif player.spawnFood < self.cost:
+      return "You do not have enough food to spawn this fish."
+    elif self.game.currentSeason is not self.season:
+      return "You can only spawn this fish in the season %s"%(self.season)
+    else:
+      player.spawning.append([self.type, x, y])
+      player.spawnFood -= self.cost
+
+    return True
 
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
@@ -287,6 +304,7 @@ class Player(object):
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
     self.updatedAt = game.turnNumber
+    self.spawning = []
 
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
@@ -296,7 +314,14 @@ class Player(object):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
 
   def nextTurn(self):
-    pass
+    #Fish spawn in at beginning of turn
+    if self.game.playerID is self.id:
+      for spawn in self.spawning:
+        fishStats = [cfgSpecies[spawn[0]][stat] for stat in self.game.statList]
+        self.game.addObject(Fish, [[spawn[1], spawn[2], self.game.playerID]] + fishStats)
+
+    self.spawning = []
+    return True
 
   def talk(self, message):
     pass

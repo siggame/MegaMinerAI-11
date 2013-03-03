@@ -44,20 +44,20 @@ class Match(DefaultGameWorld):
     self.healPercent = self.healPercent
 
     #Make grid
-    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x,y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x, y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount. 
     self.trashDict = dict()
 
   # Helper function
   #since ownership only matter on cove tiles, we're making an owned tile a cove. 
-  def getTileOwner(self,x,y):
-    if x < 3 and y<3:
+  def getTileOwner(self, x, y):
+    if x < 3 and y < 3:
+      return 0
+    elif x > self.mapWidth - 3 and y < 3:
       return 1
-    elif x>self.mapWidth-3 and y<3:
-      return 2
     else:
-      return 3
+      return 2
     
   #getTile RETURN TILE
   def getTile(self, x, y):
@@ -72,6 +72,7 @@ class Match(DefaultGameWorld):
     pass
 
   def addPlayer(self, connection, type="player"):
+    print "Adding player."
     connection.type = type
     if len(self.players) >= 2 and type == "player":
       return "Game is full"
@@ -79,7 +80,7 @@ class Match(DefaultGameWorld):
       self.players.append(connection)
       try:
         #Add Player and Player attributes  
-        self.addObject(Player, [connection.screenName, self.startTime, self.initialFood, self.maxReefHealth ])
+        self.addObject(Player, [connection.screenName, self.startTime, self.maxReefHealth, self.initialFood])
       except TypeError:
         raise TypeError("Someone forgot to add the extra attributes to the Player object initialization")
     elif type == "spectator":
@@ -90,6 +91,7 @@ class Match(DefaultGameWorld):
     return True
 
   def removePlayer(self, connection):
+    print "Removing player"
     if connection in self.players:
       if self.turn is not None:
         winner = self.players[1 - self.getPlayerIndex(connection)]
@@ -99,22 +101,23 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
       
   def spawnTrash(self):
-    while(self.trashAmount>0):
+    print "Spawning trash."
+    while self.trashAmount > 0:
       #Create random X and random Y
       randX = random.randint(0, self.mapWidth/2)
-      randY = random.randint(0, self.mapHeight/2)
+      randY = random.randint(0, self.mapHeight)
 
       #Find tile at random X and random Y position
       randTile = self.getTile(randX, randY)
       oppTile = self.getTile(self.mapWidth-randX-1, randY)
       
-      if isinstance(randTile,Tile) and randTile.owner==3:
-          val=random.randint(1,self.trashAmount)
-          randTile.trashAmount+=val
-          self.trashDict[(randTile.x,randTile.y)]=val
-          oppTile.trashAmount+=val
-          self.trashDict[(oppTile.x,oppTile.y)] = val
-          self.trashAmount-=val
+      if isinstance(randTile,Tile) and randTile.owner == 2:
+         val = random.randint(1, self.trashAmount)
+         randTile.trashAmount += val
+         self.trashDict[(randTile.x, randTile.y)] = val
+         oppTile.trashAmount += val
+         self.trashDict[(oppTile.x, oppTile.y)] = val
+         self.trashAmount -= val
       
     print self.trashDict
     print sum(self.trashDict.values())
@@ -125,6 +128,9 @@ class Match(DefaultGameWorld):
       return "Game is not full"
     if self.winner is not None or self.turn is not None:
       return "Game has already begun"
+
+    print "Starting game."
+    self.statList = ["cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks"]
 
     #TODO: Assign species to a season
     self.turn = self.players[-1]
@@ -160,6 +166,7 @@ class Match(DefaultGameWorld):
     return totalTrash
 
   def nextTurn(self):
+    print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
