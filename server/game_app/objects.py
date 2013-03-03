@@ -63,6 +63,27 @@ class Tile(Mappable):
             spec.turnsTillAvailable = ((len(self.objects.FishSpecies) - 4)*x)
     return True
 
+  def spawn(self, x, y):
+    return True
+    player = self.game.objects.players[self.game.playerID]
+    if x < 0 or x >= self.game.mapWidth:
+      return "You cannot spawn outside the breeding grounds."
+    elif y < 0:
+      return "You cannot spawn in the sky."
+    elif y >= self.game.mapHeight:
+      return "You cannot spawn in the ground."
+    elif self.game.getTile(x, y).owner is not self.game.playerID:
+      return "You can only spawn on a cove you own."
+    elif player.spawnFood < self.cost:
+      return "You do not have enough food to spawn this fish."
+    elif self.game.currentSeason is not self.season:
+      return "You can only spawn this fish in the season %s"%(self.season)
+    else:
+      player.spawning.append([self.type, x, y])
+      player.spawnFood -= self.cost
+
+    return True
+
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
@@ -145,7 +166,7 @@ class Fish(Mappable):
       return "Your fish cannot move off the map."
     elif abs(self.x-x) > 1 or abs(self.y - y) > 1 or (abs(self.x-x) == 1 and abs(self.y - y) == 1):
       return "You can only move to adjacent locations."
-    T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
+    T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
     elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
@@ -155,7 +176,7 @@ class Fish(Mappable):
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
-    elif self.game.getTile(x,y)[0].isCove == True and self.game.getTile(x,y)[0].owner != self.owner:
+    elif self.game.getTile(x,y).isCove == True and self.game.getTile(x,y).owner != self.owner:
       return "Can't go into an opponent's cove."
     #Working under the assumption that ground units can move anywhere
     self.game.grid[self.x][self.y].remove(self)
@@ -288,6 +309,7 @@ class Player(object):
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
     self.updatedAt = game.turnNumber
+    self.spawning = []
 
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
@@ -297,7 +319,14 @@ class Player(object):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
 
   def nextTurn(self):
-    pass
+    #Fish spawn in at beginning of turn
+    if self.game.playerID is self.id:
+      for spawn in self.spawning:
+        fishStats = [cfgSpecies[spawn[0]][stat] for stat in self.game.statList]
+        self.game.addObject(Fish, [[spawn[1], spawn[2], self.game.playerID]] + fishStats)
+
+    self.spawning = []
+    return True
 
   def talk(self, message):
     pass
