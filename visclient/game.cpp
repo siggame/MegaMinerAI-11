@@ -65,10 +65,10 @@ DLLEXPORT Connection* createConnection()
   c->healPercent = 0;
   c->Mappables = NULL;
   c->MappableCount = 0;
-  c->Species = NULL;
-  c->SpeciesCount = 0;
   c->Tiles = NULL;
   c->TileCount = 0;
+  c->Species = NULL;
+  c->SpeciesCount = 0;
   c->Fishes = NULL;
   c->FishCount = 0;
   c->Players = NULL;
@@ -88,6 +88,13 @@ DLLEXPORT void destroyConnection(Connection* c)
     }
     delete[] c->Mappables;
   }
+  if(c->Tiles)
+  {
+    for(int i = 0; i < c->TileCount; i++)
+    {
+    }
+    delete[] c->Tiles;
+  }
   if(c->Species)
   {
     for(int i = 0; i < c->SpeciesCount; i++)
@@ -95,13 +102,6 @@ DLLEXPORT void destroyConnection(Connection* c)
       delete[] c->Species[i].name;
     }
     delete[] c->Species;
-  }
-  if(c->Tiles)
-  {
-    for(int i = 0; i < c->TileCount; i++)
-    {
-    }
-    delete[] c->Tiles;
   }
   if(c->Fishes)
   {
@@ -220,6 +220,7 @@ DLLEXPORT void getStatus(Connection* c)
 
 
 
+
 DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
 {
   stringstream expr;
@@ -232,7 +233,6 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   UNLOCK( &object->_c->mutex);
   return 1;
 }
-
 
 
 DLLEXPORT int fishMove(_Fish* object, int x, int y)
@@ -318,6 +318,27 @@ void parseMappable(Connection* c, _Mappable* object, sexp_t* expression)
   sub = sub->next;
 
 }
+void parseTile(Connection* c, _Tile* object, sexp_t* expression)
+{
+  sexp_t* sub;
+  sub = expression->list;
+
+  object->_c = c;
+
+  object->id = atoi(sub->val);
+  sub = sub->next;
+  object->x = atoi(sub->val);
+  sub = sub->next;
+  object->y = atoi(sub->val);
+  sub = sub->next;
+  object->trashAmount = atoi(sub->val);
+  sub = sub->next;
+  object->owner = atoi(sub->val);
+  sub = sub->next;
+  object->hasEgg = atoi(sub->val);
+  sub = sub->next;
+
+}
 void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
 {
   sexp_t* sub;
@@ -346,27 +367,6 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
   object->season = atoi(sub->val);
-  sub = sub->next;
-
-}
-void parseTile(Connection* c, _Tile* object, sexp_t* expression)
-{
-  sexp_t* sub;
-  sub = expression->list;
-
-  object->_c = c;
-
-  object->id = atoi(sub->val);
-  sub = sub->next;
-  object->x = atoi(sub->val);
-  sub = sub->next;
-  object->y = atoi(sub->val);
-  sub = sub->next;
-  object->trashAmount = atoi(sub->val);
-  sub = sub->next;
-  object->owner = atoi(sub->val);
-  sub = sub->next;
-  object->hasEgg = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -554,6 +554,23 @@ DLLEXPORT int networkLoop(Connection* c)
             parseMappable(c, c->Mappables+i, sub);
           }
         }
+        else if(string(sub->val) == "Tile")
+        {
+          if(c->Tiles)
+          {
+            for(int i = 0; i < c->TileCount; i++)
+            {
+            }
+            delete[] c->Tiles;
+          }
+          c->TileCount =  sexp_list_length(expression)-1; //-1 for the header
+          c->Tiles = new _Tile[c->TileCount];
+          for(int i = 0; i < c->TileCount; i++)
+          {
+            sub = sub->next;
+            parseTile(c, c->Tiles+i, sub);
+          }
+        }
         else if(string(sub->val) == "Species")
         {
           if(c->Species)
@@ -570,23 +587,6 @@ DLLEXPORT int networkLoop(Connection* c)
           {
             sub = sub->next;
             parseSpecies(c, c->Species+i, sub);
-          }
-        }
-        else if(string(sub->val) == "Tile")
-        {
-          if(c->Tiles)
-          {
-            for(int i = 0; i < c->TileCount; i++)
-            {
-            }
-            delete[] c->Tiles;
-          }
-          c->TileCount =  sexp_list_length(expression)-1; //-1 for the header
-          c->Tiles = new _Tile[c->TileCount];
-          for(int i = 0; i < c->TileCount; i++)
-          {
-            sub = sub->next;
-            parseTile(c, c->Tiles+i, sub);
           }
         }
         else if(string(sub->val) == "Fish")
@@ -648,15 +648,6 @@ DLLEXPORT int getMappableCount(Connection* c)
   return c->MappableCount;
 }
 
-DLLEXPORT _Species* getSpecies(Connection* c, int num)
-{
-  return c->Species + num;
-}
-DLLEXPORT int getSpeciesCount(Connection* c)
-{
-  return c->SpeciesCount;
-}
-
 DLLEXPORT _Tile* getTile(Connection* c, int num)
 {
   return c->Tiles + num;
@@ -664,6 +655,15 @@ DLLEXPORT _Tile* getTile(Connection* c, int num)
 DLLEXPORT int getTileCount(Connection* c)
 {
   return c->TileCount;
+}
+
+DLLEXPORT _Species* getSpecies(Connection* c, int num)
+{
+  return c->Species + num;
+}
+DLLEXPORT int getSpeciesCount(Connection* c)
+{
+  return c->SpeciesCount;
 }
 
 DLLEXPORT _Fish* getFish(Connection* c, int num)

@@ -122,8 +122,8 @@ class Match(DefaultGameWorld):
           seasonLength = self.seasonLength,
           healPercent = self.healPercent,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
-          Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
+          Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Fishs = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
           Players = [i.toJson() for i in self.objects.values() if i.__class__ is Player],
           animations = self.jsonAnimations
@@ -223,12 +223,12 @@ class Match(DefaultGameWorld):
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
-    if updated:
-      typeLists.append(["Species"] + [i.toList() for i in updated])
     updated = [i for i in self.objects.values() if i.__class__ is Tile and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Tile"] + [i.toList() for i in updated])
+    updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
+    if updated:
+      typeLists.append(["Species"] + [i.toList() for i in updated])
     typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 

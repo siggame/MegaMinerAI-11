@@ -9,8 +9,8 @@ namespace client
 
 struct Connection;
 struct _Mappable;
-struct _Species;
 struct _Tile;
+struct _Species;
 struct _Fish;
 struct _Player;
 
@@ -21,6 +21,16 @@ struct _Mappable
   int id;
   int x;
   int y;
+};
+struct _Tile
+{
+  Connection* _c;
+  int id;
+  int x;
+  int y;
+  int trashAmount;
+  int owner;
+  int hasEgg;
 };
 struct _Species
 {
@@ -35,16 +45,6 @@ struct _Species
   int range;
   int maxAttacks;
   int season;
-};
-struct _Tile
-{
-  Connection* _c;
-  int id;
-  int x;
-  int y;
-  int trashAmount;
-  int owner;
-  int hasEgg;
 };
 struct _Fish
 {

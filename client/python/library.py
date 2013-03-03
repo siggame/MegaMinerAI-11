@@ -101,17 +101,17 @@ library.getMappable.argtypes = [c_void_p, c_int]
 library.getMappableCount.restype = c_int
 library.getMappableCount.argtypes = [c_void_p]
 
-library.getSpecies.restype = c_void_p
-library.getSpecies.argtypes = [c_void_p, c_int]
-
-library.getSpeciesCount.restype = c_int
-library.getSpeciesCount.argtypes = [c_void_p]
-
 library.getTile.restype = c_void_p
 library.getTile.argtypes = [c_void_p, c_int]
 
 library.getTileCount.restype = c_int
 library.getTileCount.argtypes = [c_void_p]
+
+library.getSpecies.restype = c_void_p
+library.getSpecies.argtypes = [c_void_p, c_int]
+
+library.getSpeciesCount.restype = c_int
+library.getSpeciesCount.argtypes = [c_void_p]
 
 library.getFish.restype = c_void_p
 library.getFish.argtypes = [c_void_p, c_int]
@@ -136,6 +136,24 @@ library.mappableGetX.argtypes = [c_void_p]
 
 library.mappableGetY.restype = c_int
 library.mappableGetY.argtypes = [c_void_p]
+
+library.tileGetId.restype = c_int
+library.tileGetId.argtypes = [c_void_p]
+
+library.tileGetX.restype = c_int
+library.tileGetX.argtypes = [c_void_p]
+
+library.tileGetY.restype = c_int
+library.tileGetY.argtypes = [c_void_p]
+
+library.tileGetTrashAmount.restype = c_int
+library.tileGetTrashAmount.argtypes = [c_void_p]
+
+library.tileGetOwner.restype = c_int
+library.tileGetOwner.argtypes = [c_void_p]
+
+library.tileGetHasEgg.restype = c_int
+library.tileGetHasEgg.argtypes = [c_void_p]
 
 library.speciesGetId.restype = c_int
 library.speciesGetId.argtypes = [c_void_p]
@@ -166,24 +184,6 @@ library.speciesGetMaxAttacks.argtypes = [c_void_p]
 
 library.speciesGetSeason.restype = c_int
 library.speciesGetSeason.argtypes = [c_void_p]
-
-library.tileGetId.restype = c_int
-library.tileGetId.argtypes = [c_void_p]
-
-library.tileGetX.restype = c_int
-library.tileGetX.argtypes = [c_void_p]
-
-library.tileGetY.restype = c_int
-library.tileGetY.argtypes = [c_void_p]
-
-library.tileGetTrashAmount.restype = c_int
-library.tileGetTrashAmount.argtypes = [c_void_p]
-
-library.tileGetOwner.restype = c_int
-library.tileGetOwner.argtypes = [c_void_p]
-
-library.tileGetHasEgg.restype = c_int
-library.tileGetHasEgg.argtypes = [c_void_p]
 
 library.fishGetId.restype = c_int
 library.fishGetId.argtypes = [c_void_p]

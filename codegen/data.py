@@ -153,14 +153,6 @@ drop = Animation('drop',
   ],
 )
 
-cove = Animation('drop',
-  data=[
-    Variable('x',int),
-    Variable('y',int),
-    Variable('owner',int)
-  ],
-)
-
 death = Animation('death',
   data=[
     Variable('actingID', int)

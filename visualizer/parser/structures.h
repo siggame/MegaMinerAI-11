@@ -16,12 +16,11 @@ namespace parser
 
 const int SPAWN = 0;
 const int MOVE = 1;
-const int DROP = 2;
-const int PICKUP = 3;
-const int DEATH = 4;
-const int DROP = 5;
-const int ATTACK = 6;
-const int PLAYERTALK = 7;
+const int PICKUP = 2;
+const int DEATH = 3;
+const int DROP = 4;
+const int ATTACK = 5;
+const int PLAYERTALK = 6;
 
 struct Mappable
 {
@@ -30,6 +29,15 @@ struct Mappable
   int y;
 
   friend std::ostream& operator<<(std::ostream& stream, Mappable obj);
+};
+
+struct Tile: public Mappable 
+{
+  int trashAmount;
+  int owner;
+  int hasEgg;
+
+  friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
 
 struct Species
@@ -46,15 +54,6 @@ struct Species
   int season;
 
   friend std::ostream& operator<<(std::ostream& stream, Species obj);
-};
-
-struct Tile: public Mappable 
-{
-  int trashAmount;
-  int owner;
-  int hasEgg;
-
-  friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
 
 struct Fish: public Mappable 
@@ -113,15 +112,6 @@ struct move : public Animation
   friend std::ostream& operator<<(std::ostream& stream, move obj);
 };
 
-struct drop : public Animation
-{
-  int x;
-  int y;
-  int owner;
-
-  friend std::ostream& operator<<(std::ostream& stream, drop obj);
-};
-
 struct pickUp : public Animation
 {
   int x;
@@ -174,8 +164,8 @@ struct AnimOwner: public Animation
 struct GameState
 {
   std::map<int,Mappable> mappables;
-  std::map<int,Species> species;
   std::map<int,Tile> tiles;
+  std::map<int,Species> species;
   std::map<int,Fish> fishes;
   std::map<int,Player> players;
 

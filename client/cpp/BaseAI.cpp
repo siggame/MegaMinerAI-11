@@ -62,20 +62,20 @@ bool BaseAI::startTurn()
     mappables[i] = Mappable(getMappable(c, i));
   }
 
-  count = getSpeciesCount(c);
-  species.clear();
-  species.resize(count);
-  for(int i = 0; i < count; i++)
-  {
-    species[i] = Species(getSpecies(c, i));
-  }
-
   count = getTileCount(c);
   tiles.clear();
   tiles.resize(count);
   for(int i = 0; i < count; i++)
   {
     tiles[i] = Tile(getTile(c, i));
+  }
+
+  count = getSpeciesCount(c);
+  species.clear();
+  species.resize(count);
+  for(int i = 0; i < count; i++)
+  {
+    species[i] = Species(getSpecies(c, i));
   }
 
   count = getFishCount(c);

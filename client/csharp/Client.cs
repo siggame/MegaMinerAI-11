@@ -66,13 +66,13 @@ public class Client {
   [DllImport("client")]
   public static extern int getMappableCount(IntPtr connection);
   [DllImport("client")]
-  public static extern IntPtr getSpecies(IntPtr connection, int num);
-  [DllImport("client")]
-  public static extern int getSpeciesCount(IntPtr connection);
-  [DllImport("client")]
   public static extern IntPtr getTile(IntPtr connection, int num);
   [DllImport("client")]
   public static extern int getTileCount(IntPtr connection);
+  [DllImport("client")]
+  public static extern IntPtr getSpecies(IntPtr connection, int num);
+  [DllImport("client")]
+  public static extern int getSpeciesCount(IntPtr connection);
   [DllImport("client")]
   public static extern IntPtr getFish(IntPtr connection, int num);
   [DllImport("client")]
@@ -90,6 +90,19 @@ public class Client {
   public static extern int mappableGetX(IntPtr ptr);
   [DllImport("client")]
   public static extern int mappableGetY(IntPtr ptr);
+
+  [DllImport("client")]
+  public static extern int tileGetId(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetX(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetY(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetTrashAmount(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetOwner(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetHasEgg(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int speciesGetId(IntPtr ptr);
@@ -111,19 +124,6 @@ public class Client {
   public static extern int speciesGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
   public static extern int speciesGetSeason(IntPtr ptr);
-
-  [DllImport("client")]
-  public static extern int tileGetId(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int tileGetX(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int tileGetY(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int tileGetTrashAmount(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int tileGetOwner(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int tileGetHasEgg(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int fishGetId(IntPtr ptr);

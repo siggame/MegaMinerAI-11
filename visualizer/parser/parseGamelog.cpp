@@ -60,6 +60,69 @@ static bool parseMappable(Mappable& object, sexp_t* expression)
   return true;
 
 }
+static bool parseTile(Tile& object, sexp_t* expression)
+{
+  sexp_t* sub;
+  if ( !expression ) return false;
+  sub = expression->list;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.id = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.x = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.y = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.trashAmount = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.owner = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.hasEgg = atoi(sub->val);
+  sub = sub->next;
+
+  return true;
+
+}
 static bool parseSpecies(Species& object, sexp_t* expression)
 {
   sexp_t* sub;
@@ -156,69 +219,6 @@ static bool parseSpecies(Species& object, sexp_t* expression)
   }
 
   object.season = atoi(sub->val);
-  sub = sub->next;
-
-  return true;
-
-}
-static bool parseTile(Tile& object, sexp_t* expression)
-{
-  sexp_t* sub;
-  if ( !expression ) return false;
-  sub = expression->list;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.id = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.x = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.y = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.trashAmount = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.owner = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.hasEgg = atoi(sub->val);
   sub = sub->next;
 
   return true;
@@ -512,36 +512,6 @@ static bool parseMove(move& object, sexp_t* expression)
   return true;
 
 }
-static bool parseDrop(drop& object, sexp_t* expression)
-{
-  sexp_t* sub;
-  if ( !expression ) return false;
-  object.type = DROP;
-  sub = expression->list->next;
-  if( !sub ) 
-  {
-    cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
-    return false;
-  }
-  object.x = atoi(sub->val);
-  sub = sub->next;
-  if( !sub ) 
-  {
-    cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
-    return false;
-  }
-  object.y = atoi(sub->val);
-  sub = sub->next;
-  if( !sub ) 
-  {
-    cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
-    return false;
-  }
-  object.owner = atoi(sub->val);
-  sub = sub->next;
-  return true;
-
-}
 static bool parsePickUp(pickUp& object, sexp_t* expression)
 {
   sexp_t* sub;
@@ -745,19 +715,6 @@ static bool parseSexp(Game& game, sexp_t* expression)
         }
         if ( !flag ) return false;
       }
-      else if(string(sub->val) == "Species")
-      {
-        sub = sub->next;
-        bool flag = true;
-        while(sub && flag)
-        {
-          Species object;
-          flag = parseSpecies(object, sub);
-          gs.species[object.id] = object;
-          sub = sub->next;
-        }
-        if ( !flag ) return false;
-      }
       else if(string(sub->val) == "Tile")
       {
         sub = sub->next;
@@ -767,6 +724,19 @@ static bool parseSexp(Game& game, sexp_t* expression)
           Tile object;
           flag = parseTile(object, sub);
           gs.tiles[object.id] = object;
+          sub = sub->next;
+        }
+        if ( !flag ) return false;
+      }
+      else if(string(sub->val) == "Species")
+      {
+        sub = sub->next;
+        bool flag = true;
+        while(sub && flag)
+        {
+          Species object;
+          flag = parseSpecies(object, sub);
+          gs.species[object.id] = object;
           sub = sub->next;
         }
         if ( !flag ) return false;
@@ -820,14 +790,6 @@ static bool parseSexp(Game& game, sexp_t* expression)
       {
         SmartPointer<move> animation = new move;
         if ( !parseMove(*animation, expression) )
-          return false;
-
-        animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
-      }
-      if(string(ToLower( sub->val ) ) == "drop")
-      {
-        SmartPointer<drop> animation = new drop;
-        if ( !parseDrop(*animation, expression) )
           return false;
 
         animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
