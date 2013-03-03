@@ -13,6 +13,8 @@ namespace visualizer
   {
     m_game = 0;
     m_suicide=false;
+
+    srand(time(0));
   } // Reef::Reef()
 
   Reef::~Reef()
@@ -122,13 +124,25 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
+    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
+    pMap->addKeyFrame( new DrawMap( pMap ) );
+
+    for (int x = 0; x < pMap->GetWidth(); x++)
+    {
+      for (int y = 0; y < pMap->GetHeight(); y++)
+      {
+          Map::Tile& tile = (*pMap)(y,x);
+          tile.isCove = rand() % 2;
+      }
+    }
+
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
     {
       Frame turn;  // The frame that will be drawn
-      SmartPointer<Something> something = new Something();
-      something->addKeyFrame( new DrawSomething( something ) );
-      turn.addAnimatable( something );
+      turn.addAnimatable(pMap);
+
+
       animationEngine->buildAnimations(turn);
       addFrame(turn);
       

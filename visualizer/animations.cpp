@@ -4,6 +4,28 @@
 namespace visualizer
 {
 
+    void DrawMap::animate(const float& t, AnimData*, IGame* game)
+    {
+        game->renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+        for (int x = 0; x < m_Map->GetWidth(); x++)
+        {
+          for (int y = 0; y < m_Map->GetHeight(); y++)
+          {
+              Map::Tile& tile = (*m_Map)(y,x);
+
+
+              if(tile.isCove > 0)
+              {
+                  game->renderer->drawTexturedQuad(x,y,1.0f,1.0f,"coral1");
+              }
+              else
+              {
+
+              }
+          }
+        }
+    }
+
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )
     {
 

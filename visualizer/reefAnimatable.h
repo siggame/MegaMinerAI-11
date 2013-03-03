@@ -18,7 +18,7 @@ namespace visualizer
 
         struct Tile
         {
-            Tile() : trashAmount(0), isCove(0)
+            Tile() : trashAmount(0), isCove(0), hasEgg(0)
             {
             }
 
@@ -28,12 +28,13 @@ namespace visualizer
 
             int trashAmount; // trash to be rendered, this value would change based off of the game being played
             int isCove; // teh cove, need to make it look nice, this value does not change between frames
+            int hasEgg; // teh egg
 
            // int turn;
            // todo: add more?
         };
 
-        Map(int w, int h, int hud, float pc, float mc, float xp) : m_tiles(w*h), width(w), height(h), hudHeight(hud), prevMapColor(pc), mapColor(mc), xPos(xp)
+        Map(int w, int h /*float pc, float mc, float xp*/) : m_tiles(w*h), width(w), height(h)/*, prevMapColor(pc), mapColor(mc), xPos(xp)*/
         {
         }
 
@@ -53,14 +54,12 @@ namespace visualizer
         float GetPrevMapColor() const { return prevMapColor; }
         float GetxPos() const { return xPos; }
         float GetMapColor() const { return mapColor; }
-        int GetHUDHeight() const { return hudHeight; }
 
     private:
 
       std::vector<Tile> m_tiles;
       int width;
       int height;
-      int hudHeight;
 
       //todo: lighting
       float prevMapColor;
