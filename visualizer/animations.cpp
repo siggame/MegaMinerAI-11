@@ -16,7 +16,7 @@ namespace visualizer
 
               if(tile.isCove > 0)
               {
-                  game->renderer->drawTexturedQuad(x,y,1.0f,1.0f,"coral1");
+                  game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
               }
               else
               {

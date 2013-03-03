@@ -133,6 +133,7 @@ namespace visualizer
       {
           Map::Tile& tile = (*pMap)(y,x);
           tile.isCove = rand() % 2;
+          tile.spriteId = rand() % 3;
       }
     }
 

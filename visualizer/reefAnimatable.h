@@ -18,7 +18,7 @@ namespace visualizer
 
         struct Tile
         {
-            Tile() : trashAmount(0), isCove(0), hasEgg(0)
+            Tile() : trashAmount(0), isCove(0), hasEgg(0), spriteId(0)
             {
             }
 
@@ -29,6 +29,7 @@ namespace visualizer
             int trashAmount; // trash to be rendered, this value would change based off of the game being played
             int isCove; // teh cove, need to make it look nice, this value does not change between frames
             int hasEgg; // teh egg
+            int spriteId;
 
            // int turn;
            // todo: add more?
