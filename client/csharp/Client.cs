@@ -58,6 +58,8 @@ public class Client {
   public static extern int getCurrentSeason(IntPtr connection);
   [DllImport("client")]
   public static extern int getSeasonLength(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getHealPercent(IntPtr connection);
 
   [DllImport("client")]
   public static extern IntPtr getMappable(IntPtr connection, int num);
@@ -120,6 +122,8 @@ public class Client {
   public static extern int tileGetTrashAmount(IntPtr ptr);
   [DllImport("client")]
   public static extern int tileGetOwner(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetHasEgg(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int fishGetId(IntPtr ptr);

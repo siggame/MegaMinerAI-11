@@ -99,5 +99,10 @@ class BaseAI:
     return library.getSeasonLength(self.connection)
   #\endcond
   seasonLength = property(getSeasonLength)
+  #\cond
+  def getHealPercent(self):
+    return library.getHealPercent(self.connection)
+  #\endcond
+  healPercent = property(getHealPercent)
   def __init__(self, connection):
     self.connection = connection

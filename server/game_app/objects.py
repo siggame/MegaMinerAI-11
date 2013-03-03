@@ -5,13 +5,14 @@ cfgSpecies = networking.config.config.readConfig("config/species.cfg")
 for key in cfgSpecies.keys():
   cfgSpecies[key]['type'] = key
 
-
-class Mappable:
+class Mappable(object):
+  game_state_attributes = ['id', 'x', 'y']
   def __init__(self, game, id, x, y):
     self.game = game
     self.id = id
     self.x = x
     self.y = y
+    self.updatedAt = game.turnNumber
 
   def toList(self):
     return [self.id, self.x, self.y, ]
@@ -23,9 +24,13 @@ class Mappable:
   def nextTurn(self):
     pass
 
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
-
-class Species:
+class Species(object):
+  game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
   def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
     self.id = id
@@ -38,6 +43,7 @@ class Species:
     self.range = range
     self.maxAttacks = maxAttacks
     self.season = season
+    self.updatedAt = game.turnNumber
 
   def toList(self):
     return [self.id, self.name, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
@@ -63,30 +69,40 @@ class Species:
   def spawn(self, x, y):
     pass
 
-
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
 class Tile(Mappable):
-  def __init__(self, game, id, x, y, trashAmount, owner):
+  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
+  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
     self.game = game
     self.id = id
     self.x = x
     self.y = y
     self.trashAmount = trashAmount
     self.owner = owner
+    self.hasEgg = hasEgg
+    self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, self.owner, ]
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, )
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
   
   def nextTurn(self):
     pass
 
-
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
 class Fish(Mappable):
+  game_state_attributes = ['id', 'x', 'y', 'owner', 'maxHealth', 'currentHealth', 'maxMovement', 'movementLeft', 'carryCap', 'carryingWeight', 'attackPower', 'isVisible', 'maxAttacks', 'attacksLeft', 'range', 'species']
   def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, isVisible, maxAttacks, attacksLeft, range, species):
     self.game = game
     self.id = id
@@ -105,6 +121,7 @@ class Fish(Mappable):
     self.attacksLeft = attacksLeft
     self.range = range
     self.species = species
+    self.updatedAt = game.turnNumber
 
   def toList(self):
     return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
@@ -255,9 +272,13 @@ class Fish(Mappable):
       target.currentHealth = target.maxHealth
     return True
 
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
-
-class Player:
+class Player(object):
+  game_state_attributes = ['id', 'playerName', 'time', 'currentReefHealth', 'spawnFood']
   def __init__(self, game, id, playerName, time, currentReefHealth, spawnFood):
     self.game = game
     self.id = id
@@ -265,6 +286,7 @@ class Player:
     self.time = time
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
+    self.updatedAt = game.turnNumber
 
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
@@ -279,7 +301,10 @@ class Player:
   def talk(self, message):
     pass
 
-
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
 
 # The following are animations and do not need to have any logic added

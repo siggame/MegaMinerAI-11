@@ -92,6 +92,9 @@ library.getCurrentSeason.argtypes = [c_void_p]
 library.getSeasonLength.restype = c_int
 library.getSeasonLength.argtypes = [c_void_p]
 
+library.getHealPercent.restype = c_int
+library.getHealPercent.argtypes = [c_void_p]
+
 library.getMappable.restype = c_void_p
 library.getMappable.argtypes = [c_void_p, c_int]
 
@@ -178,6 +181,9 @@ library.tileGetTrashAmount.argtypes = [c_void_p]
 
 library.tileGetOwner.restype = c_int
 library.tileGetOwner.argtypes = [c_void_p]
+
+library.tileGetHasEgg.restype = c_int
+library.tileGetHasEgg.argtypes = [c_void_p]
 
 library.fishGetId.restype = c_int
 library.fishGetId.argtypes = [c_void_p]

@@ -345,7 +345,7 @@ DLLEXPORT int networkLoop(Connection* c)
 % endfor
         }
 % for model in models:
-%   if model.type == 'Model':
+%   if model.type == 'Model' and not model.permanent:
         else if(string(sub->val) == "${model.name}")
         {
           if(c->${model.plural})
@@ -366,6 +366,42 @@ DLLEXPORT int networkLoop(Connection* c)
           {
             sub = sub->next;
             parse${model.name}(c, c->${model.plural}+i, sub);
+          }
+        }
+%   elif model.type == 'Model' and model.permanent:
+        else if(string(sub->val) == "${model.name}")
+        {
+          if(c->${model.plural})
+          {
+            sub = sub->next;
+            for(int i = 0; i < c->${model.name}Count; i++)
+            {
+              if(!sub)
+              {
+                break;
+              }
+              int id = atoi(sub->list->val);
+              if(id == c->${model.plural}[i].id)
+              {
+%     for datum in model.data:
+%       if datum.type == str:
+                delete[] c->${model.plural}[i].${datum.name};
+%       endif
+%     endfor
+                parse${model.name}(c, c->${model.plural}+i, sub);
+                sub = sub->next;
+              }
+            }
+          }
+          else
+          {
+            c->${model.name}Count =  sexp_list_length(expression)-1; //-1 for the header
+            c->${model.plural} = new _${model.name}[c->${model.name}Count];
+            for(int i = 0; i < c->${model.name}Count; i++)
+            {
+              sub = sub->next;
+              parse${model.name}(c, c->${model.plural}+i, sub);
+            }
           }
         }
 %   endif

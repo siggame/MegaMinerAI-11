@@ -28,6 +28,8 @@ class Tile : public Mappable {
   int trashAmount();
   ///The owner of the tile if it is part of a cove
   int owner();
+  ///Determines of a fish is set to spawn on this cove
+  int hasEgg();
 
   // Actions
 

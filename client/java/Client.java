@@ -36,6 +36,7 @@ public interface Client extends Library {
   int getTrashAmount(Pointer connection);
   int getCurrentSeason(Pointer connection);
   int getSeasonLength(Pointer connection);
+  int getHealPercent(Pointer connection);
 
   Pointer getMappable(Pointer connection, int num);
   int getMappableCount(Pointer connection);
@@ -70,6 +71,7 @@ public interface Client extends Library {
   int tileGetY(Pointer ptr);
   int tileGetTrashAmount(Pointer ptr);
   int tileGetOwner(Pointer ptr);
+  int tileGetHasEgg(Pointer ptr);
 
   int fishGetId(Pointer ptr);
   int fishGetX(Pointer ptr);

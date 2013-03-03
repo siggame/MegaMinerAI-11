@@ -41,9 +41,10 @@ class Match(DefaultGameWorld):
     self.boundLength = self.boundLength
     self.currentSeason = self.currentSeason
     self.seasonLength = self.seasonLength
+    self.healPercent = self.healPercent
 
     #Make grid
-    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x,y)])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x,y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount. 
     self.trashDict = dict()
@@ -197,10 +198,11 @@ class Match(DefaultGameWorld):
           trashAmount = self.trashAmount,
           currentSeason = self.currentSeason,
           seasonLength = self.seasonLength,
+          healPercent = self.healPercent,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
-          Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
+          Species = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
-          Fishs = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
+          Fishes = [i.toJson() for i in self.objects.values() if i.__class__ is Fish],
           Players = [i.toJson() for i in self.objects.values() if i.__class__ is Player],
           animations = self.jsonAnimations
         )
@@ -242,7 +244,7 @@ class Match(DefaultGameWorld):
         else:
           # Start by computing the total health of all fish for each player
           fishHealths = [0, 0]
-          for fish in self.objects.fishs:
+          for fish in self.objects.fishes:
             fishHealths[fish.owner] += fish.currentHealth
           # Now compare!
           # Player 1 wins if they have the school of fish with more health
@@ -360,12 +362,16 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength])
+    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
-    typeLists.append(["Species"] + [i.toList() for i in self.objects.values() if i.__class__ is Species])
-    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
+    updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
+    if updated:
+      typeLists.append(["Species"] + [i.toList() for i in updated])
+    updated = [i for i in self.objects.values() if i.__class__ is Tile and i.updatedAt > self.turnNumber-3]
+    if updated:
+      typeLists.append(["Tile"] + [i.toList() for i in updated])
     typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
