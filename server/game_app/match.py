@@ -47,7 +47,7 @@ class Match(DefaultGameWorld):
     self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x,y)])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount. 
-    self.trashDict = []
+    self.trashDict = dict()
 
   # Helper function
   #since ownership only matter on cove tiles, we're making an owned tile a cove. 
@@ -120,11 +120,13 @@ class Match(DefaultGameWorld):
           print "Trash was spawned"
           val=random.randint(1,self.trashAmount)
           randTile.trashAmount+=val
+          self.trashDict[(randTile.x,randTile.y)]=val
           oppTile.trashAmount+=val
+          self.trashDict[(oppTile.x,oppTile.y)] = val
           self.trashAmount-=val
-           #TODO UPDATE TRASH DICT
           print 'val = %i , and self.trashAmount = %i '%(val,self.trashAmount)
       
+    print self.trashDict
     print("END RANDOM TRASH GENERATION")
     return True
      
@@ -247,7 +249,7 @@ class Match(DefaultGameWorld):
       else:
         # Start by computing the total value of all fish for each player
         fishValues = [0, 0]
-        for fish in self.objects.fishs:
+        for fish in self.objects.fishes:
           fishValues[fish.owner] += cfgSpecies[fish.species]["cost"]
         # Now compare!
         # Player 1 wins if they have the higher value school of fish
@@ -277,6 +279,7 @@ class Match(DefaultGameWorld):
   def declareWinner(self, winner, reason=''):
     #DELETE GRID
     del self.grid
+    print len(self.objects.values)
     print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
     self.winner = winner
 
