@@ -278,8 +278,7 @@ class Match(DefaultGameWorld):
 
   def declareWinner(self, winner, reason=''):
     #DELETE GRID
-    del self.grid
-    print len(self.objects.values)
+    #del self.grid
     print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
     self.winner = winner
 
