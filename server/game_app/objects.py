@@ -161,7 +161,7 @@ class Fish(Mappable):
       return "Your fish cannot move off the map."
     elif abs(self.x-x) > 1 or abs(self.y - y) > 1 or (abs(self.x-x) == 1 and abs(self.y - y) == 1):
       return "You can only move to adjacent locations."
-    T = self.game.getTile (x, y) [0] #The tile the player wants to walk onto
+    T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
     elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
@@ -171,7 +171,7 @@ class Fish(Mappable):
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
-    elif self.game.getTile(x,y)[0].isCove == True and self.game.getTile(x,y)[0].owner != self.owner:
+    elif self.game.getTile(x,y).isCove == True and self.game.getTile(x,y).owner != self.owner:
       return "Can't go into an opponent's cove."
     #Working under the assumption that ground units can move anywhere
     self.game.grid[self.x][self.y].remove(self)
