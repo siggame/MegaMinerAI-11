@@ -183,6 +183,10 @@ class Match(DefaultGameWorld):
 
     else:
       return "Game is over."
+      
+    #change seasons if applicable
+    if self.turnNumber % self.seasonLength == 0:
+      self.currentSeason = (self.currentSeason + 1) % 4 #Modded by 4 in case of multiple years
 
     for obj in self.objects.values():
       obj.nextTurn()
