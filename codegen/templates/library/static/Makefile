@@ -23,7 +23,7 @@ libclient_%.o: %.cpp *$(headers)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(objects) client libclient_network.o libclient_game.o libclient_getters.o libclient_util.o libclient.so
+	rm -f $(objects) client client.a libclient_network.o libclient_game.o libclient_getters.o libclient_util.o libclient.so
 	$(MAKE) -C sexp clean
 
 libclient.so: libclient_network.o libclient_game.o libclient_getters.o libclient_util.o sexp/libclient_sexp.a
