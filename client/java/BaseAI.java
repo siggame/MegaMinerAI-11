@@ -8,8 +8,8 @@ import com.sun.jna.Pointer;
 public abstract class BaseAI
 {
   static Mappable[] mappables;
-  static Species[] species;
   static Tile[] tiles;
+  static Species[] species;
   static Fish[] fishes;
   static Player[] players;
   Pointer connection;
@@ -51,17 +51,17 @@ public abstract class BaseAI
     {
       mappables[i] = new Mappable(Client.INSTANCE.getMappable(connection, i));
     }
-    count = Client.INSTANCE.getSpeciesCount(connection);
-    species = new Species[count];
-    for(int i = 0; i < count; i++)
-    {
-      species[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
-    }
     count = Client.INSTANCE.getTileCount(connection);
     tiles = new Tile[count];
     for(int i = 0; i < count; i++)
     {
       tiles[i] = new Tile(Client.INSTANCE.getTile(connection, i));
+    }
+    count = Client.INSTANCE.getSpeciesCount(connection);
+    species = new Species[count];
+    for(int i = 0; i < count; i++)
+    {
+      species[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
     }
     count = Client.INSTANCE.getFishCount(connection);
     fishes = new Fish[count];

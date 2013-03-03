@@ -29,30 +29,27 @@ class Mappable(object):
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
       object.__setattr__(self, name, value)
 
-class Species(object):
-  game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
-  def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
+class Tile(Mappable):
+  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
+  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
     self.game = game
     self.id = id
-    self.name = name
-    self.cost = cost
-    self.maxHealth = maxHealth
-    self.maxMovement = maxMovement
-    self.carryCap = carryCap
-    self.attackPower = attackPower
-    self.range = range
-    self.maxAttacks = maxAttacks
-    self.season = season
+    self.x = x
+    self.y = y
+    self.trashAmount = trashAmount
+    self.owner = owner
+    self.hasEgg = hasEgg
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.name, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, name = self.name, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
   
   def nextTurn(self):
+    return True
     if self.game.playerID == self.id:
       x = self.spec_int #spec_int is a config constant not yet made
       for spec in self.objects.FishSpecies:
@@ -67,6 +64,7 @@ class Species(object):
     return True
 
   def spawn(self, x, y):
+    return True
     player = self.game.objects.players[self.game.playerID]
     if x < 0 or x >= self.game.mapWidth:
       return "You cannot spawn outside the breeding grounds."
@@ -91,26 +89,33 @@ class Species(object):
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
       object.__setattr__(self, name, value)
 
-class Tile(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
-  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
+class Species(object):
+  game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
+  def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
     self.id = id
-    self.x = x
-    self.y = y
-    self.trashAmount = trashAmount
-    self.owner = owner
-    self.hasEgg = hasEgg
+    self.name = name
+    self.cost = cost
+    self.maxHealth = maxHealth
+    self.maxMovement = maxMovement
+    self.carryCap = carryCap
+    self.attackPower = attackPower
+    self.range = range
+    self.maxAttacks = maxAttacks
+    self.season = season
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
+    return [self.id, self.name, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
+    return dict(id = self.id, name = self.name, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
   
   def nextTurn(self):
+    pass
+
+  def spawn(self, x, y):
     pass
 
   def __setattr__(self, name, value):
@@ -217,7 +222,7 @@ class Fish(Mappable):
     self.game.getTile(x,y).trashAmount -= weight
     #add weight to fish
     self.carryingWeight += weight
-    pass
+    return True
 
   def drop(self, x, y, weight):
     if self.owner != self.game.playerID:
@@ -358,18 +363,6 @@ class MoveAnimation:
 
   def toJson(self):
     return dict(type = "move", actingID = self.actingID, fromX = self.fromX, fromY = self.fromY, toX = self.toX, toY = self.toY)
-
-class DropAnimation:
-  def __init__(self, x, y, owner):
-    self.x = x
-    self.y = y
-    self.owner = owner
-
-  def toList(self):
-    return ["drop", self.x, self.y, self.owner, ]
-
-  def toJson(self):
-    return dict(type = "drop", x = self.x, y = self.y, owner = self.owner)
 
 class PickUpAnimation:
   def __init__(self, x, y, actingID, amount):

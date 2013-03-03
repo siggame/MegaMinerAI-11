@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 public abstract class BaseAI
 {
   public static Mappable[] mappables;
-  public static Species[] species;
   public static Tile[] tiles;
+  public static Species[] species;
   public static Fish[] fishes;
   public static Player[] players;
   IntPtr connection;
@@ -52,17 +52,17 @@ public abstract class BaseAI
     {
       mappables[i] = new Mappable(Client.getMappable(connection, i));
     }
-    count = Client.getSpeciesCount(connection);
-    species = new Species[count];
-    for(int i = 0; i < count; i++)
-    {
-      species[i] = new Species(Client.getSpecies(connection, i));
-    }
     count = Client.getTileCount(connection);
     tiles = new Tile[count];
     for(int i = 0; i < count; i++)
     {
       tiles[i] = new Tile(Client.getTile(connection, i));
+    }
+    count = Client.getSpeciesCount(connection);
+    species = new Species[count];
+    for(int i = 0; i < count; i++)
+    {
+      species[i] = new Species(Client.getSpecies(connection, i));
     }
     count = Client.getFishCount(connection);
     fishes = new Fish[count];

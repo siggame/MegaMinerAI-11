@@ -17,6 +17,18 @@ std::ostream& operator<<(std::ostream& stream, Mappable ob)
 }
 
 
+std::ostream& operator<<(std::ostream& stream, Tile ob)
+{
+  stream << "id: " << ob.id  <<'\n';
+  stream << "x: " << ob.x  <<'\n';
+  stream << "y: " << ob.y  <<'\n';
+  stream << "trashAmount: " << ob.trashAmount  <<'\n';
+  stream << "owner: " << ob.owner  <<'\n';
+  stream << "hasEgg: " << ob.hasEgg  <<'\n';
+  return stream;
+}
+
+
 std::ostream& operator<<(std::ostream& stream, Species ob)
 {
   stream << "id: " << ob.id  <<'\n';
@@ -29,18 +41,6 @@ std::ostream& operator<<(std::ostream& stream, Species ob)
   stream << "range: " << ob.range  <<'\n';
   stream << "maxAttacks: " << ob.maxAttacks  <<'\n';
   stream << "season: " << ob.season  <<'\n';
-  return stream;
-}
-
-
-std::ostream& operator<<(std::ostream& stream, Tile ob)
-{
-  stream << "id: " << ob.id  <<'\n';
-  stream << "x: " << ob.x  <<'\n';
-  stream << "y: " << ob.y  <<'\n';
-  stream << "trashAmount: " << ob.trashAmount  <<'\n';
-  stream << "owner: " << ob.owner  <<'\n';
-  stream << "hasEgg: " << ob.hasEgg  <<'\n';
   return stream;
 }
 
@@ -97,16 +97,6 @@ std::ostream& operator<<(std::ostream& stream, move ob)
   stream << "fromY: " << ob.fromY  <<'\n';
   stream << "toX: " << ob.toX  <<'\n';
   stream << "toY: " << ob.toY  <<'\n';
-  return stream;
-}
-
-
-std::ostream& operator<<(std::ostream& stream, drop ob)
-{
-  stream << "drop" << "\n";
-  stream << "x: " << ob.x  <<'\n';
-  stream << "y: " << ob.y  <<'\n';
-  stream << "owner: " << ob.owner  <<'\n';
   return stream;
 }
 
@@ -176,11 +166,11 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
   stream << "\n\nMappables:\n";
   for(std::map<int,Mappable>::iterator i = ob.mappables.begin(); i != ob.mappables.end(); i++)
     stream << i->second << '\n';
-  stream << "\n\nSpeciess:\n";
-  for(std::map<int,Species>::iterator i = ob.species.begin(); i != ob.species.end(); i++)
-    stream << i->second << '\n';
   stream << "\n\nTiles:\n";
   for(std::map<int,Tile>::iterator i = ob.tiles.begin(); i != ob.tiles.end(); i++)
+    stream << i->second << '\n';
+  stream << "\n\nSpeciess:\n";
+  for(std::map<int,Species>::iterator i = ob.species.begin(); i != ob.species.end(); i++)
     stream << i->second << '\n';
   stream << "\n\nFishs:\n";
   for(std::map<int,Fish>::iterator i = ob.fishes.begin(); i != ob.fishes.end(); i++)
@@ -202,8 +192,6 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
 //      stream << *((spawn*)*i) << "\n";
 //    if((*(*i)).type == MOVE)
 //      stream << *((move*)*i) << "\n";
-//    if((*(*i)).type == DROP)
-//      stream << *((drop*)*i) << "\n";
 //    if((*(*i)).type == PICKUP)
 //      stream << *((pickUp*)*i) << "\n";
 //    if((*(*i)).type == DEATH)

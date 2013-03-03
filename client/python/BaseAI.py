@@ -16,21 +16,21 @@ class BaseAI:
   connection = None
   #\endcond
   mappables = []
-  species = []
   tiles = []
+  species = []
   fishes = []
   players = []
   #\cond
   def startTurn(self):
     from GameObject import Mappable
-    from GameObject import Species
     from GameObject import Tile
+    from GameObject import Species
     from GameObject import Fish
     from GameObject import Player
 
     BaseAI.mappables = [Mappable(library.getMappable(self.connection, i)) for i in xrange(library.getMappableCount(self.connection))]
-    BaseAI.species = [Species(library.getSpecies(self.connection, i)) for i in xrange(library.getSpeciesCount(self.connection))]
     BaseAI.tiles = [Tile(library.getTile(self.connection, i)) for i in xrange(library.getTileCount(self.connection))]
+    BaseAI.species = [Species(library.getSpecies(self.connection, i)) for i in xrange(library.getSpeciesCount(self.connection))]
     BaseAI.fishes = [Fish(library.getFish(self.connection, i)) for i in xrange(library.getFishCount(self.connection))]
     BaseAI.players = [Player(library.getPlayer(self.connection, i)) for i in xrange(library.getPlayerCount(self.connection))]
 
