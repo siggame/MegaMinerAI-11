@@ -28,7 +28,6 @@ class Match(DefaultGameWorld):
       self.dictLog = dict(gameName = "Reef", turns = [])
     self.addPlayer(self.scribe, "spectator")
 
-    #TODO: INITIALIZE THESE!
     self.turnNumber = -1
     self.playerID = -1
     self.gameNumber = id 
@@ -59,7 +58,7 @@ class Match(DefaultGameWorld):
     else:
       return 3
     
-  #getTile RETURN [TILE]
+  #getTile RETURN TILE
   def getTile(self, x, y):
     return  self.grid[x][y][0] 
   
@@ -99,45 +98,34 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
       
   def spawnTrash(self):
-    print("START spawnTrash(self)")
-    #RANDOM ALGORITHM
-    #Loop trashAmount number of times
-    print "START RANDOM TRASH GENERATION"
-    trashCur = 0 #Current number of trash created
-    #self.trashAmount Total amount of trash
-    trashMax = self.trashAmount
     while(self.trashAmount>0):
       #Create random X and random Y
-      print ("CREATE RANDOM X AND Y")
-      randX = random.randint(0, (self.mapWidth/2)//2)
-      randY = random.randint(0, (self.mapHeight)//2)
+      randX = random.randint(0, self.mapWidth/2)
+      randY = random.randint(0, self.mapHeight/2)
 
       #Find tile at random X and random Y position
       randTile = self.getTile(randX, randY)
       oppTile = self.getTile(self.mapWidth-randX-1, randY)
       
       if isinstance(randTile,Tile) and randTile.owner==3:
-          print "Trash was spawned"
           val=random.randint(1,self.trashAmount)
           randTile.trashAmount+=val
           self.trashDict[(randTile.x,randTile.y)]=val
           oppTile.trashAmount+=val
           self.trashDict[(oppTile.x,oppTile.y)] = val
           self.trashAmount-=val
-          print 'val = %i , and self.trashAmount = %i '%(val,self.trashAmount)
       
     print self.trashDict
-    print("END RANDOM TRASH GENERATION")
+    print sum(self.trashDict.values())
     return True
      
   def start(self):
-    print("GAME STARTED")
     if len(self.players) < 2:
       return "Game is not full"
     if self.winner is not None or self.turn is not None:
       return "Game has already begun"
 
-    #TODO: START STUFF
+    #TODO: Assign species to a season
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.spawnTrash()
@@ -147,7 +135,8 @@ class Match(DefaultGameWorld):
 
   def getTrashLeft(self):
     totalTrash = 0
-    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently. I'll bring this up or make an issue, for now this works.  
+    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently. 
+    #I'll bring this up or make an issue, for now this works.  
     for x in range(0,self.mapWidth/2-self.boundLength):
       for y in range(0,self.mapHeight):
         totalTrash += self.getTile(x,y).trashAmount
@@ -170,22 +159,16 @@ class Match(DefaultGameWorld):
     return totalTrash
 
   def nextTurn(self):
-    print "TURN NUMBER: %i"% self.turnNumber
-    print self.playerID
     self.turnNumber += 1
-    print "---------------------------"
-    print self.objects.players
-    print "-------------------------"
     if self.turn == self.players[0]:
       #deal damage to the left-side player
       self.objects.players[0].currentReefHealth -= (self.getTrashLeft() + self.getTrashShared()) * self.trashDamage
-
       self.turn = self.players[1]
       self.playerID = 1
+
     elif self.turn == self.players[1]:
       #deal damage to the left-side player
       self.objects.players[1].currentReefHealth -= (self.getTrashRight() + self.getTrashShared()) * self.trashDamage
-
       self.turn = self.players[0]
       self.playerID = 0
 
@@ -229,9 +212,6 @@ class Match(DefaultGameWorld):
 
   def checkWinner(self):
     # Get the players
-    print "----------------------------"
-    print self.objects.players
-    print "----------------------"
     player1 = self.objects.players[0]
     player2 = self.objects.players[1]
     # Get the current reef healths
@@ -279,8 +259,8 @@ class Match(DefaultGameWorld):
   def declareWinner(self, winner, reason=''):
     #DELETE GRID
     #del self.grid
+    self.winner=winner
     print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
-    self.winner = winner
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
     
