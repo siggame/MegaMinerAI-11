@@ -42,6 +42,7 @@ class Match(DefaultGameWorld):
     self.currentSeason = self.currentSeason
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
+    self.count = 0
 
     #Make grid
     self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x, y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
@@ -52,6 +53,7 @@ class Match(DefaultGameWorld):
   # Helper function
   #since ownership only matter on cove tiles, we're making an owned tile a cove. 
   def getTileOwner(self, x, y):
+    self.count+=1
     if x < 3 and y < 3:
       return 0
     elif x > self.mapWidth - 3 and y < 3:
@@ -72,7 +74,6 @@ class Match(DefaultGameWorld):
     pass
 
   def addPlayer(self, connection, type="player"):
-    print "Adding player."
     connection.type = type
     if len(self.players) >= 2 and type == "player":
       return "Game is full"
@@ -91,7 +92,6 @@ class Match(DefaultGameWorld):
     return True
 
   def removePlayer(self, connection):
-    print "Removing player"
     if connection in self.players:
       if self.turn is not None:
         winner = self.players[1 - self.getPlayerIndex(connection)]
@@ -101,7 +101,7 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
       
   def spawnTrash(self):
-    print "Spawning trash."
+    #print "Spawning trash."
     while self.trashAmount > 0:
       #Create random X and random Y
       randX = random.randint(0, self.mapWidth/2)
@@ -136,7 +136,8 @@ class Match(DefaultGameWorld):
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.spawnTrash()
-
+    print self.count
+    print len(self.objects)
     self.nextTurn()
     return True
 
@@ -166,7 +167,7 @@ class Match(DefaultGameWorld):
     return totalTrash
 
   def nextTurn(self):
-    print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
+    #print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
