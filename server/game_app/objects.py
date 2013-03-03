@@ -1,4 +1,4 @@
-class Mappable:
+class Mappable(object):
   game_state_attributes = ['id', 'x', 'y']
   def __init__(self, game, id, x, y):
     self.game = game
@@ -22,7 +22,7 @@ class Mappable:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
       object.__setattr__(self, name, value)
 
-class Species:
+class Species(object):
   game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
   def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
@@ -131,7 +131,7 @@ class Fish(Mappable):
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
       object.__setattr__(self, name, value)
 
-class Player:
+class Player(object):
   game_state_attributes = ['id', 'playerName', 'time', 'currentReefHealth', 'spawnFood']
   def __init__(self, game, id, playerName, time, currentReefHealth, spawnFood):
     self.game = game

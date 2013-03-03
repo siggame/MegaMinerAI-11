@@ -2,6 +2,8 @@
 class ${model.name}\
 %   if model.parent:
 (${model.parent.name})\
+%   else:
+(object)\
 %   endif
 :
   game_state_attributes = ${[i.name for i in model.data]}
