@@ -219,7 +219,11 @@ ${arg.name}, \
     typeLists = []
 % for model in models:
 %   if model.type == 'Model':
+%     if model.permanent:
+    typeLists.append(["${model.name}"] + [i.toList() for i in self.objects.values() if i.__class__ is ${model.name} and i.updatedAt > self.turnNumber-3])
+%     else:
     typeLists.append(["${model.name}"] + [i.toList() for i in self.objects.values() if i.__class__ is ${model.name}])
+%     endif
 %   endif
 % endfor
 

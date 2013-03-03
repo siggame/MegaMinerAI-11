@@ -4,6 +4,7 @@ class ${model.name}\
 (${model.parent.name})\
 %   endif
 :
+  game_state_attributes = ${[i.name for i in model.data]}
   def __init__(self, game\
 %   for datum in model.data:
 , ${datum.name}\
@@ -13,6 +14,7 @@ class ${model.name}\
 %   for datum in model.data:
     self.${datum.name} = ${datum.name}
 %   endfor
+    self.updatedAt = game.turnNumber
 
   def toList(self):
     return [\
@@ -41,7 +43,6 @@ ${datum.name} = self.${datum.name}, \
     pass
 
 %   endfor
-
 %   for prop in model.properties:
   def ${prop.name}(self\
 %     for arg in prop.arguments:
@@ -51,6 +52,10 @@ ${datum.name} = self.${datum.name}, \
     pass
 
 %   endfor
+  def __setattr__(self, name, value):
+      if name in self.game_state_attributes:
+        object.__setattr__(self, 'updatedAt', self.game.turnNumber)
+      object.__setattr__(self, name, value)
 
 % endfor
 

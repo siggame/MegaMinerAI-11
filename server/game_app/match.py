@@ -222,7 +222,7 @@ class Match(DefaultGameWorld):
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
     typeLists.append(["Species"] + [i.toList() for i in self.objects.values() if i.__class__ is Species])
-    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile])
+    typeLists.append(["Tile"] + [i.toList() for i in self.objects.values() if i.__class__ is Tile and i.updatedAt > self.turnNumber-3])
     typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
