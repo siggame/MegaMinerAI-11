@@ -236,13 +236,12 @@ class Fish(Mappable):
 #TODO: Update to work with being passed a Fish to attack
   def attack(self, target):
   
-    target=self.game.getFish(x,y)
+    x = target.x
+    y = target.y
   
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
       return "You can only control your own fish."
-    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-      return "You can't attack off the map."
     elif abs(self.x-x) + abs(self.y-y) > self.range:
       return "You can't attack further than your fish's range."
     elif self.attacksLeft == 0:
@@ -271,9 +270,15 @@ class Fish(Mappable):
       self.game.getTile(x,y).trashAmount += target.carryingWeight
       if x == self.x and y == self.y:
         #stealth fish on same tile must pick up garbage
-        #TODO: The stealth fish won't be able to pick the weight up currently
-        #      if the weight is creater than the carry capacity
-        self.pickUp(x,y,target.carryingWeight)
+        #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
+        #      Is this desired?
+        if target.carryingWeight + self.carryingWeight <= self.carryingCap:
+           #can carry all that weight
+           self.pickUp(x,y,target.carryingWeight)
+        else:
+           #can't carry that weight, just die.
+           self.game.grid[x][y].remove(self)
+           self.game.remove(self)
       self.game.grid[x][y].remove(target)
       self.game.remove(target)
       

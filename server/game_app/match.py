@@ -349,15 +349,15 @@ class Match(DefaultGameWorld):
     
   def initSeasons(self):
     #random distribution of seasons, assigns each species a random season
-    randSeason = range(len(self.objects.Species))
+    randSeason = range(len(self.objects.species))
     random.shuffle(randSeason)
     count = 0
-      while count < len(randSeason):
-         randSeason[count] = randSeason[count] % 4
-         count += 1
+    while count < len(randSeason):
+      randSeason[count] = randSeason[count] % 4
+      count += 1
     
-    for num in range (len(self.objects.Species)):
-      self.objects.Species[num].season = randSeason[num]
+    for num in range (len(self.objects.species)):
+      self.objects.species[num].season = randSeason[num]
     return True
 
   def status(self):
