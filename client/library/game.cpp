@@ -583,15 +583,15 @@ DLLEXPORT int networkLoop(Connection* c)
             sub = sub->next;
             for(int i = 0; i < c->TileCount; i++)
             {
+              if(!sub)
+              {
+                break;
+              }
               int id = atoi(sub->list->val);
               if(id == c->Tiles[i].id)
               {
                 parseTile(c, c->Tiles+i, sub);
                 sub = sub->next;
-                if(!sub)
-                {
-                  break;
-                }
               }
             }
           }

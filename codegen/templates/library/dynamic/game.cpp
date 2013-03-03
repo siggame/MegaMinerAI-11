@@ -376,6 +376,10 @@ DLLEXPORT int networkLoop(Connection* c)
             sub = sub->next;
             for(int i = 0; i < c->${model.name}Count; i++)
             {
+              if(!sub)
+              {
+                break;
+              }
               int id = atoi(sub->list->val);
               if(id == c->${model.plural}[i].id)
               {
@@ -386,10 +390,6 @@ DLLEXPORT int networkLoop(Connection* c)
 %     endfor
                 parse${model.name}(c, c->${model.plural}+i, sub);
                 sub = sub->next;
-                if(!sub)
-                {
-                  break;
-                }
               }
             }
           }
