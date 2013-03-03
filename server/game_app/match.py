@@ -132,7 +132,7 @@ class Match(DefaultGameWorld):
     print "Starting game."
     self.statList = ["cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks"]
 
-    #TODO: Assign species to a season
+    self.initSeasons()
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.spawnTrash()
@@ -183,6 +183,10 @@ class Match(DefaultGameWorld):
 
     else:
       return "Game is over."
+      
+    #change seasons if applicable
+    if self.turnNumber % self.seasonLength == 0:
+      self.currentSeason = (self.currentSeason + 1) % 4 #Modded by 4 in case of multiple years
 
     for obj in self.objects.values():
       obj.nextTurn()
@@ -343,28 +347,17 @@ class Match(DefaultGameWorld):
       i.writeSExpr(self.animations)
     return True
     
-  def initSpeciesAvailibility(self):
-    # spec_int will be config constant
-    x = self.spec_int #TODO: change spec_int to correct variable
-    temp = range(len(self.objects.FishSpecies) - 4)
-    temp2 = list(temp)
+  def initSeasons(self):
+    #random distribution of seasons, assigns each species a random season
+    randSeason = range(len(self.objects.Species))
+    random.shuffle(randSeason)
+    count = 0
+      while count < len(randSeason):
+         randSeason[count] = randSeason[count] % 4
+         count += 1
     
-    ta = [0, 0, 0, 0] #till available
-    for i in temp:
-      temp[i] = (i + 1)*x
-    ta.extend(temp)
-    
-    tu = [x, 2*x, 3*x, 4*x] #till unavailable
-    for j in temp2:
-      temp2[j] = 0
-    tu.extend(temp2)
-    #Shuffled position list for which specific initialization values each fish species will correspond to
-    pos = range(len(self.objects.FishSpecies))
-    random.shuffle(pos)
-    
-    for num in range (len(self.objects.FishSpecies)):
-      self.objects.FishSpecies[num].turnsTillAvailable = ta[pos[num]]
-      self.objects.FishSpecies[num].turnsTillUnavailable = tu[pos[num]]
+    for num in range (len(self.objects.Species)):
+      self.objects.Species[num].season = randSeason[num]
     return True
 
   def status(self):

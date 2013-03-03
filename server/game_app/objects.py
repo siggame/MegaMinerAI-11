@@ -49,19 +49,7 @@ class Tile(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
   
   def nextTurn(self):
-    return True
-    if self.game.playerID == self.id:
-      x = self.spec_int #spec_int is a config constant not yet made
-      for spec in self.objects.FishSpecies:
-        if spec.turnsTillAvailable > 0:
-          spec.turnsTillAvailable = spec.turnsTillAvailable - 1
-          if spec.turnsTillAvailable == spec.turnsTillUnavailable: #i.e., turns till available = turns till unavailable = 0
-            spec.turnsTillUnavailable = 4*x
-        if spec.turnsTillUnavailable > 0:
-          spec.turnsTillUnavailable = spec.turnsTillUnavailable - 1
-          if spec.turnsTillUnavailable == spec.turnsTillAvailable:
-            spec.turnsTillAvailable = ((len(self.objects.FishSpecies) - 4)*x)
-    return True
+    pass
 
   def spawn(self, x, y):
     return True
