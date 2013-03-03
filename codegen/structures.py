@@ -18,6 +18,7 @@ class Model(object):
     self.name = name
     self.plural = name + 's'
     self.type = 'Model'
+    self.permanent = False
 
     if 'parent' in kwargs:
       self.parent = kwargs['parent']
@@ -39,6 +40,8 @@ class Model(object):
       self.type = kwargs['type']
     if 'plural' in kwargs:
       self.plural = kwargs['plural']
+    if 'permanent' in kwargs:
+      self.permanent = kwargs['permanent']
 
   def addData(self, data):
     self.data.extend(data)
