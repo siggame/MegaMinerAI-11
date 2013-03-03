@@ -66,6 +66,7 @@ Species = Model('Species',
     ],
   doc='This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. ',
   plural='Species',
+  permanent = True,
   )
   
 Fish = Model('Fish',

@@ -562,18 +562,31 @@ DLLEXPORT int networkLoop(Connection* c)
         {
           if(c->Species)
           {
+            sub = sub->next;
             for(int i = 0; i < c->SpeciesCount; i++)
             {
-              delete[] c->Species[i].name;
+              if(!sub)
+              {
+                break;
+              }
+              int id = atoi(sub->list->val);
+              if(id == c->Species[i].id)
+              {
+                delete[] c->Species[i].name;
+                parseSpecies(c, c->Species+i, sub);
+                sub = sub->next;
+              }
             }
-            delete[] c->Species;
           }
-          c->SpeciesCount =  sexp_list_length(expression)-1; //-1 for the header
-          c->Species = new _Species[c->SpeciesCount];
-          for(int i = 0; i < c->SpeciesCount; i++)
+          else
           {
-            sub = sub->next;
-            parseSpecies(c, c->Species+i, sub);
+            c->SpeciesCount =  sexp_list_length(expression)-1; //-1 for the header
+            c->Species = new _Species[c->SpeciesCount];
+            for(int i = 0; i < c->SpeciesCount; i++)
+            {
+              sub = sub->next;
+              parseSpecies(c, c->Species+i, sub);
+            }
           }
         }
         else if(string(sub->val) == "Tile")
