@@ -3,12 +3,6 @@ import networking.config.config
 #Initializes cfgSpecies
 cfgSpecies = networking.config.config.readConfig("config/species.cfg")
 
-print cfgSpecies["Sponge"].keys()
-print cfgSpecies["Sponge"].values()
-
-for key in cfgSpecies:
-  print key, cfgSpecies[key]["maxMovement"]
-
 for key in cfgSpecies.keys():
   cfgSpecies[key]['type'] = key
 
@@ -319,8 +313,11 @@ class Player(object):
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
 
   def nextTurn(self):
+    #TODO: Give food back to player
     #Fish spawn in at beginning of turn
     if self.game.playerID is self.id:
+      self.spawnFood +=10
+      
       for spawn in self.spawning:
         fishStats = [cfgSpecies[spawn[0]][stat] for stat in self.game.statList]
         self.game.addObject(Fish, [[spawn[1], spawn[2], self.game.playerID]] + fishStats)

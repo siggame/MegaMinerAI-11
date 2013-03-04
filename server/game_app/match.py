@@ -119,8 +119,6 @@ class Match(DefaultGameWorld):
          self.trashDict[(oppTile.x, oppTile.y)] = val
          self.trashAmount -= val
       
-    print self.trashDict
-    print sum(self.trashDict.values())
     return True
      
   def start(self):
@@ -138,8 +136,6 @@ class Match(DefaultGameWorld):
     for species in cfgSpecies.keys():
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
     self.initSeasons()
-    for species in self.objects.species:
-      print species.season
     self.nextTurn()
     return True
 
@@ -360,6 +356,8 @@ class Match(DefaultGameWorld):
     
     for num in range (len(self.objects.species)):
       self.objects.species[num].season = randSeason[num]
+    
+#    print [species.season for species in self.objects.species]
     return True
 
   def status(self):
