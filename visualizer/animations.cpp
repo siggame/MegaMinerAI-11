@@ -6,7 +6,7 @@ namespace visualizer
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
-        game->renderer->setColor(Color(1.0f,0.5f,1.0f,1.0f));
+        game->renderer->setColor(Color(1.0f,.8f,1.0f,1.0f));
 
         // render each tile on the map
         for (int x = 0; x < m_Map->GetWidth(); x++)

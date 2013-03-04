@@ -27,7 +27,7 @@ namespace visualizer
     class DrawMap: public Anim
     {
         public:
-        DrawMap( Map* map ) : m_Map(map), m_fTotalTime(0.0f)
+        DrawMap( Map* map ) : m_Map(map)
         {
             timer.start();
         }
@@ -37,7 +37,6 @@ namespace visualizer
         private:
             Map *m_Map;
             QElapsedTimer timer;
-            float m_fTotalTime;
 
     }; // DrawBackground
   
