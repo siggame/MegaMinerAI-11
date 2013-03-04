@@ -6,6 +6,7 @@ namespace visualizer
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
+
         game->renderer->setColor(Color(1.0f,.8f,1.0f,1.0f));
 
         // render each tile on the map
@@ -26,15 +27,14 @@ namespace visualizer
           }
         }
 
-
-        float fSeconds = timer.elapsed() / 1000.0f * game->options->getNumber("Enable Water Animation");
-
         // todo: change the direction of the water based on time
+        float fSeconds = timer.elapsed() / 1000.0f * game->options->getNumber("Enable Water Animation");
+        float fTransparency = (float)game->options->getNumber("Water Transparency Level") / 100.0f;
 
         // blend water map ontop of all the tiles
-        game->renderer->setColor(Color(1.0,1.0f,1.0f,0.4f));
+        game->renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
         game->renderer->drawSubTexturedQuad(0,0,m_Map->GetWidth(),m_Map->GetHeight(),(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
-        //game->renderer->drawTexturedQuad(0,0,m_Map->GetWidth(),m_Map->GetHeight(),"water");
+
     }
 
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )

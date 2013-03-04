@@ -7,9 +7,9 @@
     <maxvalue>1</maxvalue>
   </option>
   <option>
-    <key>Slider Bar</key>
+    <key>Water Transparency Level</key>
     <type>Float</type>
-    <value>100</value>
+    <value>40</value>
     <minvalue>0</minvalue>
     <maxvalue>100</maxvalue>
   </option>
