@@ -137,12 +137,22 @@ namespace visualizer
       }
     }
 
+    for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
+    {
+        Map::Tile& tile = (*pMap)(iter->second.x,iter->second.x);
+
+        cout<<iter->second.trashAmount<<endl;
+
+       // tile.spriteId = iter->second.trashAmount % 3;
+
+        //iter->
+    }
+
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
     {
       Frame turn;  // The frame that will be drawn
       turn.addAnimatable(pMap);
-
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);

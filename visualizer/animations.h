@@ -2,6 +2,7 @@
 #define ANIMATIONS_H
 
 #include "reefAnimatable.h"
+ #include <QElapsedTimer>
 
 namespace visualizer
 {
@@ -26,11 +27,17 @@ namespace visualizer
     class DrawMap: public Anim
     {
         public:
-            DrawMap( Map* map ) : m_Map(map) {}
-            void animate( const float& t, AnimData* d, IGame* game );
+        DrawMap( Map* map ) : m_Map(map), m_fTotalTime(0.0f)
+        {
+            timer.start();
+        }
+
+        void animate( const float& t, AnimData* d, IGame* game );
 
         private:
             Map *m_Map;
+            QElapsedTimer timer;
+            float m_fTotalTime;
 
     }; // DrawBackground
   
