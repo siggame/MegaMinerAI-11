@@ -139,7 +139,7 @@ namespace visualizer
 
     for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
     {
-        Map::Tile& tile = (*pMap)(iter->second.x,iter->second.x);
+        Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
 
         cout<<iter->second.trashAmount<<endl;
 

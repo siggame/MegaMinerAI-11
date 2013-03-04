@@ -27,7 +27,7 @@ namespace visualizer
         }
 
 
-        float fSeconds = timer.elapsed() / 1000.0f;
+        float fSeconds = timer.elapsed() / 1000.0f * game->options->getNumber("Enable Water Animation");
 
         // todo: change the direction of the water based on time
 
