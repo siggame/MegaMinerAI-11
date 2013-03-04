@@ -2,6 +2,10 @@ import networking.config.config
 
 #Initializes cfgSpecies
 cfgSpecies = networking.config.config.readConfig("config/species.cfg")
+c = cfgSpecies
+
+print cfgSpecies["Sponge"].values()
+
 for key in cfgSpecies.keys():
   cfgSpecies[key]['type'] = key
 

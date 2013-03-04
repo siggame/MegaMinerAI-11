@@ -104,8 +104,8 @@ class Match(DefaultGameWorld):
     #print "Spawning trash."
     while self.trashAmount > 0:
       #Create random X and random Y
-      randX = random.randint(0, self.mapWidth/2)
-      randY = random.randint(0, self.mapHeight)
+      randX = random.randint(0, self.mapWidth/2-1)
+      randY = random.randint(0, self.mapHeight-1)
 
       #Find tile at random X and random Y position
       randTile = self.getTile(randX, randY)
@@ -130,14 +130,16 @@ class Match(DefaultGameWorld):
       return "Game has already begun"
 
     print "Starting game."
-    self.statList = ["cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks"]
+    self.statList = ["name","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
 
-    self.initSeasons()
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.spawnTrash()
-    print self.count
-    print len(self.objects)
+    for species in cfgSpecies.keys():
+      self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
+    self.initSeasons()
+    for species in self.objects.species:
+      print species.season
     self.nextTurn()
     return True
 
@@ -349,7 +351,7 @@ class Match(DefaultGameWorld):
     
   def initSeasons(self):
     #random distribution of seasons, assigns each species a random season
-    randSeason = range(len(self.objects.species))
+    randSeason = range(len(cfgSpecies.keys()))
     random.shuffle(randSeason)
     count = 0
     while count < len(randSeason):
