@@ -43,7 +43,7 @@ class Match(DefaultGameWorld):
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
     self.count = 0
-
+    self.minTrash = self.minTrash
     #Make grid
     self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x, y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
@@ -101,7 +101,6 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
       
   def spawnTrash(self):
-    #print "Spawning trash."
     while self.trashAmount > 0:
       #Create random X and random Y
       randX = random.randint(0, self.mapWidth/2-1)
@@ -112,15 +111,28 @@ class Match(DefaultGameWorld):
       oppTile = self.getTile(self.mapWidth-randX-1, randY)
       
       if isinstance(randTile,Tile) and randTile.owner == 2:
-         val = random.randint(1, self.trashAmount)
+         val = random.randint(1,min([self.minTrash, self.trashAmount]))
          randTile.trashAmount += val
          self.trashDict[(randTile.x, randTile.y)] = val
          oppTile.trashAmount += val
          self.trashDict[(oppTile.x, oppTile.y)] = val
-         self.trashAmount -= val
-      
+         self.trashAmount -= val    
+    print self.trashDict
     return True
      
+  def findDamage(self,player):
+    damage = 0
+    if player==0:
+      min = 0; max = self.mapWidth/2+self.boundLength
+    elif player == 1: 
+      min = self.mapWidth/2-self.boundLength; max = self.mapWidth
+    for key in self.trashDict:
+      if min<=key[0]<max:
+        damage+=self.trashDict[key]
+    print "damage = %i"%(damage)
+    return damage
+      
+
   def start(self):
     if len(self.players) < 2:
       return "Game is not full"
@@ -169,13 +181,13 @@ class Match(DefaultGameWorld):
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
-      self.objects.players[0].currentReefHealth -= (self.getTrashLeft() + self.getTrashShared()) * self.trashDamage
+      #self.objects.players[0].currentReefHealth -= (self.getTrashLeft() + self.getTrashShared()) * self.trashDamage
       self.turn = self.players[1]
       self.playerID = 1
 
     elif self.turn == self.players[1]:
       #deal damage to the left-side player
-      self.objects.players[1].currentReefHealth -= (self.getTrashRight() + self.getTrashShared()) * self.trashDamage
+      #self.objects.players[1].currentReefHealth -= (self.getTrashRight() + self.getTrashShared()) * self.trashDamage
       self.turn = self.players[0]
       self.playerID = 0
 
@@ -188,6 +200,12 @@ class Match(DefaultGameWorld):
 
     for obj in self.objects.values():
       obj.nextTurn()
+   
+    if self.turn == self.players[0]:
+      self.objects.players[0].currentReefHealth -= self.findDamage(0)
+    
+    if self.turn == self.players[1]:
+     self.objects.players[1].currentReefHealth -= self.findDamage(1) 
 
     self.checkWinner()
     if self.winner is None:
