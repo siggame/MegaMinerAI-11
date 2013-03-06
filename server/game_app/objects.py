@@ -50,7 +50,18 @@ class Tile(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
   
   def nextTurn(self):
-    pass
+    if self.game.playerID == self.owner:
+      if self.hasEgg:
+        species = self.species
+        print 'Spawning ' + species.name
+        stats = [self.x, self.y, self.owner,
+            species.maxHealth, species.maxHealth,
+            species.maxMovement, species.maxMovement,
+            species.carryCap, 0, species.attackPower, True,
+            species.maxAttacks, species.maxAttacks,
+            species.range, species.name]
+        self.game.addObject(Fish, stats)
+        self.hasEgg = False
 
   def spawn(self, x, y):
     return True
@@ -106,15 +117,17 @@ class Species(object):
 
   def spawn(self, x, y):
     player = self.game.objects.players[self.game.playerID]
-    if not self.game.getTile(x,y).isCove:
-      return "You can only spawn fish inside of a cove tile"
-    elif player.spawnFood<self.cost:
+    if player.spawnFood<self.cost:
       return "You don'thave enough food to spawn this fish in"
-    elif not (0<x<=self.game.mapWidth or 0<y<self.game.mapHeight):
+    if not (0<=x<self.game.mapWidth or 0<=y<self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
+    tile = self.game.getTile(x,y)
+    if tile.owner != self.game.playerID:
+      return "You can only spawn fish inside of your cove tiles"
     else:
       player.spawnFood-=self.cost
-      player.spawning.append(self,x,y)
+      tile.hasEgg = True
+      tile.species = self
     pass
 
   def __setattr__(self, name, value):
@@ -154,11 +167,11 @@ class Fish(Mappable):
   def nextTurn(self):
     pass
 
-  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things 
+  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things
 
   def move(self, x, y):
     if self.owner != self.game.playerID: #check that you own the fish
-      return "You cannot move the other player's fish." 
+      return "You cannot move the other player's fish."
     elif self.movementLeft <= 0: #check that there are moves left
       return "Your fish has no moves left."
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
@@ -171,7 +184,7 @@ class Fish(Mappable):
     elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
       for i in range(1, len(self.game.getFish(x,y))):
         if not self.game.getFish(x, y)[i].isStealthed:
-          return "You can't move onto a fish." 
+          return "You can't move onto a fish."
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
@@ -200,7 +213,7 @@ class Fish(Mappable):
     elif self.game.getTile(x,y).trashAmount < weight:
       return "You can't pick up more trash then there is trash present."
     
-    #don't need to bother checking for fish because a space with a 
+    #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
     
     #unstealth fish... because that's what drop did
@@ -242,7 +255,7 @@ class Fish(Mappable):
     
     self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
-    return True 
+    return True
 
 #TODO: Update to work with being passed a Fish to attack
   def attack(self, target):
@@ -313,7 +326,6 @@ class Player(object):
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
     self.updatedAt = game.turnNumber
-    self.spawning = []
 
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
@@ -328,12 +340,6 @@ class Player(object):
     if self.game.playerID is self.id:
       self.spawnFood +=10
       
-      for spawn in self.spawning:
-        print spawn
-        fishStats = [cfgSpecies[spawn[0]][stat] for stat in self.game.statList]
-        self.game.addObject(Fish, [[spawn[1], spawn[2], self.game.playerID]] + fishStats)
-
-    self.spawning = []
     return True
 
   def talk(self, message):
