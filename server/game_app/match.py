@@ -118,6 +118,7 @@ class Match(DefaultGameWorld):
          self.trashDict[(oppTile.x, oppTile.y)] = val
          self.trashAmount -= val    
     print self.trashDict
+    print sum(self.trashDict.values())
     return True
      
   def findDamage(self,player):
@@ -129,7 +130,7 @@ class Match(DefaultGameWorld):
     for key in self.trashDict:
       if min<=key[0]<max:
         damage+=self.trashDict[key]
-    print "damage = %i"%(damage)
+    print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
 

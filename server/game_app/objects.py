@@ -105,6 +105,16 @@ class Species(object):
     pass
 
   def spawn(self, x, y):
+    player = self.game.objects.players[self.game.playerID]
+    if not self.game.getTile(x,y).isCove:
+      return "You can only spawn fish inside of a cove tile"
+    elif player.spawnFood<self.cost:
+      return "You don'thave enough food to spawn this fish in"
+    elif not (0<x<=self.game.mapWidth or 0<y<self.game.mapHeight):
+      return "You can't spawn your fish out of the edges of the map"
+    else:
+      player.spawnFood-=self.cost
+      player.spawning.append(self,x,y)
     pass
 
   def __setattr__(self, name, value):
@@ -319,6 +329,7 @@ class Player(object):
       self.spawnFood +=10
       
       for spawn in self.spawning:
+        print spawn
         fishStats = [cfgSpecies[spawn[0]][stat] for stat in self.game.statList]
         self.game.addObject(Fish, [[spawn[1], spawn[2], self.game.playerID]] + fishStats)
 
