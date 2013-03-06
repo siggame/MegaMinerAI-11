@@ -30,7 +30,7 @@ class Match(DefaultGameWorld):
 
     self.turnNumber = -1
     self.playerID = -1
-    self.gameNumber = id 
+    self.gameNumber = id
     self.initialFood = self.initialFood
     self.spawnFoodPerTurn = self.spawnFoodPerTurn
     self.maxReefHealth = self.maxReefHealth
@@ -47,11 +47,11 @@ class Match(DefaultGameWorld):
     #Make grid
     self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x, y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
-    #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount. 
+    #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
   # Helper function
-  #since ownership only matter on cove tiles, we're making an owned tile a cove. 
+  #since ownership only matter on cove tiles, we're making an owned tile a cove.
   def getTileOwner(self, x, y):
     self.count+=1
     if x < 3 and y < 3:
@@ -63,7 +63,7 @@ class Match(DefaultGameWorld):
     
   #getTile RETURN TILE
   def getTile(self, x, y):
-    return  self.grid[x][y][0] 
+    return  self.grid[x][y][0]
   
   #getFish RETURN LIST OF FISH
   def getFish(self, x, y):
@@ -80,7 +80,7 @@ class Match(DefaultGameWorld):
     if type == "player":
       self.players.append(connection)
       try:
-        #Add Player and Player attributes  
+        #Add Player and Player attributes
         self.addObject(Player, [connection.screenName, self.startTime, self.maxReefHealth, self.initialFood])
       except TypeError:
         raise TypeError("Someone forgot to add the extra attributes to the Player object initialization")
@@ -102,13 +102,8 @@ class Match(DefaultGameWorld):
       
   def spawnTrash(self):
     while self.trashAmount > 0:
-      #Create random X and random Y
-      randX = random.randint(0, self.mapWidth/2-1)
-      randY = random.randint(0, self.mapHeight-1)
-
-      #Find tile at random X and random Y position
-      randTile = self.getTile(randX, randY)
-      oppTile = self.getTile(self.mapWidth-randX-1, randY)
+      randTile = random.choice(self.objects.tiles)
+      oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
       
       if isinstance(randTile,Tile) and randTile.owner == 2:
          val = random.randint(1,min([self.minTrash, self.trashAmount]))
@@ -116,7 +111,7 @@ class Match(DefaultGameWorld):
          self.trashDict[(randTile.x, randTile.y)] = val
          oppTile.trashAmount += val
          self.trashDict[(oppTile.x, oppTile.y)] = val
-         self.trashAmount -= val    
+         self.trashAmount -= val
     print self.trashDict
     print sum(self.trashDict.values())
     return True
@@ -125,7 +120,7 @@ class Match(DefaultGameWorld):
     damage = 0
     if player==0:
       min = 0; max = self.mapWidth/2+self.boundLength
-    elif player == 1: 
+    elif player == 1:
       min = self.mapWidth/2-self.boundLength; max = self.mapWidth
     for key in self.trashDict:
       if min<=key[0]<max:
@@ -154,8 +149,8 @@ class Match(DefaultGameWorld):
 
   def getTrashLeft(self):
     totalTrash = 0
-    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently. 
-    #I'll bring this up or make an issue, for now this works.  
+    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently.
+    #I'll bring this up or make an issue, for now this works.
     for x in range(0,self.mapWidth/2-self.boundLength):
       for y in range(0,self.mapHeight):
         totalTrash += self.getTile(x,y).trashAmount
@@ -206,7 +201,7 @@ class Match(DefaultGameWorld):
       self.objects.players[0].currentReefHealth -= self.findDamage(0)
     
     if self.turn == self.players[1]:
-     self.objects.players[1].currentReefHealth -= self.findDamage(1) 
+     self.objects.players[1].currentReefHealth -= self.findDamage(1)
 
     self.checkWinner()
     if self.winner is None:

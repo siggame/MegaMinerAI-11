@@ -32,8 +32,11 @@ class AI(BaseAI):
     dis = 400
     nearest = 1
     for fish in self.fishes:
-      if self.distance(myDude,fish)<dis and (not confusion and fish.id!=myDude.id):
-        nearest = fish
+      if self.distance(myDude,fish)<dis:
+        if not confusion and fish.id!=myDude.id:
+          nearest = fish
+        else:
+          nearest = fish
     return nearest
   
   def distance(self,source,target):
