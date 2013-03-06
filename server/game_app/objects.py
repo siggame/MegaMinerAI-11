@@ -112,10 +112,14 @@ class Species(object):
       return "You don'thave enough food to spawn this fish in"
     elif not (0<x<=self.game.mapWidth or 0<y<self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
+    elif self.game.currentSeason != self.season:
+      return "This fish can't spawn in this season"
+    elif self.game.getTile(x,y).hasEgg:
+      return "there is already a fish to be spawned here"
     else:
       player.spawnFood-=self.cost
       player.spawning.append(self,x,y)
-    pass
+    return True
 
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
