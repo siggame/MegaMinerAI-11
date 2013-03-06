@@ -63,27 +63,6 @@ class Tile(Mappable):
         self.game.addObject(Fish, stats)
         self.hasEgg = False
 
-  def spawn(self, x, y):
-    return True
-    player = self.game.objects.players[self.game.playerID]
-    if x < 0 or x >= self.game.mapWidth:
-      return "You cannot spawn outside the breeding grounds."
-    elif y < 0:
-      return "You cannot spawn in the sky."
-    elif y >= self.game.mapHeight:
-      return "You cannot spawn in the ground."
-    elif self.game.getTile(x, y).owner is not self.game.playerID:
-      return "You can only spawn on a cove you own."
-    elif player.spawnFood < self.cost:
-      return "You do not have enough food to spawn this fish."
-    elif self.game.currentSeason is not self.season:
-      return "You can only spawn this fish in the season %s"%(self.season)
-    else:
-      player.spawning.append([self.type, x, y])
-      player.spawnFood -= self.cost
-
-    return True
-
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
