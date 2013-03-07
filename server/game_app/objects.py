@@ -166,7 +166,7 @@ class Fish(Mappable):
       return "You can't move on top of trash"
     elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
       for i in range(1, len(self.game.getFish(x,y))):
-        if not self.game.getFish(x, y)[i].isStealthed:
+        if self.game.getFish(x, y)[i].isVisible:
           return "You can't move onto a fish."
         else:
           print "Fringe case: moving onto a stealthed fish."
@@ -200,8 +200,8 @@ class Fish(Mappable):
     #fish shouldn't have any trash, right?
     
     #unstealth fish... because that's what drop did
-    if not self.Visible:
-       self.Visible = True;
+    if not self.isVisible:
+       self.isVisible = True
     
     #TODO: Check for the fish that's immune to trash damage (?)
     #TODO: Determine damage taken
