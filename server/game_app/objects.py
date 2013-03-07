@@ -152,8 +152,8 @@ class Fish(Mappable):
       self.currentHealth -= self.carryingWeight * self.trashDamage
       if self.currentHealth <= 0:
         #kill the fish
-        self.game.getTile(x,y).trashAmount += self.carryingWeight
-        self.game.grid[x][y].remove(self)
+        self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
+        self.game.grid[self.x][self.y].remove(self)
         self.game.remove(self)
         
     pass
