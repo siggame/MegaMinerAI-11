@@ -148,6 +148,14 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def nextTurn(self):
+    if self.species != "TomCod":
+      self.currentHealth -= self.carryingWeight * self.trashDamage
+      if self.currentHealth <= 0:
+        #kill the fish
+        self.game.getTile(x,y).trashAmount += self.carryingWeight
+        self.game.grid[x][y].remove(self)
+        self.game.remove(self)
+        
     pass
 
   ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things
@@ -201,18 +209,18 @@ class Fish(Mappable):
     
     #unstealth fish... because that's what drop did
     if not self.isVisible:
-       self.isVisible = True
+      self.isVisible = True
     
-    #TODO: Check for the fish that's immune to trash damage (?)
-    #TODO: Determine damage taken
-    #take damage
-    self.currentHealth -= self.trashDamage*weight
-    #check if dead
-    if self.currentHealth < 0:
-      #remove object
-      self.game.removeObject(self.game.getObject(x,y))
-      self.game.grid[x][y].remove(self.game.getObject(x,y))
-      return "Your fish died trying to pick up the trash."
+    #take damage if not immune to it
+    if self.species != "TomCod":
+      self.currentHealth -= self.trashDamage*weight
+      #check if dead
+      if self.currentHealth < 0:
+        #remove object
+        self.game.removeObject(self.game.getObject(x,y))
+        self.game.grid[x][y].remove(self.game.getObject(x,y))
+        return "Your fish died trying to pick up the trash."
+        
     #reduce weight of tile
     self.game.getTile(x,y).trashAmount -= weight
     #add weight to fish
