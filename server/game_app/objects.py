@@ -149,7 +149,7 @@ class Fish(Mappable):
 
   def nextTurn(self):
     if self.species != "TomCod":
-      self.currentHealth -= self.carryingWeight * self.trashDamage
+      self.currentHealth -= self.carryingWeight * self.game.trashDamage
       if self.currentHealth <= 0:
         #kill the fish
         self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
@@ -213,7 +213,7 @@ class Fish(Mappable):
     
     #take damage if not immune to it
     if self.species != "TomCod":
-      self.currentHealth -= self.trashDamage*weight
+      self.currentHealth -= self.game.trashDamage * weight
       #check if dead
       if self.currentHealth < 0:
         #remove object
@@ -287,7 +287,7 @@ class Fish(Mappable):
         #stealth fish on same tile must pick up garbage
         #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
         #      Is this desired?
-        if target.carryingWeight + self.carryingWeight <= self.carryingCap:
+        if target.carryingWeight + self.carryingWeight <= self.carryCap:
            #can carry all that weight
            self.pickUp(x,y,target.carryingWeight)
         else:
