@@ -105,11 +105,13 @@ class Species(object):
       return "You can't spawn your fish out of the edges of the map"
     elif self.game.currentSeason != self.season:
       return "This fish can't spawn in this season"
+    elif len(self.game.getFish(x,y)) != 0:
+	  return "There is already a fish here"
     tile = self.game.getTile(x,y)
     if tile.owner != self.game.playerID:
       return "You can only spawn fish inside of your cove tiles"
     elif tile.hasEgg:
-      return "there is already a fish to be spawned here"
+      return "There is already a fish to be spawned here"
     else:
       player.spawnFood-=self.cost
       tile.hasEgg = True
