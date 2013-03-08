@@ -118,15 +118,15 @@ class Match(DefaultGameWorld):
      
   def findDamage(self,player):
     damage = 0
-    if player==0:
-      min = 0; max = self.mapWidth/2+self.boundLength; owner = 0
+    if player == 0:
+      min = 0; max = self.mapWidth/2 + self.boundLength; owner = 0
     elif player == 1:
       min = self.mapWidth/2-self.boundLength; max = self.mapWidth; owner = 1
     for key in self.trashDict:
-      if min<=key[0]<max:
+      if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
-#    stars = sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max])
+    damage += sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ])
     print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
@@ -358,7 +358,7 @@ class Match(DefaultGameWorld):
 
   def sendStatus(self, players):
     for i in players:
-      i.writeSExpr(self.status())
+      i.writeSExpr(self.status(i))
       i.writeSExpr(self.animations)
     return True
     
@@ -377,7 +377,7 @@ class Match(DefaultGameWorld):
 #    print [species.season for species in self.objects.species]
     return True
 
-  def status(self):
+  def status(self, connection):
     msg = ["status"]
 
     msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
@@ -390,7 +390,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.isVisible or i.owner == self.playerID or connection.type != "player")])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
