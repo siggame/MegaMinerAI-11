@@ -166,7 +166,7 @@ class Fish(Mappable):
   
   def removeTrash(self,x,y,weight):
     self.game.trashDict[(x,y)]-=weight
-    if trashDcit[(x,y)] == 0:
+    if self.game.trashDict[(x,y)] == 0:
       del self.game.trashDict[(x,y)]
 
   def nextTurn(self):
@@ -317,10 +317,9 @@ class Fish(Mappable):
     #check if target is dead
     if target.currentHealth <= 0:
       #drop trash on tile
-      self.game.getTile(x,y).trashAmount += target.carryingWeight
       self.game.grid[x][y].remove(target)
       if target.carryingWeight>0:
-	self.addTrash(target.x,target.y,target.carryingWeight)
+        self.addTrash(target.x,target.y,target.carryingWeight)
       self.game.removeObject(target)
      
     self.game.addAnimation(AttackAnimation(self.id,target.id))
@@ -330,11 +329,10 @@ class Fish(Mappable):
       self.currentHealth -= target.attackPower
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
-        self.game.getTile(self.x,self.y).trashAmount += self.carryingWeight
-        self.game.grid[x][y].remove(self)
         if self.carryingWeight>0:
           self.addTrash(self.x,self.y,self.carryingWeight)
-        self.game.removObject(self)  
+        self.game.grid[x][y].remove(self)
+        self.game.removeObject(self)
     return True
 
   def __setattr__(self, name, value):
@@ -369,7 +367,7 @@ class Player(object):
     return True
     
   def talk(self, message):
-    self.game.addAnimations(PlayerTalkAnimation(self.id,message)
+    self.game.addAnimations(PlayerTalkAnimation(self.id,message))
     
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
