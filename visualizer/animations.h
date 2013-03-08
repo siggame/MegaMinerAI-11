@@ -39,6 +39,18 @@ namespace visualizer
             QElapsedTimer timer;
 
     }; // DrawBackground
+
+    class DrawFish: public Anim
+    {
+    public:
+        DrawFish(Fish* fish) : m_Fish(fish) {}
+
+        void animate(const float &t, AnimData *d, IGame *game);
+
+    private:
+        Fish* m_Fish;
+    };//DrawFish
+
   
     class DrawSomething: public Anim
     {

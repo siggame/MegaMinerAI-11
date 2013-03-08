@@ -48,6 +48,21 @@ namespace visualizer
 
     }
 
+
+    void DrawFish::animate(const float &t, AnimData *d, IGame *game)
+    {
+      game->renderer->setColor( Color( 1, 1, 0, 1 ) );
+
+      unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
+      float subT = m_Fish->m_moves.size() * t - index;
+
+      glm::vec2 pos = m_Fish->m_moves[index].from + (m_Fish->m_moves[index].to - m_Fish->m_moves[index].from) * subT;
+
+      //game->renderer->drawQuad(pos.x,pos.y,0.01f,0.01f);
+      game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
+      //game->renderer->drawText(pos.x,pos.y,"Roboto","fish");
+    }
+
     void StartAnim::animate( const float& /* t */, AnimData * /* d */, IGame* /*game*/ )
     {
     }
@@ -59,5 +74,7 @@ namespace visualizer
         // Draw a 2x2 rectangle at (1,1), with the top left corner of the screen being the origin
         game->renderer->drawQuad( 1, 1, 2, 2 );
     }
+
+
 }
 
