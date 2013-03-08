@@ -269,8 +269,8 @@ class Fish(Mappable):
       return "You can't heal the opponent's fish."
     elif target.owner == self.game.playerID and self.attackPower > 0:
       return "You can't attack your own fish."
-    elif self.isVisible == False and self.attackPower < target.currentHealth:
-      return "A stealthed unit can't attack a fish above it if it can't kill it."
+    elif self.x == x and self.y == y:
+      return "A stealthed unit can't attack a fish above it."
     
     #hurt the other fish
     target.currentHealth -= self.attackPower
@@ -278,28 +278,40 @@ class Fish(Mappable):
     target.isVisible = True
     #make the attacking fish visible
     self.isVisible = True
+
+    #check for sea urchin counter attacks
+    if target.species == "SeaUrchin":
+      self.currentHealth -= target.attackPower
+      #check if the counter attack killed the fish
+      if self.currentHealth <= 0:
+        self.game.getTile(self.x,self.y).trashAmount += self.carryingWeight
+        self.game.grid[x][y].remove(self)
+        self.game.remove(self)
     
     #check if dead
     if target.currentHealth <= 0:
       #drop trash on tile
       self.game.getTile(x,y).trashAmount += target.carryingWeight
-      if x == self.x and y == self.y:
-        #stealth fish on same tile must pick up garbage
-        #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
-        #      Is this desired?
-        if target.carryingWeight + self.carryingWeight <= self.carryCap:
-           #can carry all that weight
-           self.pickUp(x,y,target.carryingWeight)
-        else:
-           #can't carry that weight, just die.
-           self.game.grid[x][y].remove(self)
-           self.game.remove(self)
+      #stealthed fish can't attack fish on the same tile as them
+      #if x == self.x and y == self.y:
+      #  #stealth fish on same tile must pick up garbage
+      #  #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
+      #  #      Is this desired?
+      #  if target.carryingWeight + self.carryingWeight <= self.carryCap:
+      #     #can carry all that weight
+      #     self.pickUp(x,y,target.carryingWeight)
+      #  else:
+      #     #can't carry that weight, just die.
+      #     self.game.grid[x][y].remove(self)
+      #     self.game.remove(self)
       self.game.grid[x][y].remove(target)
       self.game.remove(target)
+
       
     #don't allow infinite health bugs to create super fish
     elif target.currentHealth > target.maxHealth:
       target.currentHealth = target.maxHealth
+        
     return True
 
   def __setattr__(self, name, value):
