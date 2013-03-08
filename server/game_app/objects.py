@@ -187,7 +187,8 @@ class Fish(Mappable):
         if self.currentHealth <0:
           self.game.grid[self.x][self.y].remove(self)         
           self.game.addAnimation(DeathAnimation(self.id))
-          self.removeTrash(self.x,self.y,self.carryingWeight)
+          self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
+          self.addTrash(self.x,self.y,self.carryingWeight)
           self.game.removeObject(self)
           print "dude died from carrying so much trash"
     return True
@@ -280,7 +281,7 @@ class Fish(Mappable):
 
     if not self.isVisible:
       self.isVisible = True #unstealth while dropping    
-    
+
     self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
     self.game.addAnimation(self.x,self.y,self.id,weight)
@@ -331,6 +332,7 @@ class Fish(Mappable):
       #drop trash on tile
       self.game.grid[x][y].remove(target)
       if target.carryingWeight > 0:
+        self.game.getTile(x, y).trashAmount += target.carryingWeight
         self.addTrash(target.x, target.y, target.carryingWeight)
       self.game.removeObject(target)
      
@@ -342,6 +344,7 @@ class Fish(Mappable):
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
         if self.carryingWeight > 0:
+          self.game.getTile(x, y).trashAmount += self.carryingWeight
           self.addTrash(self.x, self.y, self.carryingWeight)
         self.game.grid[x][y].remove(self)
         self.game.removeObject(self)
