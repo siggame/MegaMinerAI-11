@@ -1,4 +1,5 @@
 import networking.config.config
+import math
 
 #Initializes cfgSpecies
 cfgSpecies = networking.config.config.readConfig("config/species.cfg")
@@ -185,34 +186,35 @@ class Player:
     return dict(id = self.id, playerName = self.playerName, time = self.time, currentReefHealth = self.currentReefHealth, spawnFood = self.spawnFood, )
 
   def nextTurn(self):
-    # foodPerTurn logic
-    p1 = self.players[0]
-    p2 = self.objects.players[1]
-    fishWorth = [0, 0]
-    netWorth = [0, 0]
-    # Get current value of fish owned by each player
-    for fish in self.objects.fishs:
-      fishWorth[fish.owner] += cfgSpecies[fish.species]["cost"]
-    # Add value of fish to value of spawn food in respective players' banks to get net worth
-    netWorth[0] += (p1.spawnFood + fishWorth[0])
-    netWorth[1] += (p2.spawnFood + fishWorth[1])
-    # Compare players' net worths
-    deltaNetWorth = abs(netWorth[0] - netWorth[1])
-    # Calculate food both players get this turn based on whoever is closer to the cap
-    # As the fish value cap is approached, the food given to both players decreases
-    if fishWorth[0] > fishWorth[1] or fishWorth[0] == fishWorth[1]:
-      foodPlayersGetThisTurn = math.floor(self.initialFood * math.sqrt((fishValueCap - fishWorth[0]) / fishValueCap)) # Too fancy?
-    elif fishWorth[0] < fishWorth[1]:
-      foodPlayersGetThisTurn = math.floor(self.initialFood * math.sqrt((fishValueCap - fishWorth[1]) / fishValueCap))
-    p1.spawnFood += foodPlayersGetThisTurn
-    p2.spawnFood += foodPlayersGetThisTurn
-    # Give player with lower netWorth extra food based on relative error (make deltaNetWorth within a certain percent of the wealthier player's net worth)
-    if netWorth[0] > netWorth[1]:
-      p2.spawnFood +=
-    elif netWorth[1] > netWorth[0]:
-      p1.spawnFood +=
-    elif deltaNetWorth == 0:
-      pass
+	if self.game.playerID is self.id:
+		# Identify who is who
+		currentPlayer = self.game.objects.players[self.game.playerID]
+		if self.game.playerID == 0:
+			otherID = 1
+		else:
+			otherID = 0
+		otherPlayer = self.game.objects.players[otherID]
+		# Give initial food if the game just started
+		if self.turnNumber < 1:
+			currentPlayer.spawnFood += self.initialFood
+		# Get current value of fish owned by each player
+		fishWorth = [0, 0]
+		for fish in self.objects.fishs:
+			fishWorth[fish.owner] += cfgSpecies[fish.species]["cost"]
+		# Calculate net worth of each player by adding value of owned fish to available spawn food
+		netWorthCurrent = fishWorth[self.game.playerID] + currentPlayer.spawnFood
+		netWorthOther = fishWorth[otherID] + otherPlayer.spawnFood
+		# Calculate the difference
+		difference = abs(netWorthCurrent - netWorthOther)
+		# Give food for this turn, this can have maths to limit the player to a maximum fish value
+		currentPlayer.spawnFood += self.spawnFoodPerTurn
+		# Factor to determine how much the money discrepancy should be made up; this should be in config
+		fudgeFactor = 0.8
+		# If the current player has a lower net worth than the other, give them money equal to a certain fraction of the discrepancy. Why don't poor people just buy more money?
+		if netWorthCurrent < netWorthOther:
+			currentPlayer.spawnFood += math.ceil(difference * fudgeFactor)
+		else:
+			pass
 
   def talk(self, message):
     pass
