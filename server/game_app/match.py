@@ -118,15 +118,15 @@ class Match(DefaultGameWorld):
      
   def findDamage(self,player):
     damage = 0
-    if player==0:
-      min = 0; max = self.mapWidth/2+self.boundLength; owner = 0
+    if player == 0:
+      min = 0; max = self.mapWidth/2 + self.boundLength; owner = 0
     elif player == 1:
       min = self.mapWidth/2-self.boundLength; max = self.mapWidth; owner = 1
     for key in self.trashDict:
-      if min<=key[0]<max:
+      if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
-#    stars = sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max])
+    damage += sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ])
     print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
