@@ -28,11 +28,11 @@ class AI(BaseAI):
         coves.append(tile)
     return coves
   
-  def findFish(self,myID):
+  def findFish(self,myDude):
     dis = 400
     nearest = 1
     for fish in self.fishes:
-      if self.distance(myDude,fish)<dis and fish.id!=myID:
+      if self.distance(myDude,fish)<dis and fish.id!=myDude:
           nearest = fish
     return nearest
   
