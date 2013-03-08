@@ -265,9 +265,14 @@ class Fish(Mappable):
     elif abs(self.x-x) + abs(self.y-y) != 1:
       return "Can only drop onto adjacent locations"
     elif weight > self.carryingWeight:
-      return "You cannot drop more than you're carrying"
-    elif self.game.getFish(x,y) != []:
-      return "Cannot drop onto a fish"
+      return "You cannot drop more than you're carrying"      
+    Fishes = self.game.getFish(x,y)
+    if len(Fishes)>0: #If there is a fish on the tile
+      for fish in Fishes:
+        if fish.isVisible:
+          return "Cannot drop onto a fish"
+        else:
+          return "Fringe case: dropping onto a stealthed fish."    
 
     if not self.isVisible:
       self.isVisible = True #unstealth while dropping    
