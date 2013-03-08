@@ -147,10 +147,29 @@ class Fish(Mappable):
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
-  def nextTurn(self):
-    pass
+  def heal(self,fish):
+    fish.currentHealth+=fish.maxHealth*self.healPercent
+    if fish.currentHealth>fish.maxHealth:
+      fish.currentHealth = fish.maxHealth
 
-  ### TODO: move one space at a time, can't move over trash or other fish, need to figure out what to do about stealth things
+  def distance(self,source,x,y):
+    return math.sqrt((source.x-x)**2 + (source.y-y)**2) 
+
+  def nextTurn(self):
+    if self.owner == self.game.playerID:
+      if self.game.getTile(self.x,self.y).isCove:
+        self.heal(self)
+      self.movementLeft = self.maxMovement
+      self.attacksleft = self.maxAttacks
+      if self.species == "Cuttlefish":
+        self.isVisible = False
+      self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
+      if self.currentHealth <0:
+        self.game.grid[self.x][self.y].remove(self)
+        self.game.removeObject(self)
+        self.game.addAnimation(DeathAnimation(self.id))
+        print "dude died from carrying so much trash"
+    return True
 
   def move(self, x, y):
     if self.owner != self.game.playerID: #check that you own the fish
@@ -159,21 +178,21 @@ class Fish(Mappable):
       return "Your fish has no moves left."
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
       return "Your fish cannot move off the map."
-    elif abs(self.x-x) > 1 or abs(self.y - y) > 1 or (abs(self.x-x) == 1 and abs(self.y - y) == 1):
+    elif self.distance(self,x,y)!=1:
       return "You can only move to adjacent locations."
     T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
-    elif len(self.game.getFish (x, y)) > 0: #If there is a fish on the tile
-      for i in range(1, len(self.game.getFish(x,y))):
+    Fishes = self.game.getFish(x,y)
+    elif len(Fishes > 0: #If there is a fish on the tile
+      for i in range(Fishes):
         if not self.game.getFish(x, y)[i].isStealthed:
           return "You can't move onto a fish."
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
-    elif self.game.getTile(x,y).owner!=self.owner^1:
+    elif T.owner != self.owner:
       return "Can't go into an opponent's cove."
-    #Working under the assumption that ground units can move anywhere
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
             
