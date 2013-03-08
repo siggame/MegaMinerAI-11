@@ -28,14 +28,11 @@ class AI(BaseAI):
         coves.append(tile)
     return coves
   
-  def findFish(self,myDude, confusion = False):
+  def findFish(self,myID):
     dis = 400
     nearest = 1
     for fish in self.fishes:
-      if self.distance(myDude,fish)<dis:
-        if not confusion and fish.id!=myDude.id:
-          nearest = fish
-        else:
+      if self.distance(myDude,fish)<dis and fish.id!=myID:
           nearest = fish
     return nearest
   
@@ -54,7 +51,7 @@ class AI(BaseAI):
       fish.pickUp(fish.x,fish.y-1,1)
       fish.drop(fish.x-1,fish.y,1)
       fish.attack(self.findFish(fish))
-      fish.attack(self.findFish(fish,True))
+      fish.attack(fish)
     return 1
 
   def __init__(self, conn):

@@ -170,6 +170,7 @@ class Fish(Mappable):
       del self.game.trashDict[(x,y)]
 
   def nextTurn(self):
+    #TODO set fish stats to 0 if stunned by an eel
     if self.owner == self.game.playerID:
       if self.game.getTile(self.x,self.y).owner == self.owner:
         self.heal(self)
@@ -301,6 +302,8 @@ class Fish(Mappable):
 
     print "attacking a dude  with another dude"
     
+    #TODO Eel stun case
+    
     if self.species == "cleanerShrimp":
       self.heal(target)
       target.isVisible = True
@@ -364,10 +367,10 @@ class Player(object):
       self.spawnFood +=10
       
     return True
-
+    
   def talk(self, message):
-    pass
-
+    self.game.addAnimations(PlayerTalkAnimation(self.id,message)
+    
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
