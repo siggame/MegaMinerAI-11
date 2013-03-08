@@ -105,7 +105,7 @@ class Match(DefaultGameWorld):
       randTile = random.choice(self.objects.tiles)
       oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
       
-      if isinstance(randTile,Tile) and randTile.owner == 2:
+      if isinstance(randTile,Tile) and randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
          val = random.randint(1,min([self.minTrash, self.trashAmount]))
          randTile.trashAmount += val
          self.trashDict[(randTile.x, randTile.y)] = val
@@ -144,6 +144,7 @@ class Match(DefaultGameWorld):
     for species in cfgSpecies.keys():
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
     self.initSeasons()
+    print [(species.name,species.season) for species in self.objects.species]
     self.nextTurn()
     return True
 

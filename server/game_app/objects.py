@@ -62,6 +62,7 @@ class Tile(Mappable):
             species.maxAttacks, species.maxAttacks,
             species.range, species.name]
         newFish = self.game.addObject(Fish, stats)
+        self.game.addAnimation(SpawnAnimation(newFish.x,newFish.y,newFish.species))
         self.game.grid[newFish.x][newFish.y].append(newFish)
         self.hasEgg = False
      
@@ -211,7 +212,8 @@ class Fish(Mappable):
         else:
           return "Fringe case: moving onto a stealthed fish."    
     self.game.grid[self.x][self.y].remove(self)
-    self.game.grid[x][y].append(self)        
+    self.game.grid[x][y].append(self)
+    self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))        
     self.movementLeft -= 1
     self.x = x
     self.y = y
@@ -250,6 +252,7 @@ class Fish(Mappable):
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
+    self.game.addAnimation(PickUpAnimation(x,y,self.id,weight))
     print "dude picked up some trash"
     return True
 
@@ -270,12 +273,11 @@ class Fish(Mappable):
     
     self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
+    self.game.addAnimation(self.x,self.y,self.id,weight)
     self.addTrash(x,y,weight)
     return True
 
-#TODO: Update to work with being passed a Fish to attack
-  def attack(self, target):
-  
+  def attack(self, target):  
     x = target.x
     y = target.y
   
