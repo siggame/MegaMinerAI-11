@@ -358,7 +358,7 @@ class Match(DefaultGameWorld):
 
   def sendStatus(self, players):
     for i in players:
-      i.writeSExpr(self.status())
+      i.writeSExpr(self.status(i))
       i.writeSExpr(self.animations)
     return True
     
@@ -377,7 +377,7 @@ class Match(DefaultGameWorld):
 #    print [species.season for species in self.objects.species]
     return True
 
-  def status(self):
+  def status(self, connection):
     msg = ["status"]
 
     msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
@@ -390,7 +390,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.isVisible or i.owner == self.playerID or connection.type != "player")])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
