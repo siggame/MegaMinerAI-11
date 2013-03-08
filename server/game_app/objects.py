@@ -174,8 +174,12 @@ class Fish(Mappable):
     if self.owner == self.game.playerID:
       if self.game.getTile(self.x,self.y).owner == self.owner:
         self.heal(self)
-      self.movementLeft = self.maxMovement
-      self.attacksleft = self.maxAttacks
+      if self.movementLeft == -1:
+        self.movementLeft = 0
+        self.attackLeft = 0
+      else:
+        self.movementLeft = self.maxMovement
+        self.attacksLeft = self.maxAttacks
       if self.species == "Cuttlefish":
         self.isVisible = False
       if self.species != "Tomcod":
@@ -290,13 +294,13 @@ class Fish(Mappable):
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
       return "You can only control your own fish."
-    elif self.distance(self,x,y) > self.range:
+    elif self.distance(self, x, y) > self.range:
       return "You can't attack further than your fish's range."
     elif self.attacksLeft == 0:
       return "This fish has no attacks left."
-    elif not isinstance(target,Fish):
+    elif not isinstance(target, Fish):
       return "You  can only attack Fish"
-    elif target.isVisible == False and target.owner != self.game.playerID:
+    elif target.isVisible is False and target.owner != self.game.playerID:
       return "You aren't even supposed to see invisible fish, let alone attack them."
     elif target.owner != self.owner and self.attackPower < 0:
       return "You can't heal the opponent's fish."
@@ -305,13 +309,16 @@ class Fish(Mappable):
     elif self.x == x and self.y == y:
       return "A stealthed unit can't attack a fish above it."
 
-    print "attacking a dude  with another dude"
-    
-    #TODO Eel stun case
-    
-    if self.species == "cleanerShrimp":
+    print "attacking a dude with another dude"
+
+    if self.species == "CleanerShrimp":
       self.heal(target)
       target.isVisible = True
+
+    #eel stun
+    elif self.species == "ElectricEel":
+      target.movesLeft = -1
+      target.attacksLeft = -1
    
     else:   
       #hurt the other fish
@@ -323,19 +330,19 @@ class Fish(Mappable):
     if target.currentHealth <= 0:
       #drop trash on tile
       self.game.grid[x][y].remove(target)
-      if target.carryingWeight>0:
-        self.addTrash(target.x,target.y,target.carryingWeight)
+      if target.carryingWeight > 0:
+        self.addTrash(target.x, target.y, target.carryingWeight)
       self.game.removeObject(target)
      
-    self.game.addAnimation(AttackAnimation(self.id,target.id))
+    self.game.addAnimation(AttackAnimation(self.id, target.id))
     self.attacksLeft-=1  
     #check for sea urchin counter attacks
     if target.species == "SeaUrchin" and target.owner != self.owner:
       self.currentHealth -= target.attackPower
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
-        if self.carryingWeight>0:
-          self.addTrash(self.x,self.y,self.carryingWeight)
+        if self.carryingWeight > 0:
+          self.addTrash(self.x, self.y, self.carryingWeight)
         self.game.grid[x][y].remove(self)
         self.game.removeObject(self)
     return True
