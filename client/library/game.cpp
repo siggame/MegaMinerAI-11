@@ -241,6 +241,46 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  //must have enough food
+  if(object->_c->Players[object->_c->playerID].spawnFood < object->cost)
+  {
+    return 0;
+  }
+  //can't spawn off map
+  if(x<0||x>=object->_c->mapWidth||y<0||y>=object->_c->mapHeight)
+  {
+    return 0;
+  }
+  //needs to be in season
+  if(object->_c->currentSeason!=object->season)
+  {
+    return 0;
+  }
+  _Tile* tile=NULL;
+  for(int i=0;i<object->_c->TileCount;i++)
+  {
+    if(object->_c->Tiles[i].x==x&&object->_c->Tiles[i].y==y)
+    {
+      tile=&object->_c->Tiles[i];
+    }
+  }
+  //tile has to be owned by the owner
+  if(tile->owner!=object->_c->playerID)
+  {
+    return 0;
+  }
+  //tile can't have an egg
+  if(tile->hasEgg)
+  {
+    return 0;
+  }
+
+  object->_c->Players[object->_c->playerID].spawnFood -= object->cost;
+  tile->hasEgg = true;
+  //I don't think this is needed; it does not work either way though
+  //tile->species = object;
+
   return 1;
 }
 
