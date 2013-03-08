@@ -154,7 +154,7 @@ class Fish(Mappable):
 
   def distance(self,source,x,y):
     return math.sqrt((source.x-x)**2 + (source.y-y)**2) 
-
+  
   def nextTurn(self):
     if self.owner == self.game.playerID:
       if self.game.getTile(self.x,self.y).isCove:
@@ -163,12 +163,13 @@ class Fish(Mappable):
       self.attacksleft = self.maxAttacks
       if self.species == "Cuttlefish":
         self.isVisible = False
-      self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
-      if self.currentHealth <0:
-        self.game.grid[self.x][self.y].remove(self)
-        self.game.removeObject(self)
-        self.game.addAnimation(DeathAnimation(self.id))
-        print "dude died from carrying so much trash"
+      if self.species != "Tomcod":
+        self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
+        if self.currentHealth <0:
+          self.game.grid[self.x][self.y].remove(self)
+          self.game.removeObject(self)
+          self.game.addAnimation(DeathAnimation(self.id))
+          print "dude died from carrying so much trash"
     return True
 
   def move(self, x, y):
@@ -183,23 +184,26 @@ class Fish(Mappable):
     T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
+    elif T.owner != self.owner:
+      return "Can't go into an opponent's cove."
+    elif T.hasEgg:
+      return "A fish is about to be spawned here"
     Fishes = self.game.getFish(x,y)
-    elif len(Fishes > 0: #If there is a fish on the tile
-      for i in range(Fishes):
-        if not self.game.getFish(x, y)[i].isStealthed:
+    if len(Fishes > 0): #If there is a fish on the tile
+      for fish in Fishes:
+        if not fish.isVisible
           return "You can't move onto a fish."
         else:
           print "Fringe case: moving onto a stealthed fish."
           pass
-    elif T.owner != self.owner:
-      return "Can't go into an opponent's cove."
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
             
     self.movementLeft -= 1
     self.x = x
     self.y = y
-    return "Successful movement. Congrats."
+    print "moving a dude"
+    return True
 
   def pickUp(self, x, y, weight):
     if self.owner != self.game.playerID:
@@ -219,19 +223,19 @@ class Fish(Mappable):
     #fish shouldn't have any trash, right?
     
     #unstealth fish... because that's what drop did
-    if not self.Visible:
-       self.Visible = True;
+    if not self.isVisible:
+      self.isVisible = True
     
-    #TODO: Check for the fish that's immune to trash damage (?)
-    #TODO: Determine damage taken
-    #take damage
-    self.currentHealth -= self.trashDamage*weight
-    #check if dead
-    if self.currentHealth < 0:
-      #remove object
-      self.game.removeObject(self.game.getObject(x,y))
-      self.game.grid[x][y].remove(self.game.getObject(x,y))
-      return "Your fish died trying to pick up the trash."
+    #take damage if not immune to it
+    if self.species != "TomCod":
+      self.currentHealth -= self.game.trashDamage * weight
+      #check if dead
+      if self.currentHealth < 0:
+        #remove object
+        self.game.removeObject(self.game.getObject(x,y))
+        self.game.grid[x][y].remove(self.game.getObject(x,y))
+        return "Your fish died trying to pick up the trash."
+        
     #reduce weight of tile
     self.game.getTile(x,y).trashAmount -= weight
     #add weight to fish
@@ -280,8 +284,8 @@ class Fish(Mappable):
       return "You can't heal the opponent's fish."
     elif target.owner == self.game.playerID and self.attackPower > 0:
       return "You can't attack your own fish."
-    elif self.isVisible == False and self.attackPower < target.currentHealth:
-      return "A stealthed unit can't attack a fish above it if it can't kill it."
+    elif self.x == x and self.y == y:
+      return "A stealthed unit can't attack a fish above it."
     
     #hurt the other fish
     target.currentHealth -= self.attackPower
@@ -289,28 +293,40 @@ class Fish(Mappable):
     target.isVisible = True
     #make the attacking fish visible
     self.isVisible = True
+
+    #check for sea urchin counter attacks
+    if target.species == "SeaUrchin":
+      self.currentHealth -= target.attackPower
+      #check if the counter attack killed the fish
+      if self.currentHealth <= 0:
+        self.game.getTile(self.x,self.y).trashAmount += self.carryingWeight
+        self.game.grid[x][y].remove(self)
+        self.game.remove(self)
     
     #check if dead
     if target.currentHealth <= 0:
       #drop trash on tile
       self.game.getTile(x,y).trashAmount += target.carryingWeight
-      if x == self.x and y == self.y:
-        #stealth fish on same tile must pick up garbage
-        #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
-        #      Is this desired?
-        if target.carryingWeight + self.carryingWeight <= self.carryingCap:
-           #can carry all that weight
-           self.pickUp(x,y,target.carryingWeight)
-        else:
-           #can't carry that weight, just die.
-           self.game.grid[x][y].remove(self)
-           self.game.remove(self)
+      #stealthed fish can't attack fish on the same tile as them
+      #if x == self.x and y == self.y:
+      #  #stealth fish on same tile must pick up garbage
+      #  #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
+      #  #      Is this desired?
+      #  if target.carryingWeight + self.carryingWeight <= self.carryCap:
+      #     #can carry all that weight
+      #     self.pickUp(x,y,target.carryingWeight)
+      #  else:
+      #     #can't carry that weight, just die.
+      #     self.game.grid[x][y].remove(self)
+      #     self.game.remove(self)
       self.game.grid[x][y].remove(target)
       self.game.remove(target)
+
       
     #don't allow infinite health bugs to create super fish
     elif target.currentHealth > target.maxHealth:
       target.currentHealth = target.maxHealth
+        
     return True
 
   def __setattr__(self, name, value):
