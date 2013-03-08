@@ -166,7 +166,7 @@ class Fish(Mappable):
   
   def removeTrash(self,x,y,weight):
     self.game.trashDict[(x,y)]-=weight
-    if trashDcit[(x,y)] == 0:
+    if self.game.trashDict[(x,y)] == 0:
       del self.game.trashDict[(x,y)]
 
   def nextTurn(self):
@@ -265,9 +265,14 @@ class Fish(Mappable):
     elif abs(self.x-x) + abs(self.y-y) != 1:
       return "Can only drop onto adjacent locations"
     elif weight > self.carryingWeight:
-      return "You cannot drop more than you're carrying"
-    elif self.game.getFish(x,y) != []:
-      return "Cannot drop onto a fish"
+      return "You cannot drop more than you're carrying"      
+    Fishes = self.game.getFish(x,y)
+    if len(Fishes)>0: #If there is a fish on the tile
+      for fish in Fishes:
+        if fish.isVisible:
+          return "Cannot drop onto a fish"
+        else:
+          return "Fringe case: dropping onto a stealthed fish."    
 
     if not self.isVisible:
       self.isVisible = True #unstealth while dropping    
@@ -317,10 +322,9 @@ class Fish(Mappable):
     #check if target is dead
     if target.currentHealth <= 0:
       #drop trash on tile
-      self.game.getTile(x,y).trashAmount += target.carryingWeight
       self.game.grid[x][y].remove(target)
       if target.carryingWeight>0:
-	self.addTrash(target.x,target.y,target.carryingWeight)
+        self.addTrash(target.x,target.y,target.carryingWeight)
       self.game.removeObject(target)
      
     self.game.addAnimation(AttackAnimation(self.id,target.id))
@@ -330,11 +334,10 @@ class Fish(Mappable):
       self.currentHealth -= target.attackPower
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
-        self.game.getTile(self.x,self.y).trashAmount += self.carryingWeight
-        self.game.grid[x][y].remove(self)
         if self.carryingWeight>0:
           self.addTrash(self.x,self.y,self.carryingWeight)
-        self.game.removObject(self)  
+        self.game.grid[x][y].remove(self)
+        self.game.removeObject(self)
     return True
 
   def __setattr__(self, name, value):
