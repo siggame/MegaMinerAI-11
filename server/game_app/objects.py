@@ -1,4 +1,5 @@
 import networking.config.config
+import math
 
 #Initializes cfgSpecies
 cfgSpecies = networking.config.config.readConfig("config/species.cfg")
@@ -60,7 +61,8 @@ class Tile(Mappable):
             species.carryCap, 0, species.attackPower, True,
             species.maxAttacks, species.maxAttacks,
             species.range, species.name]
-        self.game.addObject(Fish, stats)
+        newFish = self.game.addObject(Fish, stats)
+        self.game.grid[newFish.x][newFish.y].append(newFish)
         self.hasEgg = False
      
   def __setattr__(self, name, value):
@@ -148,27 +150,39 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
-    fish.currentHealth+=fish.maxHealth*self.healPercent
+    fish.currentHealth+=fish.maxHealth*self.game.healPercent
     if fish.currentHealth>fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
   def distance(self,source,x,y):
     return math.sqrt((source.x-x)**2 + (source.y-y)**2) 
   
+  def addTrash(self,x,y,weight):
+    if (x,y) not in self.game.trashDict:      
+      self.game.trashDict[(x,y)] = weight
+    else:
+      self.game.trashDict[(x,y)] += weight 
+  
+  def removeTrash(self,x,y,weight):
+    self.game.trashDict[(x,y)]-=weight
+    if trashDcit[(x,y)] == 0:
+      del self.game.trashDict[(x,y)]
+
   def nextTurn(self):
     if self.owner == self.game.playerID:
-      if self.game.getTile(self.x,self.y).isCove:
+      if self.game.getTile(self.x,self.y).owner == self.owner:
         self.heal(self)
       self.movementLeft = self.maxMovement
       self.attacksleft = self.maxAttacks
       if self.species == "Cuttlefish":
         self.isVisible = False
       if self.species != "Tomcod":
-        self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
+        self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth <0:
-          self.game.grid[self.x][self.y].remove(self)
-          self.game.removeObject(self)
+          self.game.grid[self.x][self.y].remove(self)         
           self.game.addAnimation(DeathAnimation(self.id))
+          self.removeTrash(self.x,self.y,self.carryingWeight)
+          self.game.removeObject(self)
           print "dude died from carrying so much trash"
     return True
 
@@ -189,16 +203,15 @@ class Fish(Mappable):
     elif T.hasEgg:
       return "A fish is about to be spawned here"
     Fishes = self.game.getFish(x,y)
-    if len(Fishes > 0): #If there is a fish on the tile
+   # print Fishes
+    if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        if not fish.isVisible
+        if fish.isVisible:
           return "You can't move onto a fish."
         else:
-          print "Fringe case: moving onto a stealthed fish."
-          pass
+          return "Fringe case: moving onto a stealthed fish."    
     self.game.grid[self.x][self.y].remove(self)
-    self.game.grid[x][y].append(self)
-            
+    self.game.grid[x][y].append(self)        
     self.movementLeft -= 1
     self.x = x
     self.y = y
@@ -210,7 +223,7 @@ class Fish(Mappable):
       return "You can only control your own fish."
     elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
       return "Cannot pick up trash off the map."
-    elif abs(self.x-x) + abs(self.y-y) !=1:
+    elif self.distance(self,x,y) !=1:
       return "Can only pick up adjacent trash."
     elif (self.carryingWeight + weight) > self.carryCap:
       return "Cannot carry more weight than the fish's carry cap."
@@ -218,6 +231,8 @@ class Fish(Mappable):
       return "Cannot pick up a weight of 0."
     elif self.game.getTile(x,y).trashAmount < weight:
       return "You can't pick up more trash then there is trash present."
+    elif self.currentHealth < weight:
+      return "Can't pick that up, would kill your fish"
     
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
@@ -229,17 +244,13 @@ class Fish(Mappable):
     #take damage if not immune to it
     if self.species != "TomCod":
       self.currentHealth -= self.game.trashDamage * weight
-      #check if dead
-      if self.currentHealth < 0:
-        #remove object
-        self.game.removeObject(self.game.getObject(x,y))
-        self.game.grid[x][y].remove(self.game.getObject(x,y))
-        return "Your fish died trying to pick up the trash."
         
     #reduce weight of tile
     self.game.getTile(x,y).trashAmount -= weight
+    self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
+    print "dude picked up some trash"
     return True
 
   def drop(self, x, y, weight):
@@ -255,12 +266,11 @@ class Fish(Mappable):
       return "Cannot drop onto a fish"
 
     if not self.isVisible:
-      self.isVisible = True #unstealth while dropping
-    
-    #TODO: what happens when dropping onto a stealth fish?
+      self.isVisible = True #unstealth while dropping    
     
     self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
+    self.addTrash(x,y,weight)
     return True
 
 #TODO: Update to work with being passed a Fish to attack
@@ -272,61 +282,54 @@ class Fish(Mappable):
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
       return "You can only control your own fish."
-    elif abs(self.x-x) + abs(self.y-y) > self.range:
+    elif self.distance(self,x,y) > self.range:
       return "You can't attack further than your fish's range."
     elif self.attacksLeft == 0:
       return "This fish has no attacks left."
-    elif target == []:
-      return "You can't attack nothing!"
+    elif not isinstance(target,Fish):
+      return "You  can only attack Fish"
     elif target.isVisible == False and target.owner != self.game.playerID:
       return "You aren't even supposed to see invisible fish, let alone attack them."
-    elif target.owner != self.game.playerID and self.attackPower < 0:
+    elif target.owner != self.owner and self.attackPower < 0:
       return "You can't heal the opponent's fish."
-    elif target.owner == self.game.playerID and self.attackPower > 0:
+    elif target.owner == self.owner and self.attackPower > 0:
       return "You can't attack your own fish."
     elif self.x == x and self.y == y:
       return "A stealthed unit can't attack a fish above it."
-    
-    #hurt the other fish
-    target.currentHealth -= self.attackPower
-    #make the other fish visible; in case an invisible fish is being healed
-    target.isVisible = True
-    #make the attacking fish visible
-    self.isVisible = True
 
+    print "attacking a dude  with another dude"
+    
+    if self.species == "cleanerShrimp":
+      self.heal(target)
+      target.isVisible = True
+   
+    else:   
+      #hurt the other fish
+      target.currentHealth -= self.attackPower
+      #make the attacking fish visible
+      self.isVisible = True  
+    
+    #check if target is dead
+    if target.currentHealth <= 0:
+      #drop trash on tile
+      self.game.getTile(x,y).trashAmount += target.carryingWeight
+      self.game.grid[x][y].remove(target)
+      if target.carryingWeight>0:
+	self.addTrash(target.x,target.y,target.carryingWeight)
+      self.game.removeObject(target)
+     
+    self.game.addAnimation(AttackAnimation(self.id,target.id))
+    self.attacksLeft-=1  
     #check for sea urchin counter attacks
-    if target.species == "SeaUrchin":
+    if target.species == "SeaUrchin" and target.owner != self.owner:
       self.currentHealth -= target.attackPower
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
         self.game.getTile(self.x,self.y).trashAmount += self.carryingWeight
         self.game.grid[x][y].remove(self)
-        self.game.remove(self)
-    
-    #check if dead
-    if target.currentHealth <= 0:
-      #drop trash on tile
-      self.game.getTile(x,y).trashAmount += target.carryingWeight
-      #stealthed fish can't attack fish on the same tile as them
-      #if x == self.x and y == self.y:
-      #  #stealth fish on same tile must pick up garbage
-      #  #TODO: Currently the stealthed fish dies if it kills a fish with too much weight.
-      #  #      Is this desired?
-      #  if target.carryingWeight + self.carryingWeight <= self.carryCap:
-      #     #can carry all that weight
-      #     self.pickUp(x,y,target.carryingWeight)
-      #  else:
-      #     #can't carry that weight, just die.
-      #     self.game.grid[x][y].remove(self)
-      #     self.game.remove(self)
-      self.game.grid[x][y].remove(target)
-      self.game.remove(target)
-
-      
-    #don't allow infinite health bugs to create super fish
-    elif target.currentHealth > target.maxHealth:
-      target.currentHealth = target.maxHealth
-        
+        if self.carryingWeight>0:
+          self.addTrash(self.x,self.y,self.carryingWeight)
+        self.game.removObject(self)  
     return True
 
   def __setattr__(self, name, value):
