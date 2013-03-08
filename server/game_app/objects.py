@@ -369,7 +369,7 @@ class Player(object):
     return True
     
   def talk(self, message):
-    self.game.addAnimations(PlayerTalkAnimation(self.id,message)
+    self.game.addAnimations(PlayerTalkAnimation(self.id,message))
     
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
