@@ -152,7 +152,48 @@ namespace visualizer
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
     {
       Frame turn;  // The frame that will be drawn
+
+      // for each creature in the current turn
+      for( auto& p : m_game->states[ state ].fishes )
+      {
+        SmartPointer<Fish> newFish = new Fish();
+
+        for(auto& j : m_game->states[state].animations[p.second.id])
+        {
+            switch(j->type)
+            {
+                case parser::MOVE:
+                parser::move& move = (parser::move&)*j;
+                newFish->m_moves.push_back(Fish::Moves(glm::vec2(move.toX, move.toY),glm::vec2(move.fromX, move.fromY)));
+            }
+        }
+
+        if(newFish->m_moves.empty())
+        {
+            newFish->m_moves.push_back(Fish::Moves(glm::vec2(p.second.x, p.second.y),glm::vec2(p.second.x, p.second.y)));
+        }
+
+        newFish->owner = p.second.owner;
+        newFish->maxHealth = p.second.maxHealth;
+        newFish->currentHealth = p.second.currentHealth;
+        newFish->maxMovement = p.second.maxMovement;
+        newFish->movementLeft = p.second.movementLeft;
+        newFish->carryCap = p.second.carryingWeight;
+        newFish->attackPower = p.second.attackPower;
+        newFish->isVisible = p.second.isVisible;
+        newFish->maxAttacks = p.second.maxAttacks;
+        newFish->attacksLeft = p.second.attacksLeft;
+        newFish->range = p.second.range;
+        newFish->species = p.second.species;
+
+        newFish->addKeyFrame( new DrawFish( newFish ) );
+        turn.addAnimatable(newFish);
+        cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
+
+     }
+
       turn.addAnimatable(pMap);
+
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);
@@ -168,6 +209,14 @@ namespace visualizer
           timeManager->setTurn(0);
           timeManager->play();
         }
+      }
+      else
+      {
+        timeManager->setNumTurns(state);
+        animationEngine->registerGame( this, this );
+        animationEngine->registerGame(this, this);
+        timeManager->setTurn(0);
+        timeManager->play();
       }
     }
     
