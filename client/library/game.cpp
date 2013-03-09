@@ -309,6 +309,49 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+  Connection * c = object->_c;
+  //can't control enemy fish
+  if(object -> owner != c -> playerID)
+    return 0;
+  //can't move off of the map
+  else if((x < 0 || x > c -> mapWidth) || (y < 0 || y > c-> mapHeight))
+    return 0;
+  //can only pickup from adjacent tiles
+  else if(abs(object -> x - x) + abs(object -> y -y) != 1)
+    return 0;
+  //cannot carry more than the fish's carrying capacity
+  else if((object -> carryingWeight + weight) > object -> carryCap)
+    return 0;
+  //cannot pick up a weight of 0
+  else if(weight == 0)
+    return 0;
+  //cannot pick up something that will kill you
+  else if(object -> currentHealth < weight)
+    return 0;
+  //can't pick up more trash than is present
+  for (int blah = 0; blah < c -> TileCount; blah++)
+  {
+   if (c -> Tiles[blah].x == x && c -> Tiles[blah].y == y)
+   {
+      if(c -> Tiles[blah].trashAmount < weight)
+        return 0;
+   }
+  }
+
+  if(!object -> isVisible)
+    object -> isVisible = true;
+      
+  if(object -> species != "TomCod")
+    object -> currentHealth -= (c -> trashDamage * weight);
+
+  for (int blah = 0; blah < c -> TileCount; blah++) {
+    if (c -> Tiles[blah].x == x && c -> Tiles[blah].y == y)
+    {
+      c -> Tiles[blah].trashAmount -= weight;
+    }
+  }
+  object -> carryingWeight += weight;
+  
   return 1;
 }
 
