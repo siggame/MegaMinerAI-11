@@ -289,7 +289,7 @@ class Match(DefaultGameWorld):
     #DELETE GRID
     #del self.grid
     self.winner=winner
-    print "Player", self.getPlayerIndex(self.winner), "wins game", self.id
+    print "Player", self.getPlayerIndex(self.winner) + 1, "wins game", self.id
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
     
