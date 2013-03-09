@@ -244,26 +244,37 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
 
   //must have enough food
   if(object->_c->Players[object->_c->playerID].spawnFood < object->cost)
+  {
     return 0;
+  }
   //can't spawn off map
   if(x<0||x>=object->_c->mapWidth||y<0||y>=object->_c->mapHeight)
+  {
     return 0;
+  }
   //needs to be in season
   if(object->_c->currentSeason!=object->season)
+  {
     return 0;
-
+  }
   _Tile* tile=NULL;
   for(int i=0;i<object->_c->TileCount;i++)
   {
-    if(object->_c->Tiles[i].x == x && object->_c->Tiles[i].y == y)
+    if(object->_c->Tiles[i].x==x&&object->_c->Tiles[i].y==y)
+    {
       tile=&object->_c->Tiles[i];
+    }
   }
   //tile has to be owned by the owner
   if(tile->owner!=object->_c->playerID)
+  {
     return 0;
+  }
   //tile can't have an egg
   if(tile->hasEgg)
+  {
     return 0;
+  }
 
   object->_c->Players[object->_c->playerID].spawnFood -= object->cost;
   tile->hasEgg = true;
@@ -298,47 +309,61 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+  
   Connection * c = object->_c;
   //can't control enemy fish
   if(object -> owner != c -> playerID)
+  {
     return 0;
+  }
   //can't move off of the map
   else if((x < 0 || x > c -> mapWidth) || (y < 0 || y > c-> mapHeight))
+  {
     return 0;
+  }
   //can only pickup from adjacent tiles
   else if(abs(object -> x - x) + abs(object -> y -y) != 1)
-    return 0;
+  {
+   return 0;
+  }
   //cannot carry more than the fish's carrying capacity
   else if((object -> carryingWeight + weight) > object -> carryCap)
+  {
     return 0;
+  }
   //cannot pick up a weight of 0
   else if(weight == 0)
+  {
     return 0;
+  }
   //cannot pick up something that will kill you
   else if(object -> currentHealth < weight)
+  {
     return 0;
+  }
   //can't pick up more trash than is present
   for (int blah = 0; blah < c -> TileCount; blah++)
   {
    if (c -> Tiles[blah].x == x && c -> Tiles[blah].y == y)
    {
-      if(c -> Tiles[blah].trashAmount < weight)
-        return 0;
+     if(c -> Tiles[blah].trashAmount < weight)
+       return 0;
    }
   }
-
+  
   if(!object -> isVisible)
     object -> isVisible = true;
       
   if(object -> species != "TomCod")
     object -> currentHealth -= (c -> trashDamage * weight);
 
-  for (int blah = 0; blah < c -> TileCount; blah++) {
-    if (c -> Tiles[blah].x == x && c -> Tiles[blah].y == y)
-    {
-      c -> Tiles[blah].trashAmount -= weight;
-    }
-  }
+  for (int blah = 0; blah < c -> TileCount; blah++)
+  {
+   if (c -> Tiles[blah].x == x && c -> Tiles[blah].y == y)
+   {
+     c -> Tiles[blah].trashAmount -= weight;
+   }
+  }  
   object -> carryingWeight += weight;
   
   return 1;

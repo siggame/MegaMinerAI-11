@@ -6,6 +6,11 @@ namespace visualizer
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
+        m_Map->Update(game->timeManager->getTurn());
+
+        // draw a blue background
+        game->renderer->setColor(Color(0.0f,0.0f,1.0f,1.0f));
+        game->renderer->drawQuad(0.0f,0.0f,m_Map->GetWidth(),m_Map->GetHeight());
 
         game->renderer->setColor(Color(1.0f,.8f,1.0f,1.0f));
 
@@ -16,25 +21,24 @@ namespace visualizer
           {
               Map::Tile& tile = (*m_Map)(y,x);
 
-              if(tile.isCove > 0)
+              if(tile.trashAmount <= 0)
               {
-                  game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
+                  if(tile.isCove > 0)
+                  {
+                      game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
+                  }
+                  else
+                  {
+
+                  }
               }
               else
               {
-
+                  game->renderer->drawTexturedQuad(x,y,1,1,"trash");
+                  //game->renderer->drawAnimQuad(x,y,1,1,"trash",tile.trashAmount);
               }
           }
         }
-
-        // todo: change the direction of the water based on time
-        float fSeconds = timer.elapsed() / 1000.0f * game->options->getNumber("Enable Water Animation");
-        float fTransparency = (float)game->options->getNumber("Water Transparency Level") / 100.0f;
-
-        // blend water map ontop of all the tiles
-        game->renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
-        game->renderer->drawSubTexturedQuad(0,0,m_Map->GetWidth(),m_Map->GetHeight(),(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
-
     }
 
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )
@@ -51,30 +55,26 @@ namespace visualizer
 
     void DrawFish::animate(const float &t, AnimData *d, IGame *game)
     {
-      game->renderer->setColor( Color( 1, 1, 0, 1 ) );
+        game->renderer->setColor( Color( 1, 1, 1, 1 ) );
 
-      unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
-      float subT = m_Fish->m_moves.size() * t - index;
+        unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
+        float subT = m_Fish->m_moves.size() * t - index;
 
-      glm::vec2 pos = m_Fish->m_moves[index].from + (m_Fish->m_moves[index].to - m_Fish->m_moves[index].from) * subT;
+        glm::vec2 pos = m_Fish->m_moves[index].from + (m_Fish->m_moves[index].to - m_Fish->m_moves[index].from) * subT;
 
-      //game->renderer->drawQuad(pos.x,pos.y,0.01f,0.01f);
-      game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
-      //game->renderer->drawText(pos.x,pos.y,"Roboto","fish");
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
     }
 
-    void StartAnim::animate( const float& /* t */, AnimData * /* d */, IGame* /*game*/ )
+    void MapUpdater::animate(const float &t, AnimData *d, IGame *game)
     {
+        if(m_info->active)
+        {
+            cout<<"Update Map!"<<endl;
+            Map::Tile& tile = (*m_info->m_map)(m_info->y,m_info->x);
+            tile.trashAmount += m_info->amount;
+
+            m_info->active = false;
+        }
     }
-
-    void DrawSomething::animate( const float& /*t*/, AnimData * /*d*/, IGame* game )
-    {
-        // Set the color to red
-        game->renderer->setColor( Color( 1, 0, 0, 1 ) );
-        // Draw a 2x2 rectangle at (1,1), with the top left corner of the screen being the origin
-        game->renderer->drawQuad( 1, 1, 2, 2 );
-    }
-
-
 }
 
