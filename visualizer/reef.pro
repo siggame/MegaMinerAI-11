@@ -4,7 +4,8 @@ DEPENDPATH += ../common/
 
 TEMPLATE = lib
 TARGET = reef
-SOURCES = *.cpp           ./parser/*.cpp           ./parser/sexp/*.cpp           ../common/*.cpp
+SOURCES = *.cpp           ./parser/*.cpp           ./parser/sexp/*.cpp           ../common/*.cpp \
+
 
 HEADERS +=  *.h             ./parser/*.h             ./parser/sexp/*.h
 

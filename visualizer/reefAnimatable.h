@@ -1,7 +1,6 @@
 #ifndef REEF_ANIMATABLE_H
 #define REEF_ANIMATABLE_H
 
-//#include "reefAnimatable.h"
 #include "irenderer.h"
 #include "parser/structures.h"
 
@@ -10,7 +9,6 @@
 
 namespace visualizer
 {
-
     // class that stores the info about how a map is rendered
     class Map : public Animatable
     {
@@ -35,7 +33,7 @@ namespace visualizer
            // todo: add more?
         };
 
-        Map(int w, int h /*float pc, float mc, float xp*/) : m_tiles(w*h), width(w), height(h)/*, prevMapColor(pc), mapColor(mc), xPos(xp)*/
+        Map(int w, int h, int turns) : m_tiles(w*h), m_updaters(turns), width(w), height(h)
         {
         }
 
@@ -50,15 +48,20 @@ namespace visualizer
           return m_tiles[c + r*width];
         }
 
-        int GetWidth() const { return width; }
-        int GetHeight() const { return height; }
-        float GetPrevMapColor() const { return prevMapColor; }
-        float GetxPos() const { return xPos; }
-        float GetMapColor() const { return mapColor; }
+        void Update(int turn);
+
+        void AddTurn(int turn, const SmartPointer<struct TrashMovingInfo>& trash);
+
+        int GetWidth() const;
+        int GetHeight() const;
+        float GetPrevMapColor() const;
+        float GetxPos() const;
+        float GetMapColor() const;
 
     private:
 
       std::vector<Tile> m_tiles;
+      std::vector<std::vector<SmartPointer<struct TrashMovingInfo> > > m_updaters; // stupid C++
       int width;
       int height;
 
@@ -68,6 +71,19 @@ namespace visualizer
       float xPos;
 
         // todo: add more?
+    };
+
+    // todo: rename this struct
+    struct TrashMovingInfo : public Animatable
+    {
+        TrashMovingInfo() : x(0), y(0), amount(0), active(true) {}
+
+        int x;
+        int y;
+        int amount;
+
+        SmartPointer<Map> m_map;
+        bool active;
     };
 
     struct Fish : public Animatable
@@ -99,6 +115,7 @@ namespace visualizer
         char* species;      //
 
         std::vector<Moves> m_moves;
+
     };
 
     // used for static non moving sprite animations
@@ -115,10 +132,6 @@ namespace visualizer
         float dy;
         string animation;
         string enable; // used for enabling/disabling this sprite via gui
-    };
-
-    struct Something: public Animatable
-    {
     };
 
 } // visualizer

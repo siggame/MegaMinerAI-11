@@ -14,6 +14,8 @@ namespace visualizer
     m_game = 0;
     m_suicide=false;
 
+    m_WaterTimer.start();
+
     srand(time(0));
   } // Reef::Reef()
 
@@ -47,7 +49,21 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      // todo: change the direction of the water based on time?
+      float fSeconds = m_WaterTimer.elapsed() / 1000.0f * options->getNumber("Enable Water Animation");
+      float fTransparency = (float)options->getNumber("Water Transparency Level") / 100.0f;
 
+      renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+      for(unsigned int i = 0; i < m_game->states[0].mapWidth; ++i)
+      {
+        renderer->drawSubTexturedQuad(i,-2.0f,1.0f,2.0f,(fSeconds)/2.0f,0.0f,1,1,"waves");
+      }
+
+      //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");
+
+      // blend water map ontop of all the tiles
+      renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
+      renderer->drawSubTexturedQuad(0,0,m_game->states[0].mapWidth,m_game->states[0].mapHeight,(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
   }
 
 
@@ -106,11 +122,34 @@ namespace visualizer
 
     // Setup the renderer as a 4 x 4 map by default
     // TODO: Change board size to something useful
-    renderer->setCamera( 0, 0, m_game->states[0].mapWidth, m_game->states[0].mapHeight );
-    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight );
+    renderer->setCamera( 0, 4, m_game->states[0].mapWidth, m_game->states[0].mapHeight+4);
+    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight+4 );
  
     start();
   } // Reef::loadGamelog()
+
+  void Reef::BuildWorld(Map* pMap)
+  {
+      int coralHeight = 4* pMap->GetHeight() / 5;
+
+      for (int x = 0; x < pMap->GetWidth(); x++)
+      {
+        for (int y = pMap->GetHeight() - 2; y >= coralHeight; y--)
+        {
+            Map::Tile& tile = (*pMap)(y,x);
+            tile.isCove = rand() % 2;
+            tile.spriteId = 2;
+        }
+      }
+
+      for (int x = 0; x < pMap->GetWidth(); x++)
+      {
+         Map::Tile& tile = (*pMap)(pMap->GetHeight() - 1,x);
+         tile.isCove = 1;
+         tile.spriteId = rand() % 2;
+      }
+
+  }
   
   // The "main" function
   void Reef::run()
@@ -124,28 +163,17 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
-    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
+    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight,m_game->states.size());
     pMap->addKeyFrame( new DrawMap( pMap ) );
 
-    for (int x = 0; x < pMap->GetWidth(); x++)
-    {
-      for (int y = 0; y < pMap->GetHeight(); y++)
-      {
-          Map::Tile& tile = (*pMap)(y,x);
-          tile.isCove = rand() % 2;
-          tile.spriteId = rand() % 3;
-      }
-    }
+    BuildWorld(pMap);
 
     for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
     {
         Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
 
-        cout<<iter->second.trashAmount<<endl;
-
-       // tile.spriteId = iter->second.trashAmount % 3;
-
-        //iter->
+        // todo: make the ammount of trash do something else
+        tile.trashAmount = iter->second.trashAmount % 4;
     }
 
     // Look through each turn in the gamelog
@@ -153,18 +181,46 @@ namespace visualizer
     {
       Frame turn;  // The frame that will be drawn
 
-      // for each creature in the current turn
+      turn.addAnimatable(pMap);
+
+      // for each fish in the current turn
       for( auto& p : m_game->states[ state ].fishes )
       {
         SmartPointer<Fish> newFish = new Fish();
 
+        // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            switch(j->type)
+            if(j->type == parser::MOVE)
             {
-                case parser::MOVE:
+                cout<<"Move!"<<endl;
                 parser::move& move = (parser::move&)*j;
                 newFish->m_moves.push_back(Fish::Moves(glm::vec2(move.toX, move.toY),glm::vec2(move.fromX, move.fromY)));
+            }
+            else if(j->type == parser::DROP || j->type == parser::PICKUP)
+            {
+                cout<<"Move Trash!"<<endl;
+                SmartPointer<TrashMovingInfo> trashInfo = new TrashMovingInfo;
+                trashInfo->m_map = pMap;
+
+                if(j->type == parser::DROP)
+                {
+                    parser::drop& dropAnim = (parser::drop&)*j;
+                    trashInfo->amount = dropAnim.amount;
+                    trashInfo->x = dropAnim.x;
+                    trashInfo->y = dropAnim.y;
+                }
+                else
+                {
+                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;
+                    trashInfo->amount = pickupAnim.amount;
+                    trashInfo->x = pickupAnim.x;
+                    trashInfo->y = pickupAnim.y;
+                }
+                trashInfo->addKeyFrame(new MapUpdater(trashInfo));
+                pMap->AddTurn(state,trashInfo);
+                turn.addAnimatable(trashInfo);
+
             }
         }
 
@@ -191,8 +247,6 @@ namespace visualizer
         cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
 
      }
-
-      turn.addAnimatable(pMap);
 
 
       animationEngine->buildAnimations(turn);
