@@ -244,37 +244,26 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
 
   //must have enough food
   if(object->_c->Players[object->_c->playerID].spawnFood < object->cost)
-  {
     return 0;
-  }
   //can't spawn off map
   if(x<0||x>=object->_c->mapWidth||y<0||y>=object->_c->mapHeight)
-  {
     return 0;
-  }
   //needs to be in season
   if(object->_c->currentSeason!=object->season)
-  {
     return 0;
-  }
+
   _Tile* tile=NULL;
   for(int i=0;i<object->_c->TileCount;i++)
   {
-    if(object->_c->Tiles[i].x==x&&object->_c->Tiles[i].y==y)
-    {
+    if(object->_c->Tiles[i].x == x && object->_c->Tiles[i].y == y)
       tile=&object->_c->Tiles[i];
-    }
   }
   //tile has to be owned by the owner
   if(tile->owner!=object->_c->playerID)
-  {
     return 0;
-  }
   //tile can't have an egg
   if(tile->hasEgg)
-  {
     return 0;
-  }
 
   object->_c->Players[object->_c->playerID].spawnFood -= object->cost;
   tile->hasEgg = true;
