@@ -208,7 +208,7 @@ class Fish(Mappable):
     T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
       return "You can't move on top of trash"
-    elif T.owner != self.owner:
+    elif T.owner == self.owner^1:
       return "Can't go into an opponent's cove."
     elif T.hasEgg:
       return "A fish is about to be spawned here"
