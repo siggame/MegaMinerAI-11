@@ -287,7 +287,7 @@ class Fish(Mappable):
 
     self.game.getTile(x,y).trashAmount += weight
     self.carryingWeight -= weight
-    self.game.addAnimation(self.DropAnimation(self.x, self.y, self.id, weight))
+    self.game.addAnimation(DropAnimation(self.x, self.y, self.id, weight))
     self.addTrash(x,y,weight)
     return True
 
