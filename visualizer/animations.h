@@ -12,6 +12,16 @@ namespace visualizer
 
     };
 
+    class DrawSprite : public Anim
+    {
+    public:
+        DrawSprite( BaseSprite* sprite ) : m_sprite(sprite) {}
+        void animate( const float& t, AnimData* d, IGame* game );
+
+    private:
+        BaseSprite* m_sprite;
+    };
+
     class DrawAnimation : public Anim
     {
     public:
@@ -46,22 +56,6 @@ namespace visualizer
     private:
         Fish* m_Fish;
     };//DrawFish
-
-    class MapUpdater : public Anim
-    {
-    public:
-
-        MapUpdater( TrashMovingInfo* info) : m_info(info)
-        {
-        }
-
-        void animate( const float& t, AnimData* d, IGame* game );
-
-    private:
-
-        TrashMovingInfo* m_info;
-
-    };
 }
 
 #endif // ANIMATION_H

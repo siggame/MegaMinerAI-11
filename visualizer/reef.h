@@ -18,6 +18,22 @@ using namespace std;
 
 namespace visualizer
 {
+    struct Trash
+    {
+        int id;
+        int trashAmount;
+        int x;
+        int y;
+    };
+
+    struct Rect
+    {
+        int left;
+        int top;
+        int right;
+        int bottom;
+    };
+
     class Reef: public QThread, public AnimSequence, public IGame
     {
         Q_OBJECT;
@@ -46,7 +62,14 @@ namespace visualizer
             QElapsedTimer m_WaterTimer;
             bool m_suicide;
 
+            list<int> m_selectedUnitIDs;
+            std::vector<std::vector<Trash> > m_Trash;
+
+            const int SEA_OFFSET = 4;
+
             void BuildWorld(class Map* pMap);
+
+            void GetSelectedRect(Rect& out) const;
     }; 
 
 } // visualizer

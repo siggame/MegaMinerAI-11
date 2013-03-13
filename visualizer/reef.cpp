@@ -9,6 +9,7 @@
 
 namespace visualizer
 {
+
   Reef::Reef()
   {
     m_game = 0;
@@ -40,11 +41,63 @@ namespace visualizer
 
   } // Reef::~Reef()
 
+  void Reef::GetSelectedRect(Rect& R) const
+    {
+      const Input& input = gui->getInput();
+
+      // offset the input
+
+      int x = input.x;
+      int y = input.y - SEA_OFFSET;
+      int width = input.sx - x;
+      int height = input.sy - y - SEA_OFFSET;
+
+      int right = x + width;
+      int bottom = y + height;
+
+      R.left = min(x,right);
+      R.top = min(y,bottom);
+      R.right = max(x,right);
+      R.bottom = max(y,bottom);
+    }
+
   void Reef::preDraw()
   {
-    const Input& input = gui->getInput();
-    
-    // Handle player input here
+      const Input& input = gui->getInput();
+      if( input.leftRelease )
+      {
+          int turn = timeManager->getTurn();
+
+          Rect R;
+          GetSelectedRect(R);
+
+          m_selectedUnitIDs.clear();
+
+          for(unsigned int i = 0; i < m_Trash.size(); ++i)
+          {
+              if(m_Trash[turn][i].trashAmount > 0)
+              {
+                  // todo: move this logic into another function
+                  if(R.left <= m_Trash[turn][i].x && R.right >= m_Trash[turn][i].x && R.top <= m_Trash[turn][i].y && R.bottom >= m_Trash[turn][i].y)
+                  {
+                      m_selectedUnitIDs.push_back(m_Trash[turn][i].id);
+                  }
+              }
+          }
+
+          for(auto& iter : m_game->states[ turn ].fishes)
+          {
+              const auto& obj = iter.second;
+
+              // todo: move this logic into another function
+              if(R.left <= obj.x && R.right >= obj.x && R.top <= obj.y && R.bottom >= obj.y)
+              {
+                  m_selectedUnitIDs.push_back(obj.id);
+              }
+          }
+
+          cout<<"Selected Units:" << m_selectedUnitIDs.size() << endl;
+      }
   }
 
   void Reef::postDraw()
@@ -90,8 +143,7 @@ namespace visualizer
   // Give the Debug Info widget the selected object IDs in the Gamelog
   list<int> Reef::getSelectedUnits()
   {
-    // TODO Selection logic
-    return list<int>();  // return the empty list
+    return m_selectedUnitIDs;
   }
 
   void Reef::loadGamelog( std::string gamelog )
@@ -122,8 +174,8 @@ namespace visualizer
 
     // Setup the renderer as a 4 x 4 map by default
     // TODO: Change board size to something useful
-    renderer->setCamera( 0, 4, m_game->states[0].mapWidth, m_game->states[0].mapHeight+4);
-    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight+4 );
+    renderer->setCamera( 0, SEA_OFFSET, m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET);
+    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET );
  
     start();
   } // Reef::loadGamelog()
@@ -154,34 +206,33 @@ namespace visualizer
   // The "main" function
   void Reef::run()
   {
-    
     // Build the Debug Table's Headers
     QStringList header;
-    header << "one" << "two" << "three";
+    header << "Owner" << "Type" << "Trash Amount" << "X" << "Y";
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
     animationEngine->registerGame(0, 0);
 
-    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight,m_game->states.size());
+    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
     pMap->addKeyFrame( new DrawMap( pMap ) );
 
     BuildWorld(pMap);
 
-    for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
-    {
-        Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
-
-        // todo: make the ammount of trash do something else
-        tile.trashAmount = iter->second.trashAmount % 4;
-    }
+    m_Trash.resize(m_game->states.size());
 
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
     {
       Frame turn;  // The frame that will be drawn
 
+      // todo: remove this from each frame
       turn.addAnimatable(pMap);
+
+      if(state > 0)
+      {
+        m_Trash[state] = m_Trash[state - 1];
+      }
 
       // for each fish in the current turn
       for( auto& p : m_game->states[ state ].fishes )
@@ -193,33 +244,27 @@ namespace visualizer
         {
             if(j->type == parser::MOVE)
             {
-                cout<<"Move!"<<endl;
+                //cout<<"Move!"<<endl;
                 parser::move& move = (parser::move&)*j;
                 newFish->m_moves.push_back(Fish::Moves(glm::vec2(move.toX, move.toY),glm::vec2(move.fromX, move.fromY)));
             }
             else if(j->type == parser::DROP || j->type == parser::PICKUP)
             {
                 cout<<"Move Trash!"<<endl;
-                SmartPointer<TrashMovingInfo> trashInfo = new TrashMovingInfo;
-                trashInfo->m_map = pMap;
 
                 if(j->type == parser::DROP)
                 {
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    trashInfo->amount = dropAnim.amount;
-                    trashInfo->x = dropAnim.x;
-                    trashInfo->y = dropAnim.y;
+
+                    // todo: do something with the drop
                 }
                 else
                 {
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
-                    trashInfo->amount = pickupAnim.amount;
-                    trashInfo->x = pickupAnim.x;
-                    trashInfo->y = pickupAnim.y;
+
+                    // todo: do something with the pickup
+
                 }
-                trashInfo->addKeyFrame(new MapUpdater(trashInfo));
-                pMap->AddTurn(state,trashInfo);
-                turn.addAnimatable(trashInfo);
 
             }
         }
@@ -242,12 +287,59 @@ namespace visualizer
         newFish->range = p.second.range;
         newFish->species = p.second.species;
 
+        turn[p.second.id]["Owner"] = p.second.owner;
+        turn[p.second.id]["Type"] = "fish";
+        turn[p.second.id]["X"] = p.second.x;
+        turn[p.second.id]["Y"] = p.second.y;
+
         newFish->addKeyFrame( new DrawFish( newFish ) );
         turn.addAnimatable(newFish);
-        cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
+        //cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
 
      }
 
+      // If the tiles are not empty
+      if(!m_game->states[state].tiles.empty())
+      {
+          bool cleared = false;
+          for(auto iter = m_game->states[state].tiles.begin(); iter != m_game->states[state].tiles.end(); ++iter)
+          {
+              // if there is trash
+              if(iter->second.trashAmount > 0)
+              {
+                  Trash trash;
+                  trash.id = iter->second.id;
+                  trash.x = iter->second.x;
+                  trash.y = iter->second.y;
+                  trash.trashAmount = iter->second.trashAmount;
+
+                  if(!cleared)
+                  {
+                      m_Trash[state].clear();
+                      cleared = true;
+                  }
+
+                  m_Trash[state].push_back(trash);
+              }
+          }
+      }
+
+      cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
+
+      for(unsigned int i = 0; i < m_Trash[state].size(); ++i)
+      {
+          const Trash& trash = m_Trash[state][i];
+          SmartPointer<BaseSprite> trashSprite = new BaseSprite(trash.x,trash.y,1.0f,1.0f,"trash");
+          trashSprite->addKeyFrame(new DrawSprite(trashSprite));
+
+          turn.addAnimatable(trashSprite);
+
+          //turn[trashList[i].id]["Owner"] = trashList[i].owner;
+          turn[trash.id]["X"] = trash.x;
+          turn[trash.id]["Y"] = trash.y;
+          turn[trash.id]["Trash Amount"] = trash.trashAmount;
+          turn[trash.id]["Type"] = "trash";
+      }
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);

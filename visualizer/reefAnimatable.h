@@ -9,6 +9,7 @@
 
 namespace visualizer
 {
+    // todo: remove this
     // class that stores the info about how a map is rendered
     class Map : public Animatable
     {
@@ -16,15 +17,14 @@ namespace visualizer
 
         struct Tile
         {
-            Tile() : trashAmount(0), isCove(0), hasEgg(0), spriteId(0)
+            Tile() : isCove(0), hasEgg(0), spriteId(0)
             {
             }
 
-            Tile(int ta, int ic) : trashAmount(ta), isCove(ic)
+            Tile(int ic) : isCove(ic), hasEgg(0), spriteId(0)
             {
             }
 
-            int trashAmount; // trash to be rendered, this value would change based off of the game being played
             int isCove; // teh cove, need to make it look nice, this value does not change between frames
             int hasEgg; // teh egg
             int spriteId;
@@ -33,7 +33,7 @@ namespace visualizer
            // todo: add more?
         };
 
-        Map(int w, int h, int turns) : m_tiles(w*h), m_updaters(turns), width(w), height(h)
+        Map(int w, int h) : m_tiles(w*h), width(w), height(h)
         {
         }
 
@@ -48,20 +48,17 @@ namespace visualizer
           return m_tiles[c + r*width];
         }
 
-        void Update(int turn);
-
         void AddTurn(int turn, const SmartPointer<struct TrashMovingInfo>& trash);
 
-        int GetWidth() const;
-        int GetHeight() const;
-        float GetPrevMapColor() const;
-        float GetxPos() const;
-        float GetMapColor() const;
+        int GetWidth() const { return width; }
+        int GetHeight() const { return height; }
+        float GetPrevMapColor() const { return prevMapColor; }
+        float GetxPos() const { return xPos; }
+        float GetMapColor() const { return mapColor; }
 
     private:
 
       std::vector<Tile> m_tiles;
-      std::vector<std::vector<SmartPointer<struct TrashMovingInfo> > > m_updaters; // stupid C++
       int width;
       int height;
 
@@ -71,19 +68,6 @@ namespace visualizer
       float xPos;
 
         // todo: add more?
-    };
-
-    // todo: rename this struct
-    struct TrashMovingInfo : public Animatable
-    {
-        TrashMovingInfo() : x(0), y(0), amount(0), active(true) {}
-
-        int x;
-        int y;
-        int amount;
-
-        SmartPointer<Map> m_map;
-        bool active;
     };
 
     struct Fish : public Animatable
@@ -118,19 +102,26 @@ namespace visualizer
 
     };
 
-    // used for static non moving sprite animations
-    struct SpriteAnimation : public Animatable
+    struct BaseSprite : public Animatable
     {
-        // todo: maybe reorder these
-        SpriteAnimation(float posX, float posY, int f, float dx, float dy,const string& a, const string& e = "") :
-            x(posX), y(posY), frames(f), dx(dx), dy(dy), animation(a), enable(e) {}
+        BaseSprite(float posX, float posY, float dx, float dy, const string& s) :
+            x(posX), y(posY), dx(dx), dy(dy), m_sprite(s)  {}
 
         float x;
         float y;
-        int frames;
         float dx;
         float dy;
-        string animation;
+        string m_sprite;
+    };
+
+    // used for static non moving sprite animations
+    struct SpriteAnimation : public BaseSprite
+    {
+        // todo: maybe reorder these
+        SpriteAnimation(float posX, float posY, float dx, float dy ,const string& sprite, int f, const string& e = "") :
+            BaseSprite(posX,posY,dx,dy,sprite), frames(f), enable(e) {}
+
+        int frames;
         string enable; // used for enabling/disabling this sprite via gui
     };
 

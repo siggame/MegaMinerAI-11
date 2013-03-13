@@ -6,8 +6,6 @@ namespace visualizer
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
-        m_Map->Update(game->timeManager->getTurn());
-
         // draw a blue background
         game->renderer->setColor(Color(0.0f,0.0f,1.0f,1.0f));
         game->renderer->drawQuad(0.0f,0.0f,m_Map->GetWidth(),m_Map->GetHeight());
@@ -21,24 +19,18 @@ namespace visualizer
           {
               Map::Tile& tile = (*m_Map)(y,x);
 
-              if(tile.trashAmount <= 0)
+              if(tile.isCove > 0)
               {
-                  if(tile.isCove > 0)
-                  {
-                      game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
-                  }
-                  else
-                  {
-
-                  }
-              }
-              else
-              {
-                  game->renderer->drawTexturedQuad(x,y,1,1,"trash");
-                  //game->renderer->drawAnimQuad(x,y,1,1,"trash",tile.trashAmount);
+                  game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
               }
           }
         }
+    }
+
+    void DrawSprite::animate(const float &t, AnimData *d, IGame *game)
+    {
+        game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
+        game->renderer->drawTexturedQuad(m_sprite->x, m_sprite->y, m_sprite->dx, m_sprite->dy,m_sprite->m_sprite);
     }
 
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )
@@ -47,7 +39,7 @@ namespace visualizer
         if(m_animation->enable.empty() || game->options->getNumber(m_animation->enable) > 0.0f)
         {
             game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
-            game->renderer->drawAnimQuad( m_animation->x, m_animation->y, m_animation->dx, m_animation->dy, m_animation->animation , (int)(m_animation->frames * t));
+            game->renderer->drawAnimQuad( m_animation->x, m_animation->y, m_animation->dx, m_animation->dy, m_animation->m_sprite , (int)(m_animation->frames * t));
         }
 
     }
@@ -63,18 +55,6 @@ namespace visualizer
         glm::vec2 pos = m_Fish->m_moves[index].from + (m_Fish->m_moves[index].to - m_Fish->m_moves[index].from) * subT;
 
         game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
-    }
-
-    void MapUpdater::animate(const float &t, AnimData *d, IGame *game)
-    {
-        if(m_info->active)
-        {
-            cout<<"Update Map!"<<endl;
-            Map::Tile& tile = (*m_info->m_map)(m_info->y,m_info->x);
-            tile.trashAmount += m_info->amount;
-
-            m_info->active = false;
-        }
     }
 }
 
