@@ -65,7 +65,7 @@ namespace visualizer
             list<int> m_selectedUnitIDs;
             std::vector<std::vector<Trash> > m_Trash;
 
-            const int SEA_OFFSET = 4;
+            static const int SEA_OFFSET = 4;
 
             void BuildWorld(class Map* pMap);
 
