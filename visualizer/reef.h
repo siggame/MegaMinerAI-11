@@ -20,7 +20,6 @@ namespace visualizer
 {
     struct Trash
     {
-        int id;
         int trashAmount;
         int x;
         int y;
@@ -63,13 +62,35 @@ namespace visualizer
             bool m_suicide;
 
             list<int> m_selectedUnitIDs;
-            std::vector<std::vector<Trash> > m_Trash;
+            std::vector<std::map<int,Trash> > m_Trash;
+            //std::vector<std::vector<Trash> > m_Trash;
 
             static const int SEA_OFFSET = 4;
 
             void BuildWorld(class Map* pMap);
 
             void GetSelectedRect(Rect& out) const;
+
+            void RenderWorld();
+
+            void RenderObjectSelection();
+
+            template< class T >
+            bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key)
+            {
+              auto iter = datastruct.find(key);
+
+              if(iter != datastruct.end())
+              {
+                const auto& obj = iter->second;
+
+                renderer->setColor( Color( 1.0, 0.4, 0.4, 0.6 ) );
+                renderer->drawQuad(obj.x,obj.y,1,1);
+                return true;
+              }
+
+              return false;
+            }
     }; 
 
 } // visualizer

@@ -73,26 +73,28 @@ namespace visualizer
 
           m_selectedUnitIDs.clear();
 
-          for(unsigned int i = 0; i < m_Trash.size(); ++i)
+          for(auto& iter : m_Trash[turn])
           {
-              if(m_Trash[turn][i].trashAmount > 0)
+              const auto& trash = iter.second;
+          
+              if(trash.trashAmount > 0)
               {
                   // todo: move this logic into another function
-                  if(R.left <= m_Trash[turn][i].x && R.right >= m_Trash[turn][i].x && R.top <= m_Trash[turn][i].y && R.bottom >= m_Trash[turn][i].y)
+                  if(R.left <= trash.x && R.right >= trash.x && R.top <= trash.y && R.bottom >= trash.y)
                   {
-                      m_selectedUnitIDs.push_back(m_Trash[turn][i].id);
+                      m_selectedUnitIDs.push_back(iter.first);
                   }
               }
           }
 
           for(auto& iter : m_game->states[ turn ].fishes)
           {
-              const auto& obj = iter.second;
+              const auto& fish = iter.second;
 
               // todo: move this logic into another function
-              if(R.left <= obj.x && R.right >= obj.x && R.top <= obj.y && R.bottom >= obj.y)
+              if(R.left <= fish.x && R.right >= fish.x && R.top <= fish.y && R.bottom >= fish.y)
               {
-                  m_selectedUnitIDs.push_back(obj.id);
+                  m_selectedUnitIDs.push_back(fish.id);
               }
           }
 
@@ -101,6 +103,12 @@ namespace visualizer
   }
 
   void Reef::postDraw()
+  {
+      RenderWorld();
+      RenderObjectSelection();
+  }
+
+  void Reef::RenderWorld()
   {
       // todo: change the direction of the water based on time?
       float fSeconds = m_WaterTimer.elapsed() / 1000.0f * options->getNumber("Enable Water Animation");
@@ -117,6 +125,23 @@ namespace visualizer
       // blend water map ontop of all the tiles
       renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
       renderer->drawSubTexturedQuad(0,0,m_game->states[0].mapWidth,m_game->states[0].mapHeight,(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
+
+  }
+
+  void Reef::RenderObjectSelection()
+  {
+      // render object selection
+      // todo: put this code into its own method.
+      int turn = timeManager->getTurn();
+
+      for(auto iter = m_selectedUnitIDs.begin(); iter != m_selectedUnitIDs.end(); ++iter)
+      {
+        // If polymorphism was used, we would not have to search both lists.....................
+        if(!DrawQuadAroundObj(m_Trash[turn],*iter))
+        {
+          DrawQuadAroundObj(m_game->states[turn].fishes,*iter);
+        }
+      }
   }
 
 
@@ -220,6 +245,21 @@ namespace visualizer
     BuildWorld(pMap);
 
     m_Trash.resize(m_game->states.size());
+    
+    for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
+    {
+        // if there is trash
+        if(iter->second.trashAmount > 0)
+        {
+          Trash trash;
+          trash.x = iter->second.x;
+          trash.y = iter->second.y;
+          trash.trashAmount = iter->second.trashAmount;
+        
+          m_Trash[0][iter->second.id] = trash;
+        }
+        
+    }
 
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
@@ -255,14 +295,25 @@ namespace visualizer
                 if(j->type == parser::DROP)
                 {
                     parser::drop& dropAnim = (parser::drop&)*j;
+                    m_Trash[state][dropAnim.actingID].trashAmount += dropAnim.amount;
+                   
 
                     // todo: do something with the drop
                 }
                 else
                 {
-                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;
+                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;           
+                    
+                    int& trashAmount = m_Trash[state][pickupAnim.actingID].trashAmount;
+                    
+                    trashAmount -= pickupAnim.amount;
+                    
+                    if(trashAmount < 1)
+                    {
+                        m_Trash[state].erase(pickupAnim.actingID);
+                    }
 
-                    // todo: do something with the pickup
+                    //todo: do something with the pickup
 
                 }
 
@@ -298,47 +349,20 @@ namespace visualizer
 
      }
 
-      // If the tiles are not empty
-      if(!m_game->states[state].tiles.empty())
-      {
-          bool cleared = false;
-          for(auto iter = m_game->states[state].tiles.begin(); iter != m_game->states[state].tiles.end(); ++iter)
-          {
-              // if there is trash
-              if(iter->second.trashAmount > 0)
-              {
-                  Trash trash;
-                  trash.id = iter->second.id;
-                  trash.x = iter->second.x;
-                  trash.y = iter->second.y;
-                  trash.trashAmount = iter->second.trashAmount;
-
-                  if(!cleared)
-                  {
-                      m_Trash[state].clear();
-                      cleared = true;
-                  }
-
-                  m_Trash[state].push_back(trash);
-              }
-          }
-      }
-
       cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
 
-      for(unsigned int i = 0; i < m_Trash[state].size(); ++i)
+      for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
       {
-          const Trash& trash = m_Trash[state][i];
-          SmartPointer<BaseSprite> trashSprite = new BaseSprite(trash.x,trash.y,1.0f,1.0f,"trash");
+          SmartPointer<BaseSprite> trashSprite = new BaseSprite(iter->second.x,iter->second.y,1.0f,1.0f,"trash");
           trashSprite->addKeyFrame(new DrawSprite(trashSprite));
 
           turn.addAnimatable(trashSprite);
 
           //turn[trashList[i].id]["Owner"] = trashList[i].owner;
-          turn[trash.id]["X"] = trash.x;
-          turn[trash.id]["Y"] = trash.y;
-          turn[trash.id]["Trash Amount"] = trash.trashAmount;
-          turn[trash.id]["Type"] = "trash";
+          turn[iter->first]["X"] = iter->second.x;
+          turn[iter->first]["Y"] = iter->second.y;
+          turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
+          turn[iter->first]["Type"] = "trash";
       }
 
       animationEngine->buildAnimations(turn);
