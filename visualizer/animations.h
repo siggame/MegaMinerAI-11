@@ -5,7 +5,7 @@
 
 namespace visualizer
 {
-    struct StartAnim: public Anim
+    struct StartAnim : public Anim
     {
       public:
         void animate( const float& t, AnimData *d, IGame* game );
@@ -32,7 +32,7 @@ namespace visualizer
         SpriteAnimation* m_animation;
     };
 
-    class DrawMap: public Anim
+    class DrawMap : public Anim
     {
         public:
 
@@ -46,7 +46,7 @@ namespace visualizer
 
     }; // DrawBackground
 
-    class DrawFish: public Anim
+    class DrawFish : public Anim
     {
     public:
         DrawFish(Fish* fish) : m_Fish(fish) {}
@@ -56,6 +56,19 @@ namespace visualizer
     private:
         Fish* m_Fish;
     };//DrawFish
+
+    class DrawHUD : public Anim
+    {
+    public:
+        DrawHUD(HUDInfo* pInfo) : m_pHud(pInfo) {}
+
+        void animate(const float &t, AnimData *d, IGame *game);
+
+    private:
+
+        HUDInfo* m_pHud;
+    };
+
 }
 
 #endif // ANIMATION_H

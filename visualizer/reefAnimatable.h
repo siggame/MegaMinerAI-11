@@ -17,16 +17,16 @@ namespace visualizer
 
         struct Tile
         {
-            Tile() : isCove(0), hasEgg(0), spriteId(0)
+            Tile() : bCove(false), bEgg(false), spriteId(0)
             {
             }
 
-            Tile(int ic) : isCove(ic), hasEgg(0), spriteId(0)
+            Tile(bool cove) : bCove(cove), bEgg(false), spriteId(0)
             {
             }
 
-            int isCove; // teh cove, need to make it look nice, this value does not change between frames
-            int hasEgg; // teh egg
+            bool bCove; // teh cove, need to make it look nice, this value does not change between frames
+            bool bEgg; // teh egg
             int spriteId;
 
            // int turn;
@@ -123,6 +123,13 @@ namespace visualizer
 
         int frames;
         string enable; // used for enabling/disabling this sprite via gui
+    };
+
+    struct HUDInfo : public Animatable
+    {
+        explicit HUDInfo(int s) : season(s) {}
+
+        int season;
     };
 
 } // visualizer

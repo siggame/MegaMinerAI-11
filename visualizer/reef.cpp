@@ -163,6 +163,7 @@ namespace visualizer
     gui->checkForUpdate( "Reef", "./plugins/reef/checkList.md5", VERSION_FILE );
     options->loadOptionFile( "./plugins/reef/reef.xml", "reef" );
     resourceManager->loadResourceFile( "./plugins/reef/resources.r" );
+
   }
   
   // Give the Debug Info widget the selected object IDs in the Gamelog
@@ -207,22 +208,36 @@ namespace visualizer
 
   void Reef::BuildWorld(Map* pMap)
   {
-      int coralHeight = 4* pMap->GetHeight() / 5;
+      m_Trash.resize(m_game->states.size());
 
-      for (int x = 0; x < pMap->GetWidth(); x++)
+      // Loop over all of the tiles in the first turn
+      for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
       {
-        for (int y = pMap->GetHeight() - 2; y >= coralHeight; y--)
-        {
-            Map::Tile& tile = (*pMap)(y,x);
-            tile.isCove = rand() % 2;
-            tile.spriteId = 2;
-        }
+          // if there is trash
+          if(iter->second.trashAmount > 0)
+          {
+            Trash trash;
+            trash.x = iter->second.x;
+            trash.y = iter->second.y;
+            trash.trashAmount = iter->second.trashAmount;
+
+            m_Trash[0][iter->second.id] = trash;
+          }
+          else if(iter->second.owner < 2) // If the tile is not a water tile
+          {
+              // it is a cove, so draw it
+              Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
+              tile.bCove = true;
+              tile.spriteId = 2;
+          }
+
       }
 
+      // Draw other coral on the bottom of the map.
       for (int x = 0; x < pMap->GetWidth(); x++)
       {
          Map::Tile& tile = (*pMap)(pMap->GetHeight() - 1,x);
-         tile.isCove = 1;
+         tile.bCove = true;
          tile.spriteId = rand() % 2;
       }
 
@@ -244,22 +259,6 @@ namespace visualizer
 
     BuildWorld(pMap);
 
-    m_Trash.resize(m_game->states.size());
-    
-    for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
-    {
-        // if there is trash
-        if(iter->second.trashAmount > 0)
-        {
-          Trash trash;
-          trash.x = iter->second.x;
-          trash.y = iter->second.y;
-          trash.trashAmount = iter->second.trashAmount;
-        
-          m_Trash[0][iter->second.id] = trash;
-        }
-        
-    }
 
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
@@ -351,19 +350,28 @@ namespace visualizer
 
       cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
 
+      // Loop over all the trash in the current turn
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
       {
+          // Draw the trash
           SmartPointer<BaseSprite> trashSprite = new BaseSprite(iter->second.x,iter->second.y,1.0f,1.0f,"trash");
           trashSprite->addKeyFrame(new DrawSprite(trashSprite));
 
           turn.addAnimatable(trashSprite);
 
           //turn[trashList[i].id]["Owner"] = trashList[i].owner;
+
+          // Add trash to debug table
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
           turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
           turn[iter->first]["Type"] = "trash";
       }
+
+      // todo: for each season, we should create a new effect instead of just using HUDInfo & DrawHUD for all seasons
+      SmartPointer<HUDInfo> pHud = new HUDInfo(m_game->states[state].currentSeason);
+      pHud->addKeyFrame(new DrawHUD(pHud));
+      turn.addAnimatable(pHud);
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);
