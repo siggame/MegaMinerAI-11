@@ -309,7 +309,7 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
-  
+
   Connection * c = object->_c;
   //can't control enemy fish
   if(object -> owner != c -> playerID)
@@ -350,10 +350,10 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
        return 0;
    }
   }
-  
+
   if(!object -> isVisible)
     object -> isVisible = true;
-      
+
   if(object -> species != "TomCod")
     object -> currentHealth -= (c -> trashDamage * weight);
 
@@ -363,9 +363,9 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
    {
      c -> Tiles[blah].trashAmount -= weight;
    }
-  }  
+  }
   object -> carryingWeight += weight;
-  
+
   return 1;
 }
 
@@ -392,6 +392,47 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  //must own fish
+  if(object->owner != object->_c->playerID)
+  {
+    return 0;
+  }
+  //must be within range
+  else if(abs(object->x-target->x)+abs(object->y-target->y) > object->range)
+  {
+    return 0;
+  }
+  //must have attacks left
+  else if(object->attacksLeft==0)
+  {
+    return 0;
+  }
+  //can't attack opponents invisible fish
+  else if(target->owner != object->_c->playerID &&
+          !target->isVisible)
+  {
+    return 0;
+  }
+  //can't heal opponent fish
+  else if(target->owner != object->_c->playerID &&
+          object->attackPower < 0)
+  {
+    return 0;
+  }
+  //can't attack own fish
+  else if(target->owner == object->_c->playerID &&
+          object->attackPower > 0)
+  {
+     return 0;
+  }
+  //can't attack fish on the same tile as yourself
+  else if(target->x == object->x &&
+          target->y == object->y)
+  {
+     return 0;
+  }
+
   return 1;
 }
 
