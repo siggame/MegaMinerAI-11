@@ -295,6 +295,46 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+  //Cannot move a fish you do not own.
+  if(object->owner != c->playerID) {
+    return 0;
+  }
+  //Cannot move if there is no movement left.
+  else if(object->movementLeft <= 0) {
+   return 0;
+  }
+  //Cannot move out of bounds
+  else if( (x<0 || x>=c->mapWidth) || (y<0 || y>=c->mapHeight) ) {
+    return 0;
+  }
+  //Cannot move more than one space away at a time
+  else if(abs(object->x-x) + abs(object->y-y) != 1) {
+   return 0;
+  }
+  //Do not move on top of another fish.
+  for(int ii = 0; ii < c->FishCount; ii++) {
+    if (c->Fishes[ii].x == x && c->Fishes[ii].y == y) {
+     return 0;
+    }
+  }
+  //Do not move on top of trash (tile with trash amount > 0) with size.
+  for(int ii = 0; ii < c->TileCount; ii++) {
+    if(c->Tiles[ii].x == x && c->Tiles[ii].y == y)  {
+      if (c->Tiles[ii].trashAmount > 0) {
+        return 0;
+      }  
+    }
+  }
+  
+  //Decrement energy and movement
+  object->movementLeft = object->movementLeft-1;
+  
+  //Apply new movement
+  object->x = x;
+  object->y = y;
+
   return 1;
 }
 
