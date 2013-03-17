@@ -324,13 +324,13 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
     if(c->Tiles[ii].x == x && c->Tiles[ii].y == y)  {
       if (c->Tiles[ii].trashAmount > 0) {
         return 0;
-      }  
+      }
     }
   }
-  
+
   //Decrement energy and movement
   object->movementLeft = object->movementLeft-1;
-  
+
   //Apply new movement
   object->x = x;
   object->y = y;
@@ -471,6 +471,53 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
           target->y == object->y)
   {
      return 0;
+  }
+
+  if(object->species=="CleanerShirmp")
+  {
+    target->currentHealth += object->attackPower;
+    if(target->currentHealth > target->maxHealth)
+    {
+      target->currentHealth=target->maxHealth;
+    }
+    target->isVisible=true;
+  }
+  else if(object->species=="ElectricEel")
+  {
+    target->movementLeft=-1;
+    target->attacksLeft=-1;
+  }
+  object->attacksLeft-=1;
+
+  if(target->currentHealth <= 0)
+  {
+    //add weight
+    for(int i=0;i<object->_c->TileCount;i++)
+    {
+      if(object->_c->Tiles[i].x==target->x &&
+         object->_c->Tiles[i].y==target->y)
+      {
+        object->_c->Tiles[i].trashAmount+=target->carryingWeight;
+        break;
+      }
+    }
+  }
+
+  if(target->species=="SeaUrchin"&&target->owner!=object->owner)
+  {
+    object->currentHealth-=target->attackPower;
+    if(object->currentHealth<=0)
+    {
+      for(int i=0;i<object->_c->TileCount;i++)
+      {
+         if(object->_c->Tiles[i].x==target->x &&
+            object->_c->Tiles[i].y==target->y)
+         {
+            object->_c->Tiles[i].trashAmount+=object->carryingWeight;
+            break;
+         }
+      }
+    }
   }
 
   return 1;
