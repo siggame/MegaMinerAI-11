@@ -321,7 +321,7 @@ class Fish(Mappable):
 
     #eel stun
     elif self.species == "ElectricEel":
-      target.movesLeft = -1
+      target.movementLeft = -1
       target.attacksLeft = -1
    
     else:   
