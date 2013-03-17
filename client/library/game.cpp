@@ -420,6 +420,47 @@ DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  if(object->owner!=target->owner)
+  {
+    return 0;
+  }
+  else if(x>=object->_c->mapWidth || x<0)
+  {
+    return 0;
+  }
+  else if(y>=object->_c->mapHeight || y<0)
+  {
+    return 0;
+  }
+  else if(weight>object->carryingWeight)
+  {
+    return 0;
+  }
+  //check for a fish
+  for(int i=0;i<object->_c->FishCount;i++)
+  {
+    if(x==object->_c->Fishes[i].x &&
+       y==object->_c->Fishes[i].y)
+    {
+       return 0;
+    }
+  }
+
+  object->isVisible = true;
+
+  //add weight
+  object->carryingWeight-=weight;
+  for(int i=0;i<object->_c->TileCount;i++)
+  {
+    if(object->_c->Tiles[i].x==target->x &&
+       object->_c->Tiles[i].y==target->y)
+    {
+      object->_c->Tiles[i].trashAmount+=weight;
+      break;
+    }
+  }
+
   return 1;
 }
 
