@@ -216,12 +216,7 @@ namespace visualizer
           // if there is trash
           if(iter->second.trashAmount > 0)
           {
-            BasicTrash trash;
-            trash.x = iter->second.x;
-            trash.y = iter->second.y;
-            trash.amount = iter->second.trashAmount;
-
-            m_Trash[0][iter->second.id] = trash;
+              m_Trash[0][iter->second.id] = BasicTrash(iter->second.x,iter->second.y,iter->second.trashAmount);
           }
           else if(iter->second.owner < 2) // If the tile is not a water tile
           {

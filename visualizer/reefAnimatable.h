@@ -104,6 +104,11 @@ namespace visualizer
 
     struct BasicTrash
     {
+        BasicTrash() {}
+        BasicTrash(float xPos, float yPos, int iAmount) : x(xPos), y(yPos), amount(iAmount)
+        {
+        }
+
         float x;
         float y;
         int amount;
