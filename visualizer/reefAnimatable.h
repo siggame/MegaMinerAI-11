@@ -102,6 +102,17 @@ namespace visualizer
 
     };
 
+    struct BasicTrash
+    {
+        float x;
+        float y;
+        int amount;
+    };
+
+    struct Trash : public Animatable, public BasicTrash
+    {
+    };
+
     struct BaseSprite : public Animatable
     {
         BaseSprite(float posX, float posY, float dx, float dy, const string& s) :

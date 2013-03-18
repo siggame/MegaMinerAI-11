@@ -63,7 +63,7 @@ namespace visualizer
     {
         //is this right?????
         game->renderer->setColor( Color( 0, 1, 1, 1 ) );
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"trash");
+        game->renderer->drawTexturedQuad(m_Trash->x,m_Trash->y,1,1,"trash");
     }
 
     void DrawHUD::animate(const float &t, AnimData *d, IGame *game)

@@ -77,7 +77,7 @@ namespace visualizer
           {
               const auto& trash = iter.second;
           
-              if(trash.trashAmount > 0)
+              if(trash.amount > 0)
               {
                   // todo: move this logic into another function
                   if(R.left <= trash.x && R.right >= trash.x && R.top <= trash.y && R.bottom >= trash.y)
@@ -216,10 +216,10 @@ namespace visualizer
           // if there is trash
           if(iter->second.trashAmount > 0)
           {
-            Trash trash;
+            BasicTrash trash;
             trash.x = iter->second.x;
             trash.y = iter->second.y;
-            trash.trashAmount = iter->second.trashAmount;
+            trash.amount = iter->second.trashAmount;
 
             m_Trash[0][iter->second.id] = trash;
           }
@@ -294,7 +294,7 @@ namespace visualizer
                 if(j->type == parser::DROP)
                 {
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    m_Trash[state][dropAnim.actingID].trashAmount += dropAnim.amount;
+                    m_Trash[state][dropAnim.actingID].amount += dropAnim.amount;
                    
 
                     // todo: do something with the drop
@@ -303,7 +303,7 @@ namespace visualizer
                 {
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;           
                     
-                    int& trashAmount = m_Trash[state][pickupAnim.actingID].trashAmount;
+                    int& trashAmount = m_Trash[state][pickupAnim.actingID].amount;
                     
                     trashAmount -= pickupAnim.amount;
                     
@@ -364,7 +364,7 @@ namespace visualizer
           // Add trash to debug table
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
-          turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
+          turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["Type"] = "trash";
       }
 
