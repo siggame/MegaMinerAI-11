@@ -355,7 +355,7 @@ namespace visualizer
       {
           // Draw the trash
           SmartPointer<BaseSprite> trashSprite = new BaseSprite(iter->second.x,iter->second.y,1.0f,1.0f,"trash");
-          trashSprite->addKeyFrame(new DrawSprite(trashSprite));
+          trashSprite->addKeyFrame(new DrawTrash(trashSprite));
 
           turn.addAnimatable(trashSprite);
 
