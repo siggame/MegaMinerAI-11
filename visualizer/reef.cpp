@@ -293,27 +293,29 @@ namespace visualizer
 
                 if(j->type == parser::DROP)
                 {
-                    parser::drop& dropAnim = (parser::drop&)*j;
-                    m_Trash[state][dropAnim.actingID].amount += dropAnim.amount;
-                   
+                     // todo: do something with the drop
 
-                    // todo: do something with the drop
+                    parser::drop& dropAnim = (parser::drop&)*j;
+                    BasicTrash& trash = m_Trash[state][dropAnim.actingID];
+
+                    trash.amount += dropAnim.amount;
+                    trash.x = dropAnim.x;
+                    trash.y = dropAnim.y;
+
                 }
                 else
                 {
-                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;           
+                    //todo: do something with the pickup
+
+                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;
+                    BasicTrash& trash = m_Trash[state][pickupAnim.actingID];
+
+                    trash.amount -= pickupAnim.amount;
                     
-                    int& trashAmount = m_Trash[state][pickupAnim.actingID].amount;
-                    
-                    trashAmount -= pickupAnim.amount;
-                    
-                    if(trashAmount < 1)
+                    if(trash.amount < 1)
                     {
                         m_Trash[state].erase(pickupAnim.actingID);
                     }
-
-                    //todo: do something with the pickup
-
                 }
 
             }
