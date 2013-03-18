@@ -58,6 +58,13 @@ namespace visualizer
 
         game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
     }
+    
+    void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
+    {
+        //is this right?????
+        game->renderer->setColor( Color( 0, 1, 1, 1 ) );
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"trash");
+    }
 
     void DrawHUD::animate(const float &t, AnimData *d, IGame *game)
     {
