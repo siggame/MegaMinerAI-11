@@ -48,9 +48,9 @@ namespace visualizer
       // offset the input
 
       int x = input.x;
-      int y = input.y - SEA_OFFSET;
+      int y = input.y - SEA_OFFSET - 1;
       int width = input.sx - x;
-      int height = input.sy - y - SEA_OFFSET;
+      int height = input.sy - y - SEA_OFFSET - 1;
 
       int right = x + width;
       int bottom = y + height;
