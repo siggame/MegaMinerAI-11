@@ -216,7 +216,12 @@ namespace visualizer
           // if there is trash
           if(iter->second.trashAmount > 0)
           {
-              m_Trash[0][iter->second.id] = BasicTrash(iter->second.x,iter->second.y,iter->second.trashAmount);
+            BasicTrash trash;
+            trash.x = iter->second.x;
+            trash.y = iter->second.y;
+            trash.amount = iter->second.trashAmount;
+
+            m_Trash[0][iter->second.id] = trash;
           }
           else if(iter->second.owner < 2) // If the tile is not a water tile
           {
@@ -349,7 +354,7 @@ namespace visualizer
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
       {
           // Draw the trash
-          SmartPointer<BaseSprite> trashSprite = new BaseSprite(iter->second.x,iter->second.y,1.0f,1.0f,"trash");
+          SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.amount);
           trashSprite->addKeyFrame(new DrawTrash(trashSprite));
 
           turn.addAnimatable(trashSprite);
