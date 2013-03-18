@@ -61,8 +61,8 @@ namespace visualizer
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
     {
-        //is this right?????
-        game->renderer->setColor( Color( 0, 1, 1, 1 ) );
+        // todo: someone needs to make the trash get darker based on the amount of trash
+        game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
         game->renderer->drawTexturedQuad(m_Trash->x,m_Trash->y,1,1,"trash");
     }
 
@@ -90,6 +90,7 @@ namespace visualizer
         stream << "Current Season: " << seasons[currentS];
 
         // todo: maybe repos the text
+        game->renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
         game->renderer->drawText(19.0f,19.5f,"Roboto",stream.str(),7.0f,IRenderer::Center);
     }
 }
