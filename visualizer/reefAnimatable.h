@@ -116,6 +116,9 @@ namespace visualizer
 
     struct Trash : public Animatable, public BasicTrash
     {
+        Trash(float xPos, float yPos, int iAmount) : BasicTrash(xPos, yPos, iAmount)
+        {
+        }
     };
 
     struct BaseSprite : public Animatable
