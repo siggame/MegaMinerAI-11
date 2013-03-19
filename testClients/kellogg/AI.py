@@ -21,6 +21,18 @@ class AI(BaseAI):
   def end(self):
     pass
 
+  def getObject(self,x,y):
+   if len(self.grid[x][y])>0:
+     return self.grid[x][y][0]
+   else:
+    return []
+    
+  def removeGrid(self,target):
+    self.grid[target.x][target.y].remove(target)
+    
+  def addGrid(self,x,y,target):
+    self.grid[x][y].append(target)
+  
   def findCoves(self):
     coves = []
     for tile in self.tiles:
@@ -37,7 +49,7 @@ class AI(BaseAI):
     return nearest
   
   def distance(self,source,target):
-    return math.sqrt((source.x-target.x)**2+(source.y-target.y)**2)
+    return abs(source.x-target.x)+abs(source.y-target.y)
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
@@ -45,6 +57,7 @@ class AI(BaseAI):
     for species in self.species:
       for cove in self.findCoves():
         species.spawn(cove.x,cove.y)
+        
     for fish in self.fishes:
       fish.move(fish.x+1,fish.y)
       fish.pickUp(fish.x,fish.y+1,1)
