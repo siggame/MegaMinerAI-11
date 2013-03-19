@@ -27,12 +27,62 @@ class AI(BaseAI):
    else:
     return []
     
+  def moveTo(self,fish,target):
+     path = self.pathFind(fish.x,fish.y,target.x,target.y)
+     if path != None:
+       while fish.movementLeft>0 and len(path)>0:
+         next = path.pop()
+         if next!=(fish.x,fish.y) and fish.movementLeft>0:
+           self.removeGrid(fish)
+           fish.move(next[0],next[1])
+           self.addGrid(fish.x,fish.y,fish)    
+    
   def removeGrid(self,target):
     self.grid[target.x][target.y].remove(target)
     
   def addGrid(self,x,y,target):
     self.grid[x][y].append(target)
+      
+  def adjacent(self,x,y):
+    adj = []
+    if x+1<self.mapWidth:
+        adj.append((x+1,y))
+    if y-1>=0:
+        adj.append((x,y-1))
+    if x-1>=0:
+        adj.append((x-1,y))
+    if y+1<self.mapHeight:
+        adj.append((x,y+1))
+    return adj  
   
+  def pathFind(self,startX,startY,goalX,goalY):
+    closedSet = set();closedTup=set()
+    open = [(self.distance(startX,startY,goalX,goalY),(startX,startY),(startX,startY),0)];openTup=[(startX,startY)]
+    path = []
+    while len(open)>0:
+      #open.sort()
+      current = heapq.heappop(open)
+      if current[1] == (goalX,goalY):
+        node = current
+        path = []
+        while node[2]!=(startX,startY):
+          for closed in closedSet:
+            if self.distance(node[1][0],node[1][1],closed[1][0],closed[1][1])==1 and node[2] == closed[1]:
+              path.append(node[2])
+              node = closed
+        return path
+      closedSet.add(current);closedTup.add(current[1])
+      openTup.remove(current[1])
+      for neighbor in self.adjacent(current[1][0],current[1][1]):#,[(startX,startY),(goalX,goalY)]):
+       if self.getObject(neighbor[0],neighbor[1])==[] or (neighbor[0],neighbor[1])==(goalX,goalY):# or (neighbor[0],neighbor[1])==(startX,startY):
+        if neighbor in closedTup:
+         continue
+        g = current[3]+self.distance(neighbor[0],neighbor[1],current[1][0],current[1][1])
+        if neighbor == (goalX,goalY) or self.distance(neighbor[0],neighbor[1],startX,startY)<=g+1 and neighbor not in openTup:
+          neighborTup = (g+self.distance(neighbor[0],neighbor[1],goalX,goalY),(neighbor[0],neighbor[1]),(current[1]),g)
+          heapq.heappush(open,neighborTup);openTup.append(neighbor)
+    return None
+    
   def findCoves(self):
     coves = []
     for tile in self.tiles:
