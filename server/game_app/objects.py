@@ -154,8 +154,8 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
-    fish.currentHealth+=fish.maxHealth*self.game.healPercent
-    if fish.currentHealth>fish.maxHealth:
+    fish.currentHealth += fish.maxHealth * self.game.healPercent
+    if fish.currentHealth > fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
   def distance(self,source,x,y):
@@ -185,10 +185,10 @@ class Fish(Mappable):
         self.attacksLeft = self.maxAttacks
       if self.species == "Cuttlefish":
         self.isVisible = False
-      if self.species != "Tomcod":
+      if self.species != "TomCod":
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
-        if self.currentHealth <0:
-          self.game.grid[self.x][self.y].remove(self)         
+        if self.currentHealth < 0:
+          self.game.grid[self.x][self.y].remove(self)
           self.game.addAnimation(DeathAnimation(self.id))
           self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
           self.addTrash(self.x,self.y,self.carryingWeight)
@@ -321,7 +321,7 @@ class Fish(Mappable):
 
     #eel stun
     elif self.species == "ElectricEel":
-      target.movesLeft = -1
+      target.movementLeft = -1
       target.attacksLeft = -1
    
     else:   
@@ -343,7 +343,7 @@ class Fish(Mappable):
     self.attacksLeft-=1  
     #check for sea urchin counter attacks
     if target.species == "SeaUrchin" and target.owner != self.owner:
-      self.currentHealth -= target.attackPower
+      self.currentHealth -= target.attackPower / 2.0
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
         if self.carryingWeight > 0:

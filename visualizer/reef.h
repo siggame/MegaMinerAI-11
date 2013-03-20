@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include "reefAnimatable.h"
 
 // The Codegen's Parser
 #include "parser/parser.h"
@@ -18,13 +19,6 @@ using namespace std;
 
 namespace visualizer
 {
-    struct Trash
-    {
-        int trashAmount;
-        int x;
-        int y;
-    };
-
     struct Rect
     {
         int left;
@@ -62,8 +56,7 @@ namespace visualizer
             bool m_suicide;
 
             list<int> m_selectedUnitIDs;
-            std::vector<std::map<int,Trash> > m_Trash;
-            //std::vector<std::vector<Trash> > m_Trash;
+            std::vector<std::map<int,BasicTrash> > m_Trash;
 
             static const int SEA_OFFSET = 4;
 

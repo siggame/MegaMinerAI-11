@@ -48,9 +48,9 @@ namespace visualizer
       // offset the input
 
       int x = input.x;
-      int y = input.y - SEA_OFFSET;
+      int y = input.y - SEA_OFFSET - 1;
       int width = input.sx - x;
-      int height = input.sy - y - SEA_OFFSET;
+      int height = input.sy - y - SEA_OFFSET - 1;
 
       int right = x + width;
       int bottom = y + height;
@@ -77,7 +77,7 @@ namespace visualizer
           {
               const auto& trash = iter.second;
           
-              if(trash.trashAmount > 0)
+              if(trash.amount > 0)
               {
                   // todo: move this logic into another function
                   if(R.left <= trash.x && R.right >= trash.x && R.top <= trash.y && R.bottom >= trash.y)
@@ -216,10 +216,10 @@ namespace visualizer
           // if there is trash
           if(iter->second.trashAmount > 0)
           {
-            Trash trash;
+            BasicTrash trash;
             trash.x = iter->second.x;
             trash.y = iter->second.y;
-            trash.trashAmount = iter->second.trashAmount;
+            trash.amount = iter->second.trashAmount;
 
             m_Trash[0][iter->second.id] = trash;
           }
@@ -293,27 +293,29 @@ namespace visualizer
 
                 if(j->type == parser::DROP)
                 {
-                    parser::drop& dropAnim = (parser::drop&)*j;
-                    m_Trash[state][dropAnim.actingID].trashAmount += dropAnim.amount;
-                   
+                     // todo: do something with the drop
 
-                    // todo: do something with the drop
+                    parser::drop& dropAnim = (parser::drop&)*j;
+                    BasicTrash& trash = m_Trash[state][dropAnim.actingID];
+
+                    trash.amount += dropAnim.amount;
+                    trash.x = dropAnim.x;
+                    trash.y = dropAnim.y;
+
                 }
                 else
                 {
-                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;           
+                    //todo: do something with the pickup
+
+                    parser::pickUp& pickupAnim = (parser::pickUp&)*j;
+                    BasicTrash& trash = m_Trash[state][pickupAnim.actingID];
+
+                    trash.amount -= pickupAnim.amount;
                     
-                    int& trashAmount = m_Trash[state][pickupAnim.actingID].trashAmount;
-                    
-                    trashAmount -= pickupAnim.amount;
-                    
-                    if(trashAmount < 1)
+                    if(trash.amount < 1)
                     {
                         m_Trash[state].erase(pickupAnim.actingID);
                     }
-
-                    //todo: do something with the pickup
-
                 }
 
             }
@@ -354,8 +356,8 @@ namespace visualizer
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
       {
           // Draw the trash
-          SmartPointer<BaseSprite> trashSprite = new BaseSprite(iter->second.x,iter->second.y,1.0f,1.0f,"trash");
-          trashSprite->addKeyFrame(new DrawSprite(trashSprite));
+          SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.amount);
+          trashSprite->addKeyFrame(new DrawTrash(trashSprite));
 
           turn.addAnimatable(trashSprite);
 
@@ -364,7 +366,7 @@ namespace visualizer
           // Add trash to debug table
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
-          turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
+          turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["Type"] = "trash";
       }
 

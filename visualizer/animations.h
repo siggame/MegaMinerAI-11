@@ -56,6 +56,17 @@ namespace visualizer
     private:
         Fish* m_Fish;
     };//DrawFish
+    
+    class DrawTrash : public Anim
+    {
+    public:
+        DrawTrash(Trash* trash) : m_Trash(trash) {}
+        
+        void animate(const float &t, AnimData *d, IGame *game);
+        
+    private:
+        Trash *m_Trash;
+    };//DrawTrash
 
     class DrawHUD : public Anim
     {
