@@ -193,7 +193,7 @@ class Fish(Mappable):
           self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
           self.addTrash(self.x,self.y,self.carryingWeight)
           self.game.removeObject(self)
-          print "dude died from carrying so much trash"
+     #     print "dude died from carrying so much trash"
     return True
 
   def move(self, x, y):
@@ -226,7 +226,7 @@ class Fish(Mappable):
     self.movementLeft -= 1
     self.x = x
     self.y = y
-    print "moving a dude"
+    #print "moving a dude"
     return True
 
   def pickUp(self, x, y, weight):
