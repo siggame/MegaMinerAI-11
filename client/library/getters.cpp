@@ -44,6 +44,10 @@ DLLEXPORT char* speciesGetName(_Species* ptr)
 {
   return ptr->name;
 }
+DLLEXPORT int speciesGetIndex(_Species* ptr)
+{
+  return ptr->index;
+}
 DLLEXPORT int speciesGetCost(_Species* ptr)
 {
   return ptr->cost;
@@ -136,7 +140,7 @@ DLLEXPORT int fishGetRange(_Fish* ptr)
 {
   return ptr->range;
 }
-DLLEXPORT char* fishGetSpecies(_Fish* ptr)
+DLLEXPORT int fishGetSpecies(_Fish* ptr)
 {
   return ptr->species;
 }

@@ -64,6 +64,7 @@ public interface Client extends Library {
 
   int speciesGetId(Pointer ptr);
   String speciesGetName(Pointer ptr);
+  int speciesGetIndex(Pointer ptr);
   int speciesGetCost(Pointer ptr);
   int speciesGetMaxHealth(Pointer ptr);
   int speciesGetMaxMovement(Pointer ptr);
@@ -88,7 +89,7 @@ public interface Client extends Library {
   int fishGetMaxAttacks(Pointer ptr);
   int fishGetAttacksLeft(Pointer ptr);
   int fishGetRange(Pointer ptr);
-  String fishGetSpecies(Pointer ptr);
+  int fishGetSpecies(Pointer ptr);
 
   int playerGetId(Pointer ptr);
   String playerGetPlayerName(Pointer ptr);

@@ -142,8 +142,8 @@ class Fish extends Mappable
     validify();
     return Client.INSTANCE.fishGetRange(ptr);
   }
-  ///The fish species
-  public String getSpecies()
+  ///The index of the fish species.
+  public int getSpecies()
   {
     validify();
     return Client.INSTANCE.fishGetSpecies(ptr);
