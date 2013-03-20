@@ -15,7 +15,10 @@ class AI(BaseAI):
 
   ##This function is called once, before your first turn
   def init(self):
-    pass
+    self.coves = []
+    for tile in self.tiles:
+      if tile.owner == self.playerID:
+        self.coves.append(tile)
 
   ##This function is called once, after your last turn
   def end(self):
@@ -82,13 +85,6 @@ class AI(BaseAI):
           neighborTup = (g+self.distance(neighbor[0],neighbor[1],goalX,goalY),(neighbor[0],neighbor[1]),(current[1]),g)
           heapq.heappush(open,neighborTup);openTup.append(neighbor)
     return None
-    
-  def findCoves(self):
-    coves = []
-    for tile in self.tiles:
-      if tile.owner!=2:
-        coves.append(tile)
-    return coves
   
   def findFish(self,myDude):
     dis = 400
@@ -104,8 +100,12 @@ class AI(BaseAI):
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
+    self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
+    for life in self.tiles+self.fishes:
+      self.addGrid(life.x,life.y,life)
+
     for species in self.species:
-      for cove in self.findCoves():
+      for cove in self.coves:
         species.spawn(cove.x,cove.y)
         
     for fish in self.fishes:
