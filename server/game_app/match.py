@@ -57,12 +57,18 @@ class Match(DefaultGameWorld):
         dx=node[0]+adj[0]; dy = node[1]+adj[1]
         if 0<=dx<self.mapWidth and 0<=dy<self.mapHeight:
           adjacent.append((dx,dy))
+          if (dx,dy) not in self.adjDict:
+            self.adjDict[(dx,dy)] = 1
+          else:
+            self.adjDict[(dx,dy)] +=1
     return adjacent
 
   def covePath(self,seed):
+    self.adjDict = dict()
     closed = set()
     open = [seed]
     coves = self.coveLimit
+    self.adjDict[seed[0],seed[1]] = 0
     while coves>0 and len(open)>0:
         current = random.choice(open)
         open.remove(current)
@@ -71,6 +77,9 @@ class Match(DefaultGameWorld):
 	self.getTile(self.mapWidth-1-current[0],current[1]).owner = 1
         closed.add(current)
         neighbors = self.getAdjacent(current)
+        for node in open:
+          if self.adjDict[(node[0],node[1])] > 1:
+            open.remove(node)
         for neighbor in neighbors:
            if neighbor in closed:
                 continue
