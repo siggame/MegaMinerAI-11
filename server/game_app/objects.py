@@ -102,11 +102,11 @@ class Species(object):
     player = self.game.objects.players[self.game.playerID]
     if player.spawnFood<self.cost:
       return "You don'thave enough food to spawn this fish in"
-    if not (0<=x<self.game.mapWidth or 0<=y<self.game.mapHeight):
+    if not (0 <= x < self.game.mapWidth or 0 <= y < self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
     elif self.game.currentSeason != self.season:
       return "This fish can't spawn in this season"
-    elif len(self.game.getFish(x,y)) != 0:
+    elif len(self.game.getFish(x, y)) != 0:
       return "There is already a fish here"
 
     tile = self.game.getTile(x,y)
@@ -117,7 +117,7 @@ class Species(object):
     else:
       tile.hasEgg = True
       tile.species = self
-      player.spawnFood-=self.cost
+      player.spawnFood -= self.cost
     return True
 
   def __setattr__(self, name, value):
@@ -184,9 +184,9 @@ class Fish(Mappable):
       else:
         self.movementLeft = self.maxMovement
         self.attacksLeft = self.maxAttacks
-      if self.species == "Cuttlefish":
+      if self.species == 8: #Cuttlefish
         self.isVisible = False
-      if self.species != "TomCod":
+      if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth < 0:
           self.game.grid[self.x][self.y].remove(self)
@@ -316,12 +316,12 @@ class Fish(Mappable):
 
     print "attacking a dude with another dude"
 
-    if self.species == "CleanerShrimp":
+    if self.species == 9: #Cleaner Shrimp
       self.heal(target)
       target.isVisible = True
 
     #eel stun
-    elif self.species == "ElectricEel":
+    elif self.species == 10: #Electric Eel
       target.movementLeft = -1
       target.attacksLeft = -1
    
@@ -341,9 +341,9 @@ class Fish(Mappable):
       self.game.removeObject(target)
      
     self.game.addAnimation(AttackAnimation(self.id, target.id))
-    self.attacksLeft-=1  
+    self.attacksLeft -= 1
     #check for sea urchin counter attacks
-    if target.species == "SeaUrchin" and target.owner != self.owner:
+    if target.species == 4 and target.owner != self.owner: #Sea Urchin
       self.currentHealth -= target.attackPower / 2.0
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
@@ -381,7 +381,6 @@ class Player(object):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
     if self.game.playerID == self.id:
-      print "hello"
       self.spawnFood +=self.spawnFoodPerTurn
       
     return True

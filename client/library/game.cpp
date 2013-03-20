@@ -393,7 +393,7 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   if(!object->isVisible)
     object->isVisible = true;
 
-  if(object->species != "TomCod")
+  if(object->species != 6) //Tomcod
     object->currentHealth -= (c->trashDamage * weight);
 
   for (int blah = 0; blah < c->TileCount; blah++)
@@ -522,7 +522,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   }
 
   //Heal if cleanershrimp[]
-  if(object->species == "CleanerShrimp")
+  if(object->species == 9) //Cleaner Shrimp
   {
     //healed by target->maxHealth*healPercent
     target->currentHealth += target->maxHealth * c->healPercent;
@@ -534,7 +534,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     //The healed target should be visible after being healed
     target->isVisible = true;
   }
-  else if(object->species == "ElectricEel")
+  else if(object->species == 10) //Electric Eel
   {
     //Stun target (cannot move cannot attack)
     target->movementLeft = -1;
@@ -556,10 +556,10 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     }
   }
   //If target is seaurchin and not owned by player
-  if(target->species == "SeaUrchin" && target->owner != object->owner)
+  if(target->species == 4 && target->owner != object->owner) //Sea Urchin
   {
     //Attacking object gets damaged by urchin
-    object->currentHealth -= target->attackPower / 2.0;
+    object->currentHealth -= target->attackPower;
     if(object->currentHealth <= 0)
     {
       for(int i = 0; i < c->TileCount; i++)
