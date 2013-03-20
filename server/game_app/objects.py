@@ -386,8 +386,12 @@ class Player(object):
     return True
     
   def talk(self, message):
-    self.game.addAnimations(PlayerTalkAnimation(self.id,message))
-    
+    if '\\' in message:
+      return "No backslashes in your message, shame on you"
+    else:
+      self.game.addAnimations(PlayerTalkAnimation(self.id,message))
+      return True
+  
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
