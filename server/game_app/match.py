@@ -138,14 +138,13 @@ class Match(DefaultGameWorld):
         trashableTiles.remove(randTile)
       oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
       
-      if isinstance(randTile,Tile) and randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
+      if randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
          val = random.randint(1,min([self.minTrash, self.trashAmount]))
          randTile.trashAmount += val
          self.trashDict[(randTile.x, randTile.y)] = val
          oppTile.trashAmount += val
          self.trashDict[(oppTile.x, oppTile.y)] = val
          self.trashAmount -= val
-    print self.trashDict
     print sum(self.trashDict.values())
     return True
      
@@ -159,7 +158,7 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
-    damage += sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ])
+    print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
     print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
@@ -181,34 +180,9 @@ class Match(DefaultGameWorld):
     for species in cfgSpecies.keys():
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
     self.initSeasons()
-    print [(species.name,species.season) for species in self.objects.species]
+#    print [(species.name,species.season) for species in self.objects.species]
     self.nextTurn()
     return True
-
-  def getTrashLeft(self):
-    totalTrash = 0
-    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently.
-    #I'll bring this up or make an issue, for now this works.
-    for x in range(0,self.mapWidth/2-self.boundLength):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
-    
-  def getTrashShared(self):
-    totalTrash = 0
-    #I think these bounds are right?
-    for x in range(self.mapWidth/2-self.boundLength,self.mapWidth/2+self.boundLength):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
-    
-  def getTrashRight(self):
-    totalTrash = 0
-    #Comment to remind who so ever changes this to change all of the bounds
-    for x in range(self.mapWidth/2+self.boundLength,self.mapWidth):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
 
   def nextTurn(self):
     #print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
@@ -238,7 +212,7 @@ class Match(DefaultGameWorld):
     if self.turn == self.players[0]:
       self.objects.players[0].currentReefHealth -= self.findDamage(0)
     
-    if self.turn == self.players[1]:
+    elif self.turn == self.players[1]:
      self.objects.players[1].currentReefHealth -= self.findDamage(1)
 
     self.checkWinner()
