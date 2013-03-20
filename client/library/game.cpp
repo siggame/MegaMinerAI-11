@@ -109,7 +109,6 @@ DLLEXPORT void destroyConnection(Connection* c)
   {
     for(int i = 0; i < c->FishCount; i++)
     {
-      delete[] c->Fishes[i].species;
     }
     delete[] c->Fishes;
   }
@@ -362,6 +361,8 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
+  object->index = atoi(sub->val);
+  sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
   object->maxHealth = atoi(sub->val);
@@ -417,9 +418,7 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   sub = sub->next;
   object->range = atoi(sub->val);
   sub = sub->next;
-  object->species = new char[strlen(sub->val)+1];
-  strncpy(object->species, sub->val, strlen(sub->val));
-  object->species[strlen(sub->val)] = 0;
+  object->species = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -631,7 +630,6 @@ DLLEXPORT int networkLoop(Connection* c)
           {
             for(int i = 0; i < c->FishCount; i++)
             {
-              delete[] c->Fishes[i].species;
             }
             delete[] c->Fishes;
           }

@@ -22,6 +22,8 @@ class Species {
   int id();
   ///The name of this species
   char* name();
+  ///The species index of the species.
+  int index();
   ///The amount of food it takes to raise this fish
   int cost();
   ///The maximum health of this fish

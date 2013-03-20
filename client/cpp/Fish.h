@@ -45,8 +45,8 @@ class Fish : public Mappable {
   int attacksLeft();
   ///The attack range of the fish
   int range();
-  ///The fish species
-  char* species();
+  ///The index of the fish species.
+  int species();
 
   // Actions
   ///Command a fish to move to a specified position

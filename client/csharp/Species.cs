@@ -69,6 +69,17 @@ public class Species
     }
   }
 
+  ///The species index of the species.
+  public int Index
+  {
+    get
+    {
+      validify();
+      int value = Client.speciesGetIndex(ptr);
+      return value;
+    }
+  }
+
   ///The amount of food it takes to raise this fish
   public int Cost
   {

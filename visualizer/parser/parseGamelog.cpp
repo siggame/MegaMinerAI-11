@@ -155,6 +155,15 @@ static bool parseSpecies(Species& object, sexp_t* expression)
     return false;
   }
 
+  object.index = atoi(sub->val);
+  sub = sub->next;
+
+  if ( !sub ) 
+  {
+    cerr << "Error in parseSpecies.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
   object.cost = atoi(sub->val);
   sub = sub->next;
 
@@ -371,9 +380,7 @@ static bool parseFish(Fish& object, sexp_t* expression)
     return false;
   }
 
-  object.species = new char[strlen(sub->val)+1];
-  strncpy(object.species, sub->val, strlen(sub->val));
-  object.species[strlen(sub->val)] = 0;
+  object.species = atoi(sub->val);
   sub = sub->next;
 
   return true;
@@ -537,7 +544,7 @@ static bool parsePickUp(pickUp& object, sexp_t* expression)
     cerr << "Error in parsepickUp.\n Parsing: " << *expression << endl;
     return false;
   }
-  object.actingID = atoi(sub->val);
+  object.targetID = atoi(sub->val);
   sub = sub->next;
   if( !sub ) 
   {
@@ -590,7 +597,7 @@ static bool parseDrop(drop& object, sexp_t* expression)
     cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
     return false;
   }
-  object.actingID = atoi(sub->val);
+  object.targetID = atoi(sub->val);
   sub = sub->next;
   if( !sub ) 
   {
