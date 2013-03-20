@@ -2,6 +2,7 @@
 from BaseAI import BaseAI
 from GameObject import *
 import math
+import heapq
 
 class AI(BaseAI):
   """The class implementing gameplay logic."""
@@ -19,17 +20,29 @@ class AI(BaseAI):
     for tile in self.tiles:
       if tile.owner == self.playerID:
         self.coves.append(tile)
+    self.seasonDict = {0:[],2:[],3:[],1:[]}
+    for species in self.species:
+      self.seasonDict[species.season].append(species)
 
   ##This function is called once, after your last turn
   def end(self):
     pass
 
+#can return a tile or a fish
   def getObject(self,x,y):
-   if len(self.grid[x][y])>0:
+   if len(self.grid[x][y])==1:
      return self.grid[x][y][0]
    else:
-    return []
+    return [self.grid[x][y][-1]]
+
+  def getFish(self,x,y):
+    if len(self.grid[x][y])>1:
+      return self.grid[x][y][1:]
+    return None
     
+  def getTile(self,x,y):
+    return self.tiles[x*self.mapHeight+y]
+
   def moveTo(self,fish,target):
      path = self.pathFind(fish.x,fish.y,target.x,target.y)
      if path != None:
@@ -60,6 +73,7 @@ class AI(BaseAI):
   
   def pathFind(self,startX,startY,goalX,goalY):
     closedSet = set();closedTup=set()
+    # 0 = distance from goal, 1 = current (x,y), 2 = parent (x,y) 3 = distance from start
     open = [(self.distance(startX,startY,goalX,goalY),(startX,startY),(startX,startY),0)];openTup=[(startX,startY)]
     path = []
     while len(open)>0:
@@ -77,7 +91,11 @@ class AI(BaseAI):
       closedSet.add(current);closedTup.add(current[1])
       openTup.remove(current[1])
       for neighbor in self.adjacent(current[1][0],current[1][1]):#,[(startX,startY),(goalX,goalY)]):
-       if self.getObject(neighbor[0],neighbor[1])==[] or (neighbor[0],neighbor[1])==(goalX,goalY):# or (neighbor[0],neighbor[1])==(startX,startY):
+       #game specific
+       tile = self.getTile(neighbor[0],neighbor[1])
+       fish = self.getFish(neighbor[0],neighbor[1])
+       ###
+       if (tile.owner!=self.playerID^1 and tile.trashAmount==0 and fish==None) or (neighbor[0],neighbor[1])==(goalX,goalY):
         if neighbor in closedTup:
          continue
         g = current[3]+self.distance(neighbor[0],neighbor[1],current[1][0],current[1][1])
@@ -90,12 +108,12 @@ class AI(BaseAI):
     dis = 400
     nearest = 1
     for fish in self.fishes:
-      if self.distance(myDude,fish)<dis and fish.id!=myDude:
+      if self.distance(myDude.x,myDude.y,fish.x,fish.y)<dis and fish.owner!=myDude.owner:
           nearest = fish
     return nearest
   
-  def distance(self,source,target):
-    return abs(source.x-target.x)+abs(source.y-target.y)
+  def distance(self,x1,y1,x2,y2):
+    return abs(x1-x2)+abs(y1-y2)
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
@@ -103,18 +121,22 @@ class AI(BaseAI):
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
     for life in self.tiles+self.fishes:
       self.addGrid(life.x,life.y,life)
+    myPlayer = self.players[self.playerID]
 
-    for species in self.species:
-      for cove in self.coves:
-        species.spawn(cove.x,cove.y)
+    print "mah spawnin' food",myPlayer.spawnFood
+    #spawn some dudes
+    seasonal = self.seasonDict[self.currentSeason]
+    for cove in self.coves:
+      for species in seasonal:
+        if cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and myPlayer.spawnFood>=species.cost:
+          species.spawn(cove.x,cove.y)
         
     for fish in self.fishes:
-      fish.move(fish.x+1,fish.y)
-      fish.pickUp(fish.x,fish.y+1,1)
-      fish.pickUp(fish.x,fish.y-1,1)
-      fish.drop(fish.x-1,fish.y,1)
-      fish.attack(self.findFish(fish))
-      fish.attack(fish)
+      if fish.owner==self.playerID:
+        target = self.findFish(fish)
+        if isinstance(target,Fish):
+          self.moveTo(fish,target)
+
     return 1
 
   def __init__(self, conn):

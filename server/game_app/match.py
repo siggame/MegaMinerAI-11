@@ -145,7 +145,7 @@ class Match(DefaultGameWorld):
          oppTile.trashAmount += val
          self.trashDict[(oppTile.x, oppTile.y)] = val
          self.trashAmount -= val
-    print sum(self.trashDict.values())
+   # print sum(self.trashDict.values())
     return True
      
   def findDamage(self,player):
@@ -158,8 +158,8 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
-    print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
-    print "player = %i, damage = %i"%(self.playerID,damage)
+  #  print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
+  #  print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
 

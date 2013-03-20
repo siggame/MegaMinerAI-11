@@ -114,9 +114,9 @@ class Species(object):
     elif tile.hasEgg:
       return "There is already a fish to be spawned here"
     else:
-      player.spawnFood -= self.cost
       tile.hasEgg = True
       tile.species = self
+      player.spawnFood-=self.cost
     return True
 
   def __setattr__(self, name, value):
@@ -379,8 +379,9 @@ class Player(object):
   def nextTurn(self):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
-    if self.game.playerID is self.id:
-      self.spawnFood +=10
+    if self.game.playerID == self.id:
+      print "hello"
+      self.spawnFood +=self.spawnFoodPerTurn
       
     return True
     
