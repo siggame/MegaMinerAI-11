@@ -85,7 +85,7 @@ int Fish::range()
   return ((_Fish*)ptr)->range;
 }
 
-char* Fish::species()
+int Fish::species()
 {
   return ((_Fish*)ptr)->species;
 }
