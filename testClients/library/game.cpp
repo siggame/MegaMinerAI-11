@@ -258,14 +258,7 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   {
     return 0;
   }
-  _Tile* tile=NULL;
-  for(int i=0; i < c->TileCount; i++)
-  {
-    if(c->Tiles[i].x == x && c->Tiles[i].y == y)
-    {
-      tile = &c->Tiles[i];
-    }
-  }
+  _Tile* tile=&c->Tiles[x*c->mapWidth+y];
   //tile has to be owned by the owner
   if(tile->owner != c->playerID)
   {
@@ -321,12 +314,9 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
     }
   }
   //Do not move on top of trash (tile with trash amount > 0) with size.
-  for(int ii = 0; ii < c->TileCount; ii++) {
-    if(c->Tiles[ii].x == x && c->Tiles[ii].y == y)  {
-      if (c->Tiles[ii].trashAmount > 0) {
-        return 0;
-      }
-    }
+  if(c->Tiles[x*c->mapHeight + y].trashAmount > 0)
+  {
+    return 0;
   }
 
   //Decrement movement
@@ -383,13 +373,9 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
     return 0;
   }
   //can't pick up more trash than is present
-  for (int blah = 0; blah < c->TileCount; blah++)
+  if(c->Tiles[x*c->mapHeight + y].trashAmount < weight)
   {
-   if (c->Tiles[blah].x == x && c->Tiles[blah].y == y)
-   {
-     if(c->Tiles[blah].trashAmount < weight)
-       return 0;
-   }
+    return 0;
   }
 
   if(!object->isVisible)
@@ -398,13 +384,6 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   if(object->species != 6) //Tomcod
     object->currentHealth -= (c->trashDamage * weight);
 
-  for (int blah = 0; blah < c->TileCount; blah++)
-  {
-   if (c->Tiles[blah].x == x && c->Tiles[blah].y == y)
-   {
-     c->Tiles[blah].trashAmount -= weight;
-   }
-  }
   object->carryingWeight += weight;
 
   return 1;
@@ -458,15 +437,7 @@ DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
 
   //add weight to tile
   object->carryingWeight -= weight;
-  for(int i = 0; i < c->TileCount; i++)
-  {
-    if( c->Tiles[i].x == x &&
-        c->Tiles[i].y == y)
-    {
-      c->Tiles[i].trashAmount += weight;
-      break;
-    }
-  }
+  c->Tiles[x*c->mapHeight + y].trashAmount += weight;
 
   return 1;
 }
@@ -547,15 +518,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   if(target->currentHealth <= 0)
   {
     //add weight to tile where target died
-    for(int i=0; i < c->TileCount; i++)
-    {
-      if(c->Tiles[i].x == target->x &&
-         c->Tiles[i].y == target->y)
-      {
-        c->Tiles[i].trashAmount += target->carryingWeight;
-        break;
-      }
-    }
+    c->Tiles[target->x * c->mapHeight + target->y].trashAmount += target->carryingWeight;
   }
   //If target is seaurchin and not owned by player
   if(target->species == 4 && target->owner != object->owner) //Sea Urchin
@@ -564,15 +527,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     object->currentHealth -= target->attackPower;
     if(object->currentHealth <= 0)
     {
-      for(int i = 0; i < c->TileCount; i++)
-      {
-         if(c->Tiles[i].x == target->x &&
-            c->Tiles[i].y == target->y)
-         {
-            c->Tiles[i].trashAmount += object->carryingWeight;
-            break;
-         }
-      }
+      c->Tiles[object->x * c->mapHeight + object->y].trashAmount += object->carryingWeight;
     }
   }
 

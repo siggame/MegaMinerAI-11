@@ -1,0 +1,14 @@
+libclient.so
+*.so
+*.pyc
+*.o
+*.a
+*.class
+*.jar
+*.pyc
+*.exe
+*.gamelog
+*.glog
+Makefile.dependencies
+client
+!jna.jar
