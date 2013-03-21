@@ -122,6 +122,7 @@ class AI(BaseAI):
     for life in self.tiles+self.fishes:
       self.addGrid(life.x,life.y,life)
     myPlayer = self.players[self.playerID]
+    myPlayer.talk("I'm so happy to be \ olive")
 
     print "mah spawnin' food",myPlayer.spawnFood
     #spawn some dudes
