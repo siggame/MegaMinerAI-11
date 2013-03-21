@@ -100,7 +100,7 @@ class Species(object):
 
   def spawn(self, x, y):
     player = self.game.objects.players[self.game.playerID]
-    if player.spawnFood<self.cost:
+    if player.spawnFood < self.cost:
       return "You don'thave enough food to spawn this fish in"
     if not (0 <= x < self.game.mapWidth or 0 <= y < self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
