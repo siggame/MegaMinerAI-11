@@ -27,6 +27,7 @@ DLLEXPORT int tileGetHasEgg(_Tile* ptr);
 
 DLLEXPORT int speciesGetId(_Species* ptr);
 DLLEXPORT char* speciesGetName(_Species* ptr);
+DLLEXPORT int speciesGetIndex(_Species* ptr);
 DLLEXPORT int speciesGetCost(_Species* ptr);
 DLLEXPORT int speciesGetMaxHealth(_Species* ptr);
 DLLEXPORT int speciesGetMaxMovement(_Species* ptr);
@@ -52,7 +53,7 @@ DLLEXPORT int fishGetIsVisible(_Fish* ptr);
 DLLEXPORT int fishGetMaxAttacks(_Fish* ptr);
 DLLEXPORT int fishGetAttacksLeft(_Fish* ptr);
 DLLEXPORT int fishGetRange(_Fish* ptr);
-DLLEXPORT char* fishGetSpecies(_Fish* ptr);
+DLLEXPORT int fishGetSpecies(_Fish* ptr);
 
 
 DLLEXPORT int playerGetId(_Player* ptr);

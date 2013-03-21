@@ -192,6 +192,14 @@ class Species(GameObject):
   name = property(getName)
 
   #\cond
+  def getIndex(self):
+    self.validify()
+    return library.speciesGetIndex(self._ptr)
+  #\endcond
+  ##The species index of the species.
+  index = property(getIndex)
+
+  #\cond
   def getCost(self):
     self.validify()
     return library.speciesGetCost(self._ptr)
@@ -261,6 +269,7 @@ class Species(GameObject):
     ret = ""
     ret += "id: %s\n" % self.getId()
     ret += "name: %s\n" % self.getName()
+    ret += "index: %s\n" % self.getIndex()
     ret += "cost: %s\n" % self.getCost()
     ret += "maxHealth: %s\n" % self.getMaxHealth()
     ret += "maxMovement: %s\n" % self.getMaxMovement()
@@ -441,7 +450,7 @@ class Fish(Mappable):
     self.validify()
     return library.fishGetSpecies(self._ptr)
   #\endcond
-  ##The fish species
+  ##The index of the fish species.
   species = property(getSpecies)
 
 

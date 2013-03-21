@@ -33,6 +33,7 @@ std::ostream& operator<<(std::ostream& stream, Species ob)
 {
   stream << "id: " << ob.id  <<'\n';
   stream << "name: " << ob.name  <<'\n';
+  stream << "index: " << ob.index  <<'\n';
   stream << "cost: " << ob.cost  <<'\n';
   stream << "maxHealth: " << ob.maxHealth  <<'\n';
   stream << "maxMovement: " << ob.maxMovement  <<'\n';
@@ -106,7 +107,7 @@ std::ostream& operator<<(std::ostream& stream, pickUp ob)
   stream << "pickUp" << "\n";
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
-  stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "targetID: " << ob.targetID  <<'\n';
   stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }
@@ -125,7 +126,7 @@ std::ostream& operator<<(std::ostream& stream, drop ob)
   stream << "drop" << "\n";
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
-  stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "targetID: " << ob.targetID  <<'\n';
   stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }

@@ -169,8 +169,9 @@ class Match(DefaultGameWorld):
     if self.winner is not None or self.turn is not None:
       return "Game has already begun"
 
-    print "Starting game."
-    self.statList = ["name","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
+    print "Starting game"
+
+    self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
 
     self.turn = self.players[-1]
     self.turnNumber = -1
@@ -185,7 +186,7 @@ class Match(DefaultGameWorld):
     return True
 
   def nextTurn(self):
-    #print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
+    print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player

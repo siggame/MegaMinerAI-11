@@ -48,15 +48,17 @@ class AI(BaseAI):
     return None
     '''
   def attemptSpawn(self, x, y, species):
+    me = self.players[self.playerID]
     if x < 0 or x > self.mapWidth:
       return False
     if y < 0 or y > self.mapHeight:
       return False
 
-    if self.getCurrentSeason() is not species.getSeason():
+    if self.getCurrentSeason() is not species.season:
       return False
 
-    if self.players[self.playerID].getSpawnFood() < species.cost:
+    print "Spawn Food: %i    Species Cost: %i" % (me.spawnFood, species.cost)
+    if me.spawnFood < species.cost:
       return False
 
     species.spawn(x, y)
