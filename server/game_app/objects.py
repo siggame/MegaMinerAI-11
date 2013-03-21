@@ -381,7 +381,7 @@ class Player(object):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
     if self.game.playerID == self.id:
-      self.spawnFood +=self.spawnFoodPerTurn
+      self.spawnFood +=self.spawnFoodPerTufrn
       
     return True
     
@@ -389,7 +389,7 @@ class Player(object):
     if '\\' in message:
       return "No backslashes in your message, shame on you"
     else:
-      self.game.addAnimations(PlayerTalkAnimation(self.id,message))
+      self.game.addAnimation(PlayerTalkAnimation(self.id,message))
       return True
   
   def __setattr__(self, name, value):
