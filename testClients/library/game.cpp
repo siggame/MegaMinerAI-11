@@ -258,7 +258,7 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   {
     return 0;
   }
-  _Tile* tile=&c->Tiles[x*c->mapWidth+y];
+  _Tile* tile=&c->Tiles[x*c->mapHeight+y];
   //tile has to be owned by the owner
   if(tile->owner != c->playerID)
   {
