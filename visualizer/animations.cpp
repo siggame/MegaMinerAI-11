@@ -90,12 +90,10 @@ namespace visualizer
         glClearColor(seasonsColor[currentS].x,seasonsColor[currentS].y,
                      seasonsColor[currentS].z,seasonsColor[currentS].w);
 
-        stringstream stream;
-        stream << "Current Season: " << seasons[currentS];
+       // game->renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+        //stream << "Current Season: " << seasons[currentS] << endl;
+        //game->renderer->drawText(19.0f,5.5f,"Roboto",stream.str(),7.0f,IRenderer::Center);
 
-        // todo: maybe repos the text
-        game->renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-        game->renderer->drawText(19.0f,19.5f,"Roboto",stream.str(),7.0f,IRenderer::Center);
     }
 }
 

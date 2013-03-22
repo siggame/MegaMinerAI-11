@@ -104,8 +104,20 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
+  }
+
+  void Reef::RenderSpecies()
+  {
+      int turn = timeManager->getTurn();
+      int currentSeason = m_game->states[turn].currentSeason;
+
+      for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
+      {
+          renderer->drawText(5.0f + 10*i,20.0f,"Roboto",m_Species[currentSeason][i].name,5.0f,IRenderer::Center);
+      }
   }
 
   void Reef::RenderWorld()
@@ -205,6 +217,9 @@ namespace visualizer
     // we must clear the previous games data
     m_selectedUnitIDs.clear();
     m_Trash.clear();
+
+    m_Species.clear();
+    m_Species.resize(4);
  
     start();
   } // Reef::loadGamelog()
@@ -263,6 +278,10 @@ namespace visualizer
 
     BuildWorld(pMap);
 
+    for(auto iter = m_game->states[0].species.begin(); iter != m_game->states[0].species.end(); ++iter)
+    {
+        m_Species[iter->second.season].push_back(iter->second);
+    }
 
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
@@ -285,6 +304,7 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
+            cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -347,8 +367,6 @@ namespace visualizer
         turn[p.second.id]["Species"] = p.second.species;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y;
-
-
 
 
         newFish->addKeyFrame( new DrawFish( newFish ) );
