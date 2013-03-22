@@ -115,6 +115,18 @@ class AI(BaseAI):
   def distance(self,x1,y1,x2,y2):
     return abs(x1-x2)+abs(y1-y2)
 
+  def pickUpNearestTrash(self,fish):
+    #find nearest trash
+    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.coorDict}
+    trash = self.getTile(trashDir[min(trashDir)][0],trashDir[min(trashDir)][1])
+    self.moveTo(fish,trash)
+    if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
+      print("picking up trash"); x = trash.trashAmount
+      amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount)   
+      y = fish.pickUp(trash.x,trash.y,amount) 
+      print (trash.trashAmount,x,y,fish.carryingWeight,amount  )
+    
+
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
@@ -122,9 +134,13 @@ class AI(BaseAI):
     for life in self.tiles+self.fishes:
       self.addGrid(life.x,life.y,life)
     myPlayer = self.players[self.playerID]
-    myPlayer.talk("I'm so happy to be \ olive")
+    
+    self.coorDict = {(tile.x,tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount>0}
+    self.amountDict = {value:key for key,value in self.coorDict.items()}
 
-    print "mah spawnin' food",myPlayer.spawnFood
+    myPlayer.talk("I'm so happy to be olive")
+
+
     #spawn some dudes
     seasonal = self.seasonDict[self.currentSeason]
     for cove in self.coves:
@@ -132,13 +148,15 @@ class AI(BaseAI):
         if cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and myPlayer.spawnFood>=species.cost:
           species.spawn(cove.x,cove.y)
         
-    for fish in self.fishes:
+    for fish in self.fishes: 
       if fish.owner==self.playerID:
+        self.pickUpNearestTrash(fish)
         target = self.findFish(fish)
         if isinstance(target,Fish):
           self.moveTo(fish,target)
-
     return 1
+
+
 
   def __init__(self, conn):
     BaseAI.__init__(self, conn)
