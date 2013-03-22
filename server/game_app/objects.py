@@ -72,11 +72,12 @@ class Tile(Mappable):
       object.__setattr__(self, name, value)
 
 class Species(object):
-  game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
-  def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
+  game_state_attributes = ['id', 'name', 'index', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
+  def __init__(self, game, id, name, index, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
     self.id = id
     self.name = name
+    self.index = index
     self.cost = cost
     self.maxHealth = maxHealth
     self.maxMovement = maxMovement
@@ -88,24 +89,24 @@ class Species(object):
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.name, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
+    return [self.id, self.name, self.index, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, name = self.name, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
+    return dict(id = self.id, name = self.name, index = self.index, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
   
   def nextTurn(self):
     pass
 
   def spawn(self, x, y):
     player = self.game.objects.players[self.game.playerID]
-    if player.spawnFood<self.cost:
+    if player.spawnFood < self.cost:
       return "You don'thave enough food to spawn this fish in"
-    if not (0<=x<self.game.mapWidth or 0<=y<self.game.mapHeight):
+    if not (0 <= x < self.game.mapWidth or 0 <= y < self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
     elif self.game.currentSeason != self.season:
       return "This fish can't spawn in this season"
-    elif len(self.game.getFish(x,y)) != 0:
+    elif len(self.game.getFish(x, y)) != 0:
       return "There is already a fish here"
 
     tile = self.game.getTile(x,y)
@@ -114,9 +115,9 @@ class Species(object):
     elif tile.hasEgg:
       return "There is already a fish to be spawned here"
     else:
-      player.spawnFood -= self.cost
       tile.hasEgg = True
       tile.species = self
+      player.spawnFood -= self.cost
     return True
 
   def __setattr__(self, name, value):
@@ -183,9 +184,9 @@ class Fish(Mappable):
       else:
         self.movementLeft = self.maxMovement
         self.attacksLeft = self.maxAttacks
-      if self.species == "Cuttlefish":
+      if self.species == 8: #Cuttlefish
         self.isVisible = False
-      if self.species != "TomCod":
+      if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth < 0:
           self.game.grid[self.x][self.y].remove(self)
@@ -193,7 +194,7 @@ class Fish(Mappable):
           self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
           self.addTrash(self.x,self.y,self.carryingWeight)
           self.game.removeObject(self)
-          print "dude died from carrying so much trash"
+     #     print "dude died from carrying so much trash"
     return True
 
   def move(self, x, y):
@@ -226,7 +227,7 @@ class Fish(Mappable):
     self.movementLeft -= 1
     self.x = x
     self.y = y
-    print "moving a dude"
+    #print "moving a dude"
     return True
 
   def pickUp(self, x, y, weight):
@@ -315,12 +316,12 @@ class Fish(Mappable):
 
     print "attacking a dude with another dude"
 
-    if self.species == "CleanerShrimp":
+    if self.species == 9: #Cleaner Shrimp
       self.heal(target)
       target.isVisible = True
 
     #eel stun
-    elif self.species == "ElectricEel":
+    elif self.species == 10: #Electric Eel
       target.movementLeft = -1
       target.attacksLeft = -1
    
@@ -340,9 +341,9 @@ class Fish(Mappable):
       self.game.removeObject(target)
      
     self.game.addAnimation(AttackAnimation(self.id, target.id))
-    self.attacksLeft-=1  
+    self.attacksLeft -= 1
     #check for sea urchin counter attacks
-    if target.species == "SeaUrchin" and target.owner != self.owner:
+    if target.species == 4 and target.owner != self.owner: #Sea Urchin
       self.currentHealth -= target.attackPower / 2.0
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
@@ -379,14 +380,18 @@ class Player(object):
   def nextTurn(self):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
-    if self.game.playerID is self.id:
-      self.spawnFood +=10
+    if self.game.playerID == self.id:
+      self.spawnFood +=self.spawnFoodPerTufrn
       
     return True
     
   def talk(self, message):
-    self.game.addAnimations(PlayerTalkAnimation(self.id,message))
-    
+    if '\\' in message:
+      return "No backslashes in your message, shame on you"
+    else:
+      self.game.addAnimation(PlayerTalkAnimation(self.id,message))
+      return True
+  
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
@@ -421,17 +426,17 @@ class MoveAnimation:
     return dict(type = "move", actingID = self.actingID, fromX = self.fromX, fromY = self.fromY, toX = self.toX, toY = self.toY)
 
 class PickUpAnimation:
-  def __init__(self, x, y, actingID, amount):
+  def __init__(self, x, y, targetID, amount):
     self.x = x
     self.y = y
-    self.actingID = actingID
+    self.targetID = targetID
     self.amount = amount
 
   def toList(self):
-    return ["pickUp", self.x, self.y, self.actingID, self.amount, ]
+    return ["pickUp", self.x, self.y, self.targetID, self.amount, ]
 
   def toJson(self):
-    return dict(type = "pickUp", x = self.x, y = self.y, actingID = self.actingID, amount = self.amount)
+    return dict(type = "pickUp", x = self.x, y = self.y, targetID = self.targetID, amount = self.amount)
 
 class DeathAnimation:
   def __init__(self, actingID):
@@ -444,17 +449,17 @@ class DeathAnimation:
     return dict(type = "death", actingID = self.actingID)
 
 class DropAnimation:
-  def __init__(self, x, y, actingID, amount):
+  def __init__(self, x, y, targetID, amount):
     self.x = x
     self.y = y
-    self.actingID = actingID
+    self.targetID = targetID
     self.amount = amount
 
   def toList(self):
-    return ["drop", self.x, self.y, self.actingID, self.amount, ]
+    return ["drop", self.x, self.y, self.targetID, self.amount, ]
 
   def toJson(self):
-    return dict(type = "drop", x = self.x, y = self.y, actingID = self.actingID, amount = self.amount)
+    return dict(type = "drop", x = self.x, y = self.y, targetID = self.targetID, amount = self.amount)
 
 class AttackAnimation:
   def __init__(self, actingID, targetID):

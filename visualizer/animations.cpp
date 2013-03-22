@@ -64,6 +64,10 @@ namespace visualizer
         // todo: someone needs to make the trash get darker based on the amount of trash
         game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
         game->renderer->drawTexturedQuad(m_Trash->x,m_Trash->y,1,1,"trash");
+
+        stringstream stream;
+        stream << m_Trash->amount;
+        game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),5);
     }
 
     void DrawHUD::animate(const float &t, AnimData *d, IGame *game)

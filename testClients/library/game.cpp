@@ -109,7 +109,6 @@ DLLEXPORT void destroyConnection(Connection* c)
   {
     for(int i = 0; i < c->FishCount; i++)
     {
-      delete[] c->Fishes[i].species;
     }
     delete[] c->Fishes;
   }
@@ -241,6 +240,41 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+
+  //must have enough food
+  if(c->Players[c->playerID].spawnFood < object->cost)
+  {
+    return 0;
+  }
+  //can't spawn off map
+  if(x<0 || x >= c->mapWidth || y<0 || y >= c->mapHeight)
+  {
+    return 0;
+  }
+  //needs to be in season
+  if(c->currentSeason != object->season)
+  {
+    return 0;
+  }
+  _Tile* tile=&c->Tiles[x*c->mapHeight+y];
+  //tile has to be owned by the owner
+  if(tile->owner != c->playerID)
+  {
+    return 0;
+  }
+  //tile can't have an egg
+  if(tile->hasEgg)
+  {
+    return 0;
+  }
+
+  c->Players[c->playerID].spawnFood -= object->cost;
+  tile->hasEgg = true;
+  //I don't think this is needed; it does not work either way though
+  //tile->species = object;
+
   return 1;
 }
 
@@ -255,6 +289,43 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+  //Cannot move a fish you do not own.
+  if(object->owner != c->playerID) {
+    return 0;
+  }
+  //Cannot move if there is no movement left.
+  else if(object->movementLeft <= 0) {
+   return 0;
+  }
+  //Cannot move out of bounds
+  else if( (x<0 || x>=c->mapWidth) || (y<0 || y>=c->mapHeight) ) {
+    return 0;
+  }
+  //Cannot move more than one space away at a time
+  else if(abs(object->x-x) + abs(object->y-y) != 1) {
+   return 0;
+  }
+  //Do not move on top of another fish.
+  for(int ii = 0; ii < c->FishCount; ii++) {
+    if (c->Fishes[ii].x == x && c->Fishes[ii].y == y) {
+     return 0;
+    }
+  }
+  //Do not move on top of trash (tile with trash amount > 0) with size.
+  if(c->Tiles[x*c->mapHeight + y].trashAmount > 0)
+  {
+    return 0;
+  }
+
+  //Decrement movement
+  object->movementLeft = object->movementLeft-1;
+
+  //Apply new movement
+  object->x = x;
+  object->y = y;
+
   return 1;
 }
 
@@ -269,6 +340,52 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+  //can't control enemy fish
+  if(object -> owner != c->playerID)
+  {
+    return 0;
+  }
+  //can't move off of the map
+  else if((x < 0 || x > c->mapWidth) || (y < 0 || y > c->mapHeight))
+  {
+    return 0;
+  }
+  //can only pickup from adjacent tiles
+  else if(abs(object->x - x) + abs(object->y -y) != 1)
+  {
+   return 0;
+  }
+  //cannot carry more than the fish's carrying capacity
+  else if( (object->carryingWeight + weight) > object->carryCap )
+  {
+    return 0;
+  }
+  //cannot pick up a weight of 0
+  else if(weight == 0)
+  {
+    return 0;
+  }
+  //cannot pick up something that will kill you
+  else if(object->currentHealth < weight)
+  {
+    return 0;
+  }
+  //can't pick up more trash than is present
+  if(c->Tiles[x*c->mapHeight + y].trashAmount < weight)
+  {
+    return 0;
+  }
+
+  if(!object->isVisible)
+    object->isVisible = true;
+
+  if(object->species != 6) //Tomcod
+    object->currentHealth -= (c->trashDamage * weight);
+
+  object->carryingWeight += weight;
+
   return 1;
 }
 
@@ -283,6 +400,45 @@ DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+  //can't control enemy fish
+  if(object -> owner != c->playerID)
+  {
+    return 0;
+  }
+  //Cannot drop outside map
+  else if(x >= c->mapWidth || x < 0)
+  {
+    return 0;
+  }
+  //Cannot drop outside map
+  else if(y >= c->mapHeight || y < 0)
+  {
+    return 0;
+  }
+  //Cannot drop more than the fish is carrying
+  else if(weight > object->carryingWeight)
+  {
+    return 0;
+  }
+
+  //Cannot drop on a fish
+  for(int i = 0; i < c->FishCount; i++)
+  {
+    if(x == c->Fishes[i].x &&
+       y == c->Fishes[i].y)
+    {
+       return 0;
+    }
+  }
+  //Make fish visible when dropping
+  object->isVisible = true;
+
+  //add weight to tile
+  object->carryingWeight -= weight;
+  c->Tiles[x*c->mapHeight + y].trashAmount += weight;
+
   return 1;
 }
 
@@ -295,6 +451,86 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
+
+  Connection * c = object->_c;
+
+  //must own fish
+  if(object->owner != c->playerID)
+  {
+    return 0;
+  }
+  //must be within range
+  else if(abs(object->x-target->x)+abs(object->y-target->y) > object->range)
+  {
+    return 0;
+  }
+  //must have attacks left
+  else if(object->attacksLeft==0)
+  {
+    return 0;
+  }
+  //can't attack opponents invisible fish
+  else if(target->owner != c->playerID &&
+          !target->isVisible)
+  {
+    return 0;
+  }
+  //can't heal opponent fish
+  else if(target->owner != c->playerID &&
+          object->attackPower < 0)
+  {
+    return 0;
+  }
+  //can't attack own fish
+  else if(target->owner == c->playerID &&
+          object->attackPower > 0)
+  {
+     return 0;
+  }
+  //can't attack fish on the same tile as yourself
+  else if(target->x == object->x &&
+          target->y == object->y)
+  {
+     return 0;
+  }
+
+  //Heal if cleanershrimp[]
+  if(object->species == 9) //Cleaner Shrimp
+  {
+    //healed by target->maxHealth*healPercent
+    target->currentHealth += target->maxHealth * c->healPercent;
+    //Make sure the healed target's health is not greater than its max health
+    if(target->currentHealth > target->maxHealth)
+    {
+      target->currentHealth = target->maxHealth;
+    }
+    //The healed target should be visible after being healed
+    target->isVisible = true;
+  }
+  else if(object->species == 10) //Electric Eel
+  {
+    //Stun target (cannot move cannot attack)
+    target->movementLeft = -1;
+    target->attacksLeft = -1;
+  }
+  object->attacksLeft -= 1;
+
+  if(target->currentHealth <= 0)
+  {
+    //add weight to tile where target died
+    c->Tiles[target->x * c->mapHeight + target->y].trashAmount += target->carryingWeight;
+  }
+  //If target is seaurchin and not owned by player
+  if(target->species == 4 && target->owner != object->owner) //Sea Urchin
+  {
+    //Attacking object gets damaged by urchin
+    object->currentHealth -= target->attackPower;
+    if(object->currentHealth <= 0)
+    {
+      c->Tiles[object->x * c->mapHeight + object->y].trashAmount += object->carryingWeight;
+    }
+  }
+
   return 1;
 }
 
@@ -362,6 +598,8 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
+  object->index = atoi(sub->val);
+  sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
   object->maxHealth = atoi(sub->val);
@@ -417,9 +655,7 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   sub = sub->next;
   object->range = atoi(sub->val);
   sub = sub->next;
-  object->species = new char[strlen(sub->val)+1];
-  strncpy(object->species, sub->val, strlen(sub->val));
-  object->species[strlen(sub->val)] = 0;
+  object->species = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -631,7 +867,6 @@ DLLEXPORT int networkLoop(Connection* c)
           {
             for(int i = 0; i < c->FishCount; i++)
             {
-              delete[] c->Fishes[i].species;
             }
             delete[] c->Fishes;
           }

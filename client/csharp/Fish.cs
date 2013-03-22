@@ -228,14 +228,14 @@ public class Fish: Mappable
     }
   }
 
-  ///The fish species
-  public string Species
+  ///The index of the fish species.
+  public int Species
   {
     get
     {
       validify();
-      IntPtr value = Client.fishGetSpecies(ptr);
-      return Marshal.PtrToStringAuto(value);
+      int value = Client.fishGetSpecies(ptr);
+      return value;
     }
   }
 

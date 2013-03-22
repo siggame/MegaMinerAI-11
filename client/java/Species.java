@@ -50,6 +50,12 @@ class Species
     validify();
     return Client.INSTANCE.speciesGetName(ptr);
   }
+  ///The species index of the species.
+  public int getIndex()
+  {
+    validify();
+    return Client.INSTANCE.speciesGetIndex(ptr);
+  }
   ///The amount of food it takes to raise this fish
   public int getCost()
   {

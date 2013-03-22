@@ -163,7 +163,6 @@ namespace visualizer
     gui->checkForUpdate( "Reef", "./plugins/reef/checkList.md5", VERSION_FILE );
     options->loadOptionFile( "./plugins/reef/reef.xml", "reef" );
     resourceManager->loadResourceFile( "./plugins/reef/resources.r" );
-
   }
   
   // Give the Debug Info widget the selected object IDs in the Gamelog
@@ -202,6 +201,10 @@ namespace visualizer
     // TODO: Change board size to something useful
     renderer->setCamera( 0, SEA_OFFSET, m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET);
     renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET );
+
+    // we must clear the previous games data
+    m_selectedUnitIDs.clear();
+    m_Trash.clear();
  
     start();
   } // Reef::loadGamelog()
@@ -216,6 +219,7 @@ namespace visualizer
           // if there is trash
           if(iter->second.trashAmount > 0)
           {
+            // add it
             BasicTrash trash;
             trash.x = iter->second.x;
             trash.y = iter->second.y;
@@ -248,7 +252,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header << "Owner" << "Type" << "Trash Amount" << "X" << "Y";
+    header<<"Species" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -339,10 +343,14 @@ namespace visualizer
         newFish->range = p.second.range;
         newFish->species = p.second.species;
 
-        turn[p.second.id]["Owner"] = p.second.owner;
-        turn[p.second.id]["Type"] = "fish";
+        //turn[p.second.id]["Owner"] = p.second.owner;
+        //turn[p.second.id]["Type"] = "fish";
+        turn[p.second.id]["Species"] = p.second.species;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y;
+
+
+
 
         newFish->addKeyFrame( new DrawFish( newFish ) );
         turn.addAnimatable(newFish);
@@ -367,7 +375,7 @@ namespace visualizer
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
           turn[iter->first]["Trash Amount"] = iter->second.amount;
-          turn[iter->first]["Type"] = "trash";
+          //turn[iter->first]["Type"] = "trash";
       }
 
       // todo: for each season, we should create a new effect instead of just using HUDInfo & DrawHUD for all seasons

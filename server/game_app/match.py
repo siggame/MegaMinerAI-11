@@ -44,22 +44,49 @@ class Match(DefaultGameWorld):
     self.healPercent = self.healPercent
     self.count = 0
     self.minTrash = self.minTrash
+    self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
     #Make grid
-    self.grid = [[[self.addObject(Tile,[x, y, 0, self.getTileOwner(x, y), False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[self.addObject(Tile,[x, y, 0, 2, False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
-  # Helper function
-  #since ownership only matter on cove tiles, we're making an owned tile a cove.
-  def getTileOwner(self, x, y):
-    self.count+=1
-    if x < 3 and y < 3:
-      return 0
-    elif x > self.mapWidth - 3 and y < 3:
-      return 1
-    else:
-      return 2
+  def getAdjacent(self,node):
+    adjacent = []
+    for adj in self.offset:
+        dx=node[0]+adj[0]; dy = node[1]+adj[1]
+        if 0<=dx<self.mapWidth and 0<=dy<self.mapHeight:
+          adjacent.append((dx,dy))
+          if (dx,dy) not in self.adjDict:
+            self.adjDict[(dx,dy)] = 1
+          else:
+            self.adjDict[(dx,dy)] +=1
+    return adjacent
+
+  def covePath(self,seed):
+    self.adjDict = dict()
+    closed = set()
+    open = [seed]
+    coves = self.coveLimit
+    self.adjDict[seed[0],seed[1]] = 0
+    while coves>0 and len(open)>0:
+        current = random.choice(open)
+        open.remove(current)
+        coves-=1
+        self.getTile(current[0],current[1]).owner=0
+	self.getTile(self.mapWidth-1-current[0],current[1]).owner = 1
+        closed.add(current)
+        neighbors = self.getAdjacent(current)
+        for node in open:
+          if self.adjDict[(node[0],node[1])] > 1:
+            open.remove(node)
+        for neighbor in neighbors:
+           if neighbor in closed:
+                continue
+           else:
+                open.append(neighbor)
+    return True
+
     
   #getTile RETURN TILE
   def getTile(self, x, y):
@@ -101,19 +128,24 @@ class Match(DefaultGameWorld):
       self.spectators.remove(connection)
       
   def spawnTrash(self):
+    trashableTiles = list(self.objects.tiles)
     while self.trashAmount > 0:
-      randTile = random.choice(self.objects.tiles)
+      randTile = random.choice(trashableTiles)
+      if randTile.owner==2:
+        trashableTiles.remove(randTile)
+      while randTile.owner!=2:
+        randTile = random.choice(trashableTiles)  
+        trashableTiles.remove(randTile)
       oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
       
-      if isinstance(randTile,Tile) and randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
+      if randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
          val = random.randint(1,min([self.minTrash, self.trashAmount]))
          randTile.trashAmount += val
          self.trashDict[(randTile.x, randTile.y)] = val
          oppTile.trashAmount += val
          self.trashDict[(oppTile.x, oppTile.y)] = val
          self.trashAmount -= val
-    print self.trashDict
-    print sum(self.trashDict.values())
+   # print sum(self.trashDict.values())
     return True
      
   def findDamage(self,player):
@@ -126,8 +158,8 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
-    damage += sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ])
-    print "player = %i, damage = %i"%(self.playerID,damage)
+  #  print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
+  #  print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
       
 
@@ -137,46 +169,24 @@ class Match(DefaultGameWorld):
     if self.winner is not None or self.turn is not None:
       return "Game has already begun"
 
-    print "Starting game."
-    self.statList = ["name","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
+    print "Starting game"
+
+    self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
 
     self.turn = self.players[-1]
     self.turnNumber = -1
+    self.seed = (0,self.mapHeight-1)
+    self.covePath(self.seed)
     self.spawnTrash()
     for species in cfgSpecies.keys():
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
     self.initSeasons()
-    print [(species.name,species.season) for species in self.objects.species]
+#    print [(species.name,species.season) for species in self.objects.species]
     self.nextTurn()
     return True
 
-  def getTrashLeft(self):
-    totalTrash = 0
-    #is this right? --- This works. But it runs at O(w*h), and can be done more efficiently.
-    #I'll bring this up or make an issue, for now this works.
-    for x in range(0,self.mapWidth/2-self.boundLength):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
-    
-  def getTrashShared(self):
-    totalTrash = 0
-    #I think these bounds are right?
-    for x in range(self.mapWidth/2-self.boundLength,self.mapWidth/2+self.boundLength):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
-    
-  def getTrashRight(self):
-    totalTrash = 0
-    #Comment to remind who so ever changes this to change all of the bounds
-    for x in range(self.mapWidth/2+self.boundLength,self.mapWidth):
-      for y in range(0,self.mapHeight):
-        totalTrash += self.getTile(x,y).trashAmount
-    return totalTrash
-
   def nextTurn(self):
-    #print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
+    print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
     self.turnNumber += 1
     if self.turn == self.players[0]:
       #deal damage to the left-side player
@@ -203,7 +213,7 @@ class Match(DefaultGameWorld):
     if self.turn == self.players[0]:
       self.objects.players[0].currentReefHealth -= self.findDamage(0)
     
-    if self.turn == self.players[1]:
+    elif self.turn == self.players[1]:
      self.objects.players[1].currentReefHealth -= self.findDamage(1)
 
     self.checkWinner()

@@ -109,7 +109,6 @@ DLLEXPORT void destroyConnection(Connection* c)
   {
     for(int i = 0; i < c->FishCount; i++)
     {
-      delete[] c->Fishes[i].species;
     }
     delete[] c->Fishes;
   }
@@ -242,31 +241,26 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
   send_string(object->_c->socket, expr.str().c_str());
   UNLOCK( &object->_c->mutex);
 
+  Connection * c = object->_c;
+
   //must have enough food
-  if(object->_c->Players[object->_c->playerID].spawnFood < object->cost)
+  if(c->Players[c->playerID].spawnFood < object->cost)
   {
     return 0;
   }
   //can't spawn off map
-  if(x<0||x>=object->_c->mapWidth||y<0||y>=object->_c->mapHeight)
+  if(x<0 || x >= c->mapWidth || y<0 || y >= c->mapHeight)
   {
     return 0;
   }
   //needs to be in season
-  if(object->_c->currentSeason!=object->season)
+  if(c->currentSeason != object->season)
   {
     return 0;
   }
-  _Tile* tile=NULL;
-  for(int i=0;i<object->_c->TileCount;i++)
-  {
-    if(object->_c->Tiles[i].x==x&&object->_c->Tiles[i].y==y)
-    {
-      tile=&object->_c->Tiles[i];
-    }
-  }
+  _Tile* tile=&c->Tiles[x*c->mapHeight+y];
   //tile has to be owned by the owner
-  if(tile->owner!=object->_c->playerID)
+  if(tile->owner != c->playerID)
   {
     return 0;
   }
@@ -276,7 +270,7 @@ DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
     return 0;
   }
 
-  object->_c->Players[object->_c->playerID].spawnFood -= object->cost;
+  c->Players[c->playerID].spawnFood -= object->cost;
   tile->hasEgg = true;
   //I don't think this is needed; it does not work either way though
   //tile->species = object;
@@ -320,12 +314,9 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
     }
   }
   //Do not move on top of trash (tile with trash amount > 0) with size.
-  for(int ii = 0; ii < c->TileCount; ii++) {
-    if(c->Tiles[ii].x == x && c->Tiles[ii].y == y)  {
-      if (c->Tiles[ii].trashAmount > 0) {
-        return 0;
-      }
-    }
+  if(c->Tiles[x*c->mapHeight + y].trashAmount > 0)
+  {
+    return 0;
   }
 
   //Decrement movement
@@ -382,28 +373,17 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
     return 0;
   }
   //can't pick up more trash than is present
-  for (int blah = 0; blah < c->TileCount; blah++)
+  if(c->Tiles[x*c->mapHeight + y].trashAmount < weight)
   {
-   if (c->Tiles[blah].x == x && c->Tiles[blah].y == y)
-   {
-     if(c->Tiles[blah].trashAmount < weight)
-       return 0;
-   }
+    return 0;
   }
 
   if(!object->isVisible)
     object->isVisible = true;
 
-  if(object->species != "TomCod")
+  if(object->species != 6) //Tomcod
     object->currentHealth -= (c->trashDamage * weight);
 
-  for (int blah = 0; blah < c->TileCount; blah++)
-  {
-   if (c->Tiles[blah].x == x && c->Tiles[blah].y == y)
-   {
-     c->Tiles[blah].trashAmount -= weight;
-   }
-  }
   object->carryingWeight += weight;
 
   return 1;
@@ -457,15 +437,7 @@ DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
 
   //add weight to tile
   object->carryingWeight -= weight;
-  for(int i = 0; i < c->TileCount; i++)
-  {
-    if( c->Tiles[i].x == x &&
-        c->Tiles[i].y == y)
-    {
-      c->Tiles[i].trashAmount += weight;
-      break;
-    }
-  }
+  c->Tiles[x*c->mapHeight + y].trashAmount += weight;
 
   return 1;
 }
@@ -523,7 +495,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   }
 
   //Heal if cleanershrimp[]
-  if(object->species == "CleanerShrimp")
+  if(object->species == 9) //Cleaner Shrimp
   {
     //healed by target->maxHealth*healPercent
     target->currentHealth += target->maxHealth * c->healPercent;
@@ -535,7 +507,7 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     //The healed target should be visible after being healed
     target->isVisible = true;
   }
-  else if(object->species == "ElectricEel")
+  else if(object->species == 10) //Electric Eel
   {
     //Stun target (cannot move cannot attack)
     target->movementLeft = -1;
@@ -546,32 +518,16 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   if(target->currentHealth <= 0)
   {
     //add weight to tile where target died
-    for(int i=0; i < c->TileCount; i++)
-    {
-      if(c->Tiles[i].x == target->x &&
-         c->Tiles[i].y == target->y)
-      {
-        c->Tiles[i].trashAmount += target->carryingWeight;
-        break;
-      }
-    }
+    c->Tiles[target->x * c->mapHeight + target->y].trashAmount += target->carryingWeight;
   }
   //If target is seaurchin and not owned by player
-  if(target->species == "SeaUrchin" && target->owner != object->owner)
+  if(target->species == 4 && target->owner != object->owner) //Sea Urchin
   {
     //Attacking object gets damaged by urchin
-    object->currentHealth -= target->attackPower / 2.0;
+    object->currentHealth -= target->attackPower;
     if(object->currentHealth <= 0)
     {
-      for(int i = 0; i < c->TileCount; i++)
-      {
-         if(c->Tiles[i].x == target->x &&
-            c->Tiles[i].y == target->y)
-         {
-            c->Tiles[i].trashAmount += object->carryingWeight;
-            break;
-         }
-      }
+      c->Tiles[object->x * c->mapHeight + object->y].trashAmount += object->carryingWeight;
     }
   }
 
@@ -642,6 +598,8 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
+  object->index = atoi(sub->val);
+  sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
   object->maxHealth = atoi(sub->val);
@@ -697,9 +655,7 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   sub = sub->next;
   object->range = atoi(sub->val);
   sub = sub->next;
-  object->species = new char[strlen(sub->val)+1];
-  strncpy(object->species, sub->val, strlen(sub->val));
-  object->species[strlen(sub->val)] = 0;
+  object->species = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -911,7 +867,6 @@ DLLEXPORT int networkLoop(Connection* c)
           {
             for(int i = 0; i < c->FishCount; i++)
             {
-              delete[] c->Fishes[i].species;
             }
             delete[] c->Fishes;
           }

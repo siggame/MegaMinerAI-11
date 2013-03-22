@@ -161,6 +161,9 @@ library.speciesGetId.argtypes = [c_void_p]
 library.speciesGetName.restype = c_char_p
 library.speciesGetName.argtypes = [c_void_p]
 
+library.speciesGetIndex.restype = c_int
+library.speciesGetIndex.argtypes = [c_void_p]
+
 library.speciesGetCost.restype = c_int
 library.speciesGetCost.argtypes = [c_void_p]
 
@@ -230,7 +233,7 @@ library.fishGetAttacksLeft.argtypes = [c_void_p]
 library.fishGetRange.restype = c_int
 library.fishGetRange.argtypes = [c_void_p]
 
-library.fishGetSpecies.restype = c_char_p
+library.fishGetSpecies.restype = c_int
 library.fishGetSpecies.argtypes = [c_void_p]
 
 library.playerGetId.restype = c_int

@@ -34,6 +34,7 @@ struct _Species
   Connection* _c;
   int id;
   char* name;
+  int index;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -61,7 +62,7 @@ struct _Fish
   int maxAttacks;
   int attacksLeft;
   int range;
-  char* species;
+  int species;
 };
 struct _Player
 {
