@@ -298,9 +298,8 @@ namespace visualizer
                 if(j->type == parser::DROP)
                 {
                      // todo: do something with the drop
-
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    BasicTrash& trash = m_Trash[state][dropAnim.actingID];
+                    BasicTrash& trash = m_Trash[state][dropAnim.targetID];
 
                     trash.amount += dropAnim.amount;
                     trash.x = dropAnim.x;
@@ -312,13 +311,13 @@ namespace visualizer
                     //todo: do something with the pickup
 
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
-                    BasicTrash& trash = m_Trash[state][pickupAnim.actingID];
+                    BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
 
                     trash.amount -= pickupAnim.amount;
                     
                     if(trash.amount < 1)
                     {
-                        m_Trash[state].erase(pickupAnim.actingID);
+                        m_Trash[state].erase(pickupAnim.targetID);
                     }
                 }
 
@@ -358,7 +357,28 @@ namespace visualizer
 
      }
 
-      cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
+      //cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
+
+      // this code does not do anything
+     /* for(auto iter = m_game->states[state].tiles.begin(); iter != m_game->states[state].tiles.end(); ++iter)
+      {
+          if(iter->second.trashAmount > 0)
+          {
+              // Draw the trash
+              SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.trashAmount);
+              trashSprite->addKeyFrame(new DrawTrash(trashSprite));
+
+              turn.addAnimatable(trashSprite);
+
+              //turn[trashList[i].id]["Owner"] = trashList[i].owner;
+
+              // Add trash to debug table
+              turn[iter->first]["Species"] = "Trash";
+              turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
+              turn[iter->first]["X"] = iter->second.x;
+              turn[iter->first]["Y"] = iter->second.y;
+          }
+      }*/
 
       // Loop over all the trash in the current turn
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
@@ -372,9 +392,11 @@ namespace visualizer
           //turn[trashList[i].id]["Owner"] = trashList[i].owner;
 
           // Add trash to debug table
+          turn[iter->first]["Species"] = "Trash";
+          turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
-          turn[iter->first]["Trash Amount"] = iter->second.amount;
+
           //turn[iter->first]["Type"] = "trash";
       }
 

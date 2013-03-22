@@ -96,7 +96,7 @@ namespace visualizer
         int maxAttacks;     //
         int attacksLeft;    //
         int range;          //
-        char* species;      //
+        int species;      //
 
         std::vector<Moves> m_moves;
 
