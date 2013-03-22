@@ -104,8 +104,20 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
+  }
+
+  void Reef::RenderSpecies()
+  {
+      int turn = timeManager->getTurn();
+      int currentSeason = m_game->states[turn].currentSeason;
+
+      for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
+      {
+          renderer->drawText(5.0f + 10*i,20.0f,"Roboto",m_Species[currentSeason][i].name,5.0f,IRenderer::Center);
+      }
   }
 
   void Reef::RenderWorld()
@@ -205,6 +217,9 @@ namespace visualizer
     // we must clear the previous games data
     m_selectedUnitIDs.clear();
     m_Trash.clear();
+
+    m_Species.clear();
+    m_Species.resize(4);
  
     start();
   } // Reef::loadGamelog()
@@ -263,6 +278,10 @@ namespace visualizer
 
     BuildWorld(pMap);
 
+    for(auto iter = m_game->states[0].species.begin(); iter != m_game->states[0].species.end(); ++iter)
+    {
+        m_Species[iter->second.season].push_back(iter->second);
+    }
 
     // Look through each turn in the gamelog
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
@@ -285,6 +304,7 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
+            cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -298,9 +318,8 @@ namespace visualizer
                 if(j->type == parser::DROP)
                 {
                      // todo: do something with the drop
-
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    BasicTrash& trash = m_Trash[state][dropAnim.actingID];
+                    BasicTrash& trash = m_Trash[state][dropAnim.targetID];
 
                     trash.amount += dropAnim.amount;
                     trash.x = dropAnim.x;
@@ -312,13 +331,13 @@ namespace visualizer
                     //todo: do something with the pickup
 
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
-                    BasicTrash& trash = m_Trash[state][pickupAnim.actingID];
+                    BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
 
                     trash.amount -= pickupAnim.amount;
                     
                     if(trash.amount < 1)
                     {
-                        m_Trash[state].erase(pickupAnim.actingID);
+                        m_Trash[state].erase(pickupAnim.targetID);
                     }
                 }
 
@@ -350,15 +369,34 @@ namespace visualizer
         turn[p.second.id]["Y"] = p.second.y;
 
 
-
-
         newFish->addKeyFrame( new DrawFish( newFish ) );
         turn.addAnimatable(newFish);
         //cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
 
      }
 
-      cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
+      //cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
+
+      // this code does not do anything
+     /* for(auto iter = m_game->states[state].tiles.begin(); iter != m_game->states[state].tiles.end(); ++iter)
+      {
+          if(iter->second.trashAmount > 0)
+          {
+              // Draw the trash
+              SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.trashAmount);
+              trashSprite->addKeyFrame(new DrawTrash(trashSprite));
+
+              turn.addAnimatable(trashSprite);
+
+              //turn[trashList[i].id]["Owner"] = trashList[i].owner;
+
+              // Add trash to debug table
+              turn[iter->first]["Species"] = "Trash";
+              turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
+              turn[iter->first]["X"] = iter->second.x;
+              turn[iter->first]["Y"] = iter->second.y;
+          }
+      }*/
 
       // Loop over all the trash in the current turn
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
@@ -372,9 +410,11 @@ namespace visualizer
           //turn[trashList[i].id]["Owner"] = trashList[i].owner;
 
           // Add trash to debug table
+          turn[iter->first]["Species"] = "Trash";
+          turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
-          turn[iter->first]["Trash Amount"] = iter->second.amount;
+
           //turn[iter->first]["Type"] = "trash";
       }
 

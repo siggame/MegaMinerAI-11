@@ -60,7 +60,7 @@ bool AI::run()
       fishes[i].pickUp((fishes[i].x()-1),fishes[i].y(),5);
       fishes[i].pickUp((fishes[i].x()-1),(fishes[i].y()-1),5);
       fishes[i].drop(fishes[i].x(),(fishes[i].y()+1),bogus);
-    }
+    }/*
     for(int k = 0; k < mapWidth(); k++)
     {
       fishes[i].move((fishes[i].x() - 1),fishes[i].y());
@@ -100,7 +100,7 @@ bool AI::run()
       fishes[i].pickUp((fishes[i].x()-1),(fishes[i].y()-1),5);
       fishes[i].drop(fishes[i].x(),(fishes[i].y()+1),bogus);
     }
-  }
+  }*/
   return true;
 }
 
