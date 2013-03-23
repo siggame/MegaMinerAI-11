@@ -293,6 +293,8 @@ namespace visualizer
 
     m_Species.clear();
     m_Species.resize(4);
+
+    m_ReefInfo.clear();
  
     start();
   } // Reef::loadGamelog()
