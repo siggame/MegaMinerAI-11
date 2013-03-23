@@ -114,9 +114,13 @@ namespace visualizer
       int turn = timeManager->getTurn();
       int currentSeason = m_game->states[turn].currentSeason;
 
+      renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
+      renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
+
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          renderer->drawText(5.0f + 10*i,20.0f,"Roboto",m_Species[currentSeason][i].name,5.0f,IRenderer::Center);
+          renderer->drawText(12.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(12.0f + 8*i,21.0f,"Roboto",m_Species[(currentSeason + 1) % m_Species.size()][i].name,4.0f,IRenderer::Center);
       }
   }
 
