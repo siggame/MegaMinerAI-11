@@ -27,6 +27,15 @@ namespace visualizer
         int bottom;
     };
 
+    struct ReefInfo
+    {
+        ReefInfo(int health, int food) : currentReefHealth(health), spawnFood(food) {}
+
+        int currentReefHealth;
+        int spawnFood;
+    };
+
+
     class Reef: public QThread, public AnimSequence, public IGame
     {
         Q_OBJECT;
@@ -59,10 +68,9 @@ namespace visualizer
             bool m_suicide;
 
             list<int> m_selectedUnitIDs;
+            std::vector<ReefInfo> m_ReefInfo;
             std::vector<std::map<int,BasicTrash> > m_Trash;
             std::vector<std::vector<parser::Species> > m_Species;
-
-
 
             void BuildWorld(class Map* pMap);
 
@@ -74,9 +82,10 @@ namespace visualizer
 
             void RenderSpecies();
 
-            void RenderPlayerNames();
+            void RenderPlayerInfo();
 
             void RenderPlayerName(unsigned int id, float xPos = 1.0f);
+            void RenderReefHealthBar(unsigned int id, float xPos = 1.0f);
 
             template< class T >
             bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key)

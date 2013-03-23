@@ -9,6 +9,14 @@
 
 namespace visualizer
 {
+    template< class T >
+    string toString(const T& data)
+    {
+        ostringstream stream;
+        stream << data;
+        return stream.str();
+    }
+
   glm::vec4 lerp( const glm::vec4& A, const glm::vec4& B, float t )
   {
       return A*(1.0f - t) + B*t;
@@ -108,7 +116,7 @@ namespace visualizer
 
   void Reef::postDraw()
   {
-      RenderPlayerNames();
+      RenderPlayerInfo();
       RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
@@ -129,10 +137,23 @@ namespace visualizer
       }
   }
 
-  void Reef::RenderPlayerNames()
+  void Reef::RenderReefHealthBar(unsigned int id, float xPos)
   {
+      int turn = timeManager->getTurn();
+      ReefInfo& info = m_ReefInfo[id + turn * 2];
+
+      renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
+  }
+
+  void Reef::RenderPlayerInfo()
+  {
+      float xPos = 2.0f * m_game->states[0].mapWidth / 3.0f;
+
       RenderPlayerName(0);
-      RenderPlayerName(1,2.0f * m_game->states[0].mapWidth / 3.0f);
+      RenderPlayerName(1,xPos);
+
+      RenderReefHealthBar(0);
+      RenderReefHealthBar(1,xPos);
   }
 
   void Reef::RenderSpecies()
@@ -346,6 +367,16 @@ namespace visualizer
       if(state > 0)
       {
         m_Trash[state] = m_Trash[state - 1];
+      }
+
+      // for each player in the current turn
+      for( auto& p : m_game->states[ state ].players )
+      {
+          // todo: I could resize this vector
+          m_ReefInfo.push_back(ReefInfo(p.second.currentReefHealth,p.second.spawnFood));
+          /*SmartPointer<HUDInfo> hud = new HUDInfo(p.second.id - 800,p.second.currentReefHealth,p.second.spawnFood);
+          hud->addKeyFrame( new DrawHUD( hud ) );
+          turn.addAnimatable(hud);*/
       }
 
       // for each fish in the current turn

@@ -70,10 +70,5 @@ namespace visualizer
         game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),5);
     }
 
-    void DrawHUD::animate(const float &t, AnimData *d, IGame *game)
-    {
-
-
-    }
 }
 

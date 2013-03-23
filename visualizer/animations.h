@@ -68,17 +68,7 @@ namespace visualizer
         Trash *m_Trash;
     };//DrawTrash
 
-    class DrawHUD : public Anim
-    {
-    public:
-        DrawHUD(HUDInfo* pInfo) : m_pHud(pInfo) {}
 
-        void animate(const float &t, AnimData *d, IGame *game);
-
-    private:
-
-        HUDInfo* m_pHud;
-    };
 
 }
 

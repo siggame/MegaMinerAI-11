@@ -147,12 +147,6 @@ namespace visualizer
         string enable; // used for enabling/disabling this sprite via gui
     };
 
-    struct HUDInfo : public Animatable
-    {
-        explicit HUDInfo(int s) : season(s) {}
-
-        int season;
-    };
 
 } // visualizer
 
