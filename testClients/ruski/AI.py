@@ -2,13 +2,13 @@
 from BaseAI import BaseAI
 from GameObject import *
 import random
+import time
 
 class AI(BaseAI):
   """The class implementing gameplay logic."""
 
   myCoves = []
   myFish = []
-
 
   @staticmethod
   def username():
@@ -36,17 +36,7 @@ class AI(BaseAI):
       if fish.owner is self.playerID:
         self.myFish.append(fish)
     return
-  '''
-  def getFish(self, x, y):
-    for fish in self.fish:
 
-  def getTile(self, x, y):
-    for tile in self.tiles:
-      if tile.x is x and tile.y is y:
-        return tile
-
-    return None
-    '''
   def attemptSpawn(self, x, y, species):
     me = self.players[self.playerID]
     if x < 0 or x > self.mapWidth:
@@ -74,7 +64,17 @@ class AI(BaseAI):
 
   def printMyCoves(self):
     for cove in self.myCoves:
-      print "(%i, %i)" % (cove.x, cove.y)
+      print "(%i, %i)" % (cove.x, cove.y),
+    return
+
+  def printTiles(self):
+    for tile in self.tiles:
+      print "%i:(%i, %i)" % (tile.id, tile.x, tile.y),
+    return
+
+  def printPlayers(self):
+    for play in self.players:
+      print "%s %i" % (play.playerName, play.id)
     return
 
   def printMyFish(self):
@@ -86,6 +86,9 @@ class AI(BaseAI):
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
     print "Starting Turn #%i" % self.turnNumber
+    self.printPlayers()
+    self.printTiles()
+    time.sleep(.25)
     self.getMyFish()
     self.printMyFish()
 
