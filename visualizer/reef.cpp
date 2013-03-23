@@ -9,6 +9,10 @@
 
 namespace visualizer
 {
+  glm::vec4 lerp( const glm::vec4& A, const glm::vec4& B, float t )
+  {
+      return A*(1.0f - t) + B*t;
+  }
 
   Reef::Reef()
   {
@@ -111,16 +115,38 @@ namespace visualizer
 
   void Reef::RenderSpecies()
   {
+      // todo: need to make this look nice
+      // todo: change these colors
+      static const string seasons[] = {"winter" , "spring", "summer", "fall"};
+      static const glm::vec4 seasonsColor[] =
+      {
+          glm::vec4(1.0f,0.8f,0.8f,0.0f),
+          glm::vec4(.2f,0.8f,0.2f,0.0f),
+          glm::vec4(1.0f,0.3f,0.1f,0.0f),
+          glm::vec4(.8f,0.4f,0.5f,0.0f)
+      };
+
       int turn = timeManager->getTurn();
       int currentSeason = m_game->states[turn].currentSeason;
+      int nextSeason = (currentSeason + 1) % m_Species.size();
+      float seasonPercent = (turn % m_game->states[turn].seasonLength) / (float)m_game->states[turn].seasonLength;
+
+      glm::vec4 newColor = lerp(seasonsColor[currentSeason],seasonsColor[nextSeason],seasonPercent);
+
+      glClearColor(newColor.x,newColor.y,
+                   newColor.z,newColor.w);
 
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
+      stringstream stream;
+      stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
+      renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
           renderer->drawText(12.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
-          renderer->drawText(12.0f + 8*i,21.0f,"Roboto",m_Species[(currentSeason + 1) % m_Species.size()][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(12.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
   }
 
@@ -422,10 +448,9 @@ namespace visualizer
           //turn[iter->first]["Type"] = "trash";
       }
 
-      // todo: for each season, we should create a new effect instead of just using HUDInfo & DrawHUD for all seasons
-      SmartPointer<HUDInfo> pHud = new HUDInfo(m_game->states[state].currentSeason);
+      /*SmartPointer<HUDInfo> pHud = new HUDInfo(m_game->states[state].currentSeason);
       pHud->addKeyFrame(new DrawHUD(pHud));
-      turn.addAnimatable(pHud);
+      turn.addAnimatable(pHud);*/
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);

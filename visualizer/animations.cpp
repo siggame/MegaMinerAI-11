@@ -72,27 +72,7 @@ namespace visualizer
 
     void DrawHUD::animate(const float &t, AnimData *d, IGame *game)
     {
-        // todo: maybe this could go somewhere else
 
-        static const string seasons[] = {"winter" , "spring", "summer", "fall"};
-        static const glm::vec4 seasonsColor[] =
-        {
-            glm::vec4(1.0f,0.8f,0.8f,0.0f),
-            glm::vec4(1.0f,0.49f,0.0f,0.0f),
-            glm::vec4(1.0f,0.1f,0.1f,0.0f),
-            glm::vec4(.8f,0.4f,0.5f,0.0f)
-        };
-
-        assert(m_pHud->season < 4);
-
-        int currentS = (m_pHud->season /*+ 3*/) % 4;
-
-        glClearColor(seasonsColor[currentS].x,seasonsColor[currentS].y,
-                     seasonsColor[currentS].z,seasonsColor[currentS].w);
-
-       // game->renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-        //stream << "Current Season: " << seasons[currentS] << endl;
-        //game->renderer->drawText(19.0f,5.5f,"Roboto",stream.str(),7.0f,IRenderer::Center);
 
     }
 }
