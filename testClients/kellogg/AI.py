@@ -3,6 +3,7 @@ from BaseAI import BaseAI
 from GameObject import *
 import math
 import heapq
+import random
 
 class AI(BaseAI):
   """The class implementing gameplay logic."""
@@ -17,6 +18,7 @@ class AI(BaseAI):
   ##This function is called once, before your first turn
   def init(self):
     self.coves = []
+    self.adjacentList = [(-1,0),(1,0),(0,1),(0,-1)]
     for tile in self.tiles:
       if tile.owner == self.playerID:
         self.coves.append(tile)
@@ -121,11 +123,30 @@ class AI(BaseAI):
     trash = self.getTile(trashDir[min(trashDir)][0],trashDir[min(trashDir)][1])
     self.moveTo(fish,trash)
     if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
-      print("picking up trash"); x = trash.trashAmount
+      x = trash.trashAmount
       amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount)   
       y = fish.pickUp(trash.x,trash.y,amount) 
-      print (trash.trashAmount,x,y,fish.carryingWeight,amount  )
-    
+      print "picking up trash",y
+      if y==1:
+        self.coorDict[(trash.x,trash.y)]-=amount 
+
+  def isSafe(self,x,):
+    if self.playerID==0 and x>self.mapWidth/2+self.boundLength:
+      return True
+    elif self.playerID==1 and x<self.mapWidth/2+self.boundLength:
+      return True
+    return False
+
+  def pushTrash(self,fish):
+    theirTiles = [tile for tile in self.tiles if self.isSafe(tile.x) and tile.owner==2]
+   # print [tile for tile in self.tiles if not self.isSafe(tile.x) and tile.owner==2]
+    tile = random.choice(theirTiles)
+    self.moveTo(fish,tile)
+    if self.distance(fish.x,fish.y,tile.x,tile.y) == 1:
+      fish.drop(tile.x,tile.y,fish.carryingWeight)
+    elif self.isSafe(fish.x):
+      for adj in self.adjacentList:
+        print "fish drop", fish.drop(adj[0],adj[1],fish.carryingWeight)
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
@@ -133,27 +154,26 @@ class AI(BaseAI):
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
     for life in self.tiles+self.fishes:
       self.addGrid(life.x,life.y,life)
-    myPlayer = self.players[self.playerID]
+    self.myPlayer = self.players[self.playerID]
     
     self.coorDict = {(tile.x,tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount>0}
     self.amountDict = {value:key for key,value in self.coorDict.items()}
 
-    myPlayer.talk("I'm so happy to be olive")
-
+    self.myPlayer.talk("I'm so happy to be olive")
 
     #spawn some dudes
     seasonal = self.seasonDict[self.currentSeason]
     for cove in self.coves:
       for species in seasonal:
-        if cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and myPlayer.spawnFood>=species.cost:
+        if cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and self.myPlayer.spawnFood>=species.cost:
           species.spawn(cove.x,cove.y)
         
     for fish in self.fishes: 
       if fish.owner==self.playerID:
-        self.pickUpNearestTrash(fish)
-        target = self.findFish(fish)
-        if isinstance(target,Fish):
-          self.moveTo(fish,target)
+        if fish.carryCap != fish.carryingWeight:    
+          self.pickUpNearestTrash(fish)
+        else:
+          self.pushTrash(fish) 
     return 1
 
 
