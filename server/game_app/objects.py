@@ -50,11 +50,12 @@ class Tile(Mappable):
       object.__setattr__(self, name, value)
 
 class Species(object):
-  game_state_attributes = ['id', 'name', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
-  def __init__(self, game, id, name, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
+  game_state_attributes = ['id', 'name', 'index', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
+  def __init__(self, game, id, name, index, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
     self.id = id
     self.name = name
+    self.index = index
     self.cost = cost
     self.maxHealth = maxHealth
     self.maxMovement = maxMovement
@@ -66,11 +67,11 @@ class Species(object):
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.name, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
+    return [self.id, self.name, self.index, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, name = self.name, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
+    return dict(id = self.id, name = self.name, index = self.index, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
   
   def nextTurn(self):
     pass
@@ -84,8 +85,8 @@ class Species(object):
       object.__setattr__(self, name, value)
 
 class Fish(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'owner', 'maxHealth', 'currentHealth', 'maxMovement', 'movementLeft', 'carryCap', 'carryingWeight', 'attackPower', 'isVisible', 'maxAttacks', 'attacksLeft', 'range', 'species']
-  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, isVisible, maxAttacks, attacksLeft, range, species):
+  game_state_attributes = ['id', 'x', 'y', 'owner', 'maxHealth', 'currentHealth', 'maxMovement', 'movementLeft', 'carryCap', 'carryingWeight', 'attackPower', 'maxAttacks', 'attacksLeft', 'range', 'species']
+  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, maxAttacks, attacksLeft, range, species):
     self.game = game
     self.id = id
     self.x = x
@@ -98,7 +99,6 @@ class Fish(Mappable):
     self.carryCap = carryCap
     self.carryingWeight = carryingWeight
     self.attackPower = attackPower
-    self.isVisible = isVisible
     self.maxAttacks = maxAttacks
     self.attacksLeft = attacksLeft
     self.range = range
@@ -106,11 +106,11 @@ class Fish(Mappable):
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
+    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
+    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
   
   def nextTurn(self):
     pass
@@ -190,17 +190,17 @@ class MoveAnimation:
     return dict(type = "move", actingID = self.actingID, fromX = self.fromX, fromY = self.fromY, toX = self.toX, toY = self.toY)
 
 class PickUpAnimation:
-  def __init__(self, x, y, actingID, amount):
+  def __init__(self, actingID, x, y, amount):
+    self.actingID = actingID
     self.x = x
     self.y = y
-    self.actingID = actingID
     self.amount = amount
 
   def toList(self):
-    return ["pickUp", self.x, self.y, self.actingID, self.amount, ]
+    return ["pickUp", self.actingID, self.x, self.y, self.amount, ]
 
   def toJson(self):
-    return dict(type = "pickUp", x = self.x, y = self.y, actingID = self.actingID, amount = self.amount)
+    return dict(type = "pickUp", actingID = self.actingID, x = self.x, y = self.y, amount = self.amount)
 
 class DeathAnimation:
   def __init__(self, actingID):
@@ -213,17 +213,17 @@ class DeathAnimation:
     return dict(type = "death", actingID = self.actingID)
 
 class DropAnimation:
-  def __init__(self, x, y, actingID, amount):
+  def __init__(self, actingID, x, y, amount):
+    self.actingID = actingID
     self.x = x
     self.y = y
-    self.actingID = actingID
     self.amount = amount
 
   def toList(self):
-    return ["drop", self.x, self.y, self.actingID, self.amount, ]
+    return ["drop", self.actingID, self.x, self.y, self.amount, ]
 
   def toJson(self):
-    return dict(type = "drop", x = self.x, y = self.y, actingID = self.actingID, amount = self.amount)
+    return dict(type = "drop", actingID = self.actingID, x = self.x, y = self.y, amount = self.amount)
 
 class AttackAnimation:
   def __init__(self, actingID, targetID):

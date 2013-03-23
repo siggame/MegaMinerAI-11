@@ -47,6 +47,10 @@ DLLEXPORT char* speciesGetName(_Species* ptr)
 {
   return ptr->name;
 }
+DLLEXPORT int speciesGetIndex(_Species* ptr)
+{
+  return ptr->index;
+}
 DLLEXPORT int speciesGetCost(_Species* ptr)
 {
   return ptr->cost;
@@ -122,10 +126,6 @@ DLLEXPORT int fishGetCarryingWeight(_Fish* ptr)
 DLLEXPORT int fishGetAttackPower(_Fish* ptr)
 {
   return ptr->attackPower;
-}
-DLLEXPORT int fishGetIsVisible(_Fish* ptr)
-{
-  return ptr->isVisible;
 }
 DLLEXPORT int fishGetMaxAttacks(_Fish* ptr)
 {

@@ -192,6 +192,14 @@ class Species(GameObject):
   name = property(getName)
 
   #\cond
+  def getIndex(self):
+    self.validify()
+    return library.speciesGetIndex(self._ptr)
+  #\endcond
+  ##The species index of the species.
+  index = property(getIndex)
+
+  #\cond
   def getCost(self):
     self.validify()
     return library.speciesGetCost(self._ptr)
@@ -261,6 +269,7 @@ class Species(GameObject):
     ret = ""
     ret += "id: %s\n" % self.getId()
     ret += "name: %s\n" % self.getName()
+    ret += "index: %s\n" % self.getIndex()
     ret += "cost: %s\n" % self.getCost()
     ret += "maxHealth: %s\n" % self.getMaxHealth()
     ret += "maxMovement: %s\n" % self.getMaxMovement()
@@ -405,14 +414,6 @@ class Fish(Mappable):
   attackPower = property(getAttackPower)
 
   #\cond
-  def getIsVisible(self):
-    self.validify()
-    return library.fishGetIsVisible(self._ptr)
-  #\endcond
-  ##The visibleness of the fish
-  isVisible = property(getIsVisible)
-
-  #\cond
   def getMaxAttacks(self):
     self.validify()
     return library.fishGetMaxAttacks(self._ptr)
@@ -459,7 +460,6 @@ class Fish(Mappable):
     ret += "carryCap: %s\n" % self.getCarryCap()
     ret += "carryingWeight: %s\n" % self.getCarryingWeight()
     ret += "attackPower: %s\n" % self.getAttackPower()
-    ret += "isVisible: %s\n" % self.getIsVisible()
     ret += "maxAttacks: %s\n" % self.getMaxAttacks()
     ret += "attacksLeft: %s\n" % self.getAttacksLeft()
     ret += "range: %s\n" % self.getRange()

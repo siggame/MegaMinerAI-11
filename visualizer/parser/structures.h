@@ -44,6 +44,7 @@ struct Species
 {
   int id;
   char* name;
+  int index;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -66,7 +67,6 @@ struct Fish: public Mappable
   int carryCap;
   int carryingWeight;
   int attackPower;
-  int isVisible;
   int maxAttacks;
   int attacksLeft;
   int range;
@@ -114,9 +114,9 @@ struct move : public Animation
 
 struct pickUp : public Animation
 {
+  int actingID;
   int x;
   int y;
-  int actingID;
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, pickUp obj);
@@ -131,9 +131,9 @@ struct death : public Animation
 
 struct drop : public Animation
 {
+  int actingID;
   int x;
   int y;
-  int actingID;
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, drop obj);

@@ -161,6 +161,9 @@ library.speciesGetId.argtypes = [c_void_p]
 library.speciesGetName.restype = c_char_p
 library.speciesGetName.argtypes = [c_void_p]
 
+library.speciesGetIndex.restype = c_int
+library.speciesGetIndex.argtypes = [c_void_p]
+
 library.speciesGetCost.restype = c_int
 library.speciesGetCost.argtypes = [c_void_p]
 
@@ -217,9 +220,6 @@ library.fishGetCarryingWeight.argtypes = [c_void_p]
 
 library.fishGetAttackPower.restype = c_int
 library.fishGetAttackPower.argtypes = [c_void_p]
-
-library.fishGetIsVisible.restype = c_int
-library.fishGetIsVisible.argtypes = [c_void_p]
 
 library.fishGetMaxAttacks.restype = c_int
 library.fishGetMaxAttacks.argtypes = [c_void_p]

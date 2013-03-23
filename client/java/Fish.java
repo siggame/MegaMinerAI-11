@@ -118,12 +118,6 @@ class Fish extends Mappable
     validify();
     return Client.INSTANCE.fishGetAttackPower(ptr);
   }
-  ///The visibleness of the fish
-  public int getIsVisible()
-  {
-    validify();
-    return Client.INSTANCE.fishGetIsVisible(ptr);
-  }
   ///The maximum number of attacks this fish has per turn
   public int getMaxAttacks()
   {

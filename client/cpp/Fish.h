@@ -37,8 +37,6 @@ class Fish : public Mappable {
   int carryingWeight();
   ///The power of the fish's attack
   int attackPower();
-  ///The visibleness of the fish
-  int isVisible();
   ///The maximum number of attacks this fish has per turn
   int maxAttacks();
   ///The number of attacks a fish has left
