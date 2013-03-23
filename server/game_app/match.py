@@ -46,14 +46,19 @@ class Match(DefaultGameWorld):
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
     #Make grid
-    self.grid = [[[self.addObject(Tile,[x, y, 0, 2, False])] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[ ]]]
+    #self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
+  def makeGrid(self):
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    return
+
   def getAdjacent(self,node):
-    adjacent = []
-    for adj in self.offset:
+     adjacent = []
+     for adj in self.offset:
         dx=node[0]+adj[0]; dy = node[1]+adj[1]
         if 0<=dx<self.mapWidth and 0<=dy<self.mapHeight:
           adjacent.append((dx,dy))
@@ -61,7 +66,7 @@ class Match(DefaultGameWorld):
             self.adjDict[(dx,dy)] = 1
           else:
             self.adjDict[(dx,dy)] +=1
-    return adjacent
+     return adjacent
 
   def covePath(self,seed):
     self.adjDict = dict()
@@ -172,7 +177,7 @@ class Match(DefaultGameWorld):
     print "Starting game"
 
     self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
-
+    self.makeGrid()
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)

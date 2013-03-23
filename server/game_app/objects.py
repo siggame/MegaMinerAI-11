@@ -381,7 +381,7 @@ class Player(object):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
     if self.game.playerID == self.id:
-      self.spawnFood +=self.spawnFoodPerTufrn
+      self.spawnFood += self.game.spawnFoodPerTurn
       
     return True
     
