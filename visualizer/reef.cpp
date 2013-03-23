@@ -108,9 +108,31 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderPlayerNames();
       RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
+  }
+
+  void Reef::RenderPlayerName(unsigned int id, float xPos)
+  {
+      if(m_game->players[id].empty())
+      {
+          ostringstream stream;
+          stream << "Player " << id << " Has No Name" ;
+
+          renderer->drawText(xPos,-4.0f,"Roboto",stream.str(),4.0f);
+      }
+      else
+      {
+          renderer->drawText(xPos,-4.0f,"Roboto",this->m_game->players[id],4.0f);
+      }
+  }
+
+  void Reef::RenderPlayerNames()
+  {
+      RenderPlayerName(0);
+      RenderPlayerName(1,2.0f * m_game->states[0].mapWidth / 3.0f);
   }
 
   void Reef::RenderSpecies()
@@ -139,7 +161,7 @@ namespace visualizer
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
-      stringstream stream;
+      ostringstream stream;
       stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
 
@@ -159,7 +181,7 @@ namespace visualizer
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
       for(unsigned int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
-        renderer->drawSubTexturedQuad(i,-2.0f,1.0f,2.0f,(fSeconds)/2.0f,0.0f,1,1,"waves");
+        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds)/2.0f,0.0f,1,1,"waves");
       }
 
       //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");

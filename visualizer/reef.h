@@ -74,6 +74,10 @@ namespace visualizer
 
             void RenderSpecies();
 
+            void RenderPlayerNames();
+
+            void RenderPlayerName(unsigned int id, float xPos = 1.0f);
+
             template< class T >
             bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key)
             {
