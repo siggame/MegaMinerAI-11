@@ -263,7 +263,7 @@ class Fish(Mappable):
     #add weight to fish
     self.carryingWeight += weight
     self.game.addAnimation(PickUpAnimation(x,y,self.id,weight))
-    print "dude picked up some trash"
+    #print "dude picked up some trash"
     return True
 
   def drop(self, x, y, weight):
@@ -314,7 +314,7 @@ class Fish(Mappable):
     elif self.x == x and self.y == y:
       return "A stealthed unit can't attack a fish above it."
 
-    print "attacking a dude with another dude"
+    #print "attacking a dude with another dude"
 
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)

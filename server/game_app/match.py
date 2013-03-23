@@ -39,22 +39,15 @@ class Match(DefaultGameWorld):
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
     self.boundLength = self.boundLength
-    self.currentSeason = self.currentSeason
+    self.currentSeason = random.choice(range(4))
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
     self.count = 0
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
-    #Make grid
-    self.grid = [[[ ]]]
-    #self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
-
-  def makeGrid(self):
-    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
-    return
 
   def getAdjacent(self,node):
      adjacent = []
@@ -91,7 +84,6 @@ class Match(DefaultGameWorld):
            else:
                 open.append(neighbor)
     return True
-
     
   #getTile RETURN TILE
   def getTile(self, x, y):
@@ -176,8 +168,8 @@ class Match(DefaultGameWorld):
 
     print "Starting game"
 
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)] 
     self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
-    self.makeGrid()
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)
@@ -186,22 +178,17 @@ class Match(DefaultGameWorld):
     for species in cfgSpecies.keys():
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
     self.initSeasons()
-#    print [(species.name,species.season) for species in self.objects.species]
     self.nextTurn()
     return True
 
   def nextTurn(self):
-    print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
+    #print "Next turn: %i P0: %i P1 %i" % (self.turnNumber, self.objects.players[0].currentReefHealth, self.objects.players[1].currentReefHealth)
     self.turnNumber += 1
     if self.turn == self.players[0]:
-      #deal damage to the left-side player
-      #self.objects.players[0].currentReefHealth -= (self.getTrashLeft() + self.getTrashShared()) * self.trashDamage
       self.turn = self.players[1]
       self.playerID = 1
 
     elif self.turn == self.players[1]:
-      #deal damage to the left-side player
-      #self.objects.players[1].currentReefHealth -= (self.getTrashRight() + self.getTrashShared()) * self.trashDamage
       self.turn = self.players[0]
       self.playerID = 0
 
