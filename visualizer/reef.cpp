@@ -122,7 +122,7 @@ namespace visualizer
       RenderObjectSelection();
   }
 
-  void Reef::RenderPlayerName(unsigned int id, float xPos)
+  void Reef::RenderPlayerName(unsigned int id, float xPos) const
   {
       if(m_game->players[id].empty())
       {
@@ -137,15 +137,17 @@ namespace visualizer
       }
   }
 
-  void Reef::RenderReefHealthBar(unsigned int id, float xPos)
+  void Reef::RenderReefHealthBar(unsigned int id, float xPos) const
   {
       int turn = timeManager->getTurn();
-      ReefInfo& info = m_ReefInfo[id + turn * 2];
+      const ReefInfo& info = m_ReefInfo[id + turn * 2];
 
-      renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
+      //renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
+      renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
+      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 3.0f);
   }
 
-  void Reef::RenderPlayerInfo()
+  void Reef::RenderPlayerInfo() const
   {
       float xPos = 2.0f * m_game->states[0].mapWidth / 3.0f;
 
@@ -156,7 +158,7 @@ namespace visualizer
       RenderReefHealthBar(1,xPos);
   }
 
-  void Reef::RenderSpecies()
+  void Reef::RenderSpecies() const
   {
       // todo: need to make this look nice
       // todo: change these colors
@@ -193,7 +195,7 @@ namespace visualizer
       }
   }
 
-  void Reef::RenderWorld()
+  void Reef::RenderWorld() const
   {
       // todo: change the direction of the water based on time?
       float fSeconds = m_WaterTimer.elapsed() / 1000.0f * options->getNumber("Enable Water Animation");
@@ -213,7 +215,7 @@ namespace visualizer
 
   }
 
-  void Reef::RenderObjectSelection()
+  void Reef::RenderObjectSelection() const
   {
       // render object selection
       // todo: put this code into its own method.
