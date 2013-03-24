@@ -17,12 +17,18 @@ namespace visualizer
         return stream.str();
     }
 
+    float GetRandFloat(float a, float b)
+    {
+        float fRand = rand() / (RAND_MAX + 1.0f);
+        return fRand*(b - a) + a;
+    }
+
   glm::vec4 lerp( const glm::vec4& A, const glm::vec4& B, float t )
   {
       return A*(1.0f - t) + B*t;
   }
 
-  Reef::Reef()
+  Reef::Reef() : m_fDt(0.0f)
   {
     m_game = 0;
     m_suicide=false;
@@ -75,6 +81,43 @@ namespace visualizer
 
   void Reef::preDraw()
   {
+      m_WaterTimer.restart();
+
+      ProccessInput();
+      UpdateBubbles();
+  }
+
+  void Reef::UpdateBubbles()
+  {
+      if(m_Bubbles.size() < 4)
+      {
+          int width = m_game->states[0].mapWidth;
+
+          glm::vec2 pos(GetRandFloat(0.0f,width),m_game->states[0].mapHeight - 0.5f);
+          Color color(1.0f,1.0f,1.0f,0.7f);
+          float maxAge = GetRandFloat(2.0f,5.0f);
+          float angle = GetRandFloat(0.523598f,2.61799f);
+          float speed = GetRandFloat(1.0f,5.0f);
+          m_Bubbles.push_back(Bubble(pos,color,speed,angle,maxAge));
+      }
+
+      for(auto iter = m_Bubbles.begin(); iter != m_Bubbles.end(); )
+      {
+          Bubble& bubble = *iter;
+
+          if(bubble.Update(m_fDt))
+          {
+              iter = m_Bubbles.erase(iter);
+          }
+          else
+          {
+              ++iter;
+          }
+      }
+  }
+
+  void Reef::ProccessInput()
+  {
       const Input& input = gui->getInput();
       if( input.leftRelease )
       {
@@ -88,7 +131,7 @@ namespace visualizer
           for(auto& iter : m_Trash[turn])
           {
               const auto& trash = iter.second;
-          
+
               if(trash.amount > 0)
               {
                   // todo: move this logic into another function
@@ -116,10 +159,14 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderBubbles();
       RenderPlayerInfo();
       RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
+
+
+      m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
   void Reef::RenderPlayerName(unsigned int id, float xPos) const
@@ -139,12 +186,13 @@ namespace visualizer
 
   void Reef::RenderReefHealthBar(unsigned int id, float xPos) const
   {
+      //cout<<m_ReefInfo.size()<<endl;
       int turn = timeManager->getTurn();
-      const ReefInfo& info = m_ReefInfo[id + turn * 2];
+      const ReefInfo& info = m_ReefInfo[id + (turn) * 2];
 
       //renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
       renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 3.0f);
+      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 1.0f);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -181,12 +229,16 @@ namespace visualizer
       glClearColor(newColor.x,newColor.y,
                    newColor.z,newColor.w);
 
+      renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
       ostringstream stream;
       stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
@@ -197,14 +249,22 @@ namespace visualizer
 
   void Reef::RenderWorld() const
   {
+      static float counter = 0.0f;
+      counter += m_fDt;
+
+      if(counter > 53.0f)
+      {
+          counter = 0.0f;
+      }
+
       // todo: change the direction of the water based on time?
-      float fSeconds = m_WaterTimer.elapsed() / 1000.0f * options->getNumber("Enable Water Animation");
+      float fSeconds = (3.0f*counter) * options->getNumber("Enable Water Animation");
       float fTransparency = (float)options->getNumber("Water Transparency Level") / 100.0f;
 
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
       for(unsigned int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
-        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds)/2.0f,0.0f,1,1,"waves");
+        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds),0.0f,1,1,"waves");
       }
 
       //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");
@@ -213,6 +273,15 @@ namespace visualizer
       renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
       renderer->drawSubTexturedQuad(0,0,m_game->states[0].mapWidth,m_game->states[0].mapHeight,(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
 
+  }
+
+  void Reef::RenderBubbles() const
+  {
+     for(auto iter = m_Bubbles.begin(); iter != m_Bubbles.end(); ++iter)
+     {
+         const Bubble& bubble = *iter;
+         bubble.Render(*renderer);
+     }
   }
 
   void Reef::RenderObjectSelection() const
@@ -376,6 +445,7 @@ namespace visualizer
       // for each player in the current turn
       for( auto& p : m_game->states[ state ].players )
       {
+          cout<<"Name:" << p.second.playerName<<endl;
           // todo: I could resize this vector
           m_ReefInfo.push_back(ReefInfo(p.second.currentReefHealth,p.second.spawnFood));
           /*SmartPointer<HUDInfo> hud = new HUDInfo(p.second.id - 800,p.second.currentReefHealth,p.second.spawnFood);
