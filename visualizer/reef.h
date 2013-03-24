@@ -76,19 +76,19 @@ namespace visualizer
 
             void GetSelectedRect(Rect& out) const;
 
-            void RenderWorld();
+            void RenderWorld() const;
 
-            void RenderObjectSelection();
+            void RenderObjectSelection() const;
 
-            void RenderSpecies();
+            void RenderSpecies() const;
 
-            void RenderPlayerInfo();
+            void RenderPlayerInfo() const;
 
-            void RenderPlayerName(unsigned int id, float xPos = 1.0f);
-            void RenderReefHealthBar(unsigned int id, float xPos = 1.0f);
+            void RenderPlayerName(unsigned int id, float xPos = 1.0f) const;
+            void RenderReefHealthBar(unsigned int id, float xPos = 1.0f) const;
 
             template< class T >
-            bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key)
+            bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key) const
             {
               auto iter = datastruct.find(key);
 
