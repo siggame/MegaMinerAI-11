@@ -145,7 +145,7 @@ namespace visualizer
 
       //renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
       renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 3.0f)
+      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 3.0f);
   }
 
   void Reef::RenderPlayerInfo() const
