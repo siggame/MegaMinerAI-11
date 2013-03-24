@@ -117,7 +117,6 @@ namespace visualizer
   void Reef::postDraw()
   {
       RenderPlayerInfo();
-      RenderReefHealthBar();
       RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
