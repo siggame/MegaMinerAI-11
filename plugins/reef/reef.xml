@@ -1,5 +1,12 @@
 <options>
   <option>
+    <key>Enable Bubbles</key>
+    <type>Integer</type>
+    <value>0</value>
+    <minvalue>0</minvalue>
+    <maxvalue>1</maxvalue>
+  </option>
+  <option>
     <key>Enable Water Animation</key>
     <type>Integer</type>
     <value>1</value>
@@ -9,7 +16,7 @@
   <option>
     <key>Water Transparency Level</key>
     <type>Float</type>
-    <value>40</value>
+    <value>25</value>
     <minvalue>0</minvalue>
     <maxvalue>100</maxvalue>
   </option>

@@ -89,7 +89,9 @@ namespace visualizer
 
   void Reef::UpdateBubbles()
   {
-      if(m_Bubbles.size() < 4)
+      bool bEnableBubbles = options->getNumber("Enable Bubbles") > 0;
+
+      if(bEnableBubbles && m_Bubbles.size() < 4)
       {
           int width = m_game->states[0].mapWidth;
 
@@ -262,7 +264,7 @@ namespace visualizer
       float fTransparency = (float)options->getNumber("Water Transparency Level") / 100.0f;
 
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      for(unsigned int i = 0; i < m_game->states[0].mapWidth; ++i)
+      for(int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
         renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds),0.0f,1,1,"waves");
       }
