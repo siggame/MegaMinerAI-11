@@ -47,7 +47,7 @@ class AI(BaseAI):
     if self.getCurrentSeason() is not species.season:
       return False
 
-    print "Spawn Food: %i    Species Cost: %i" % (me.spawnFood, species.cost)
+    #print "Spawn Food: %i    Species Cost: %i" % (me.spawnFood, species.cost)
     if me.spawnFood < species.cost:
       return False
 
@@ -79,18 +79,19 @@ class AI(BaseAI):
 
   def printMyFish(self):
     for fish in self.myFish:
-      print fish
+      print "%i %s (%i, %i)" % (fish.id, self.species[fish.species].name, fish.x, fish.y)
     return
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
     print "Starting Turn #%i" % self.turnNumber
-    self.printPlayers()
-    self.printTiles()
-    time.sleep(.25)
     self.getMyFish()
     self.printMyFish()
+    time.sleep(.25)
+
+    for fish in self.myFish:
+      fish.move(fish.x+1, fish.y)
 
     for spec in self.species:
       for cove in self.myCoves:
