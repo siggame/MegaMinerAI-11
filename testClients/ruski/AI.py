@@ -63,21 +63,30 @@ class AI(BaseAI):
     return
 
   def printMyCoves(self):
+    print "MY COVES:"
     for cove in self.myCoves:
       print "(%i, %i)" % (cove.x, cove.y),
     return
 
   def printTiles(self):
+    print "TILES:"
     for tile in self.tiles:
       print "%i:(%i, %i)" % (tile.id, tile.x, tile.y),
     return
 
+  def printSpecies(self):
+    print "SPECIES:"
+    for spec in self.species:
+      print "%i %s" % (spec.index, spec.name)
+
   def printPlayers(self):
+    print "PLAYERS:"
     for play in self.players:
       print "%s %i" % (play.playerName, play.id)
     return
 
   def printMyFish(self):
+    print "MY FISH:"
     for fish in self.myFish:
       print "%i %s (%i, %i)" % (fish.id, self.species[fish.species].name, fish.x, fish.y)
     return
@@ -88,6 +97,7 @@ class AI(BaseAI):
     print "Starting Turn #%i" % self.turnNumber
     self.getMyFish()
     self.printMyFish()
+    self.printSpecies()
     time.sleep(.25)
 
     for fish in self.myFish:

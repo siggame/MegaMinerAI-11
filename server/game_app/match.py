@@ -7,6 +7,7 @@ import itertools
 import scribe
 import jsonLogger
 import random
+import operator
 
 Scribe = scribe.Scribe
 
@@ -175,8 +176,11 @@ class Match(DefaultGameWorld):
     self.seed = (0,self.mapHeight-1)
     self.covePath(self.seed)
     self.spawnTrash()
+
     for species in cfgSpecies.keys():
+      print species
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
+
     self.initSeasons()
     self.nextTurn()
     return True
