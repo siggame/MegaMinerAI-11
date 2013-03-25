@@ -854,7 +854,7 @@ static bool parseSexp(Game& game, sexp_t* expression)
 
         animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
       }
-      if(string(ToLower( sub->val ) ) == "pick-up")
+      if(string(ToLower( sub->val ) ) == "pickup")
       {
         SmartPointer<pickUp> animation = new pickUp;
         if ( !parsePickUp(*animation, expression) )

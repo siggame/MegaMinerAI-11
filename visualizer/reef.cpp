@@ -447,7 +447,6 @@ namespace visualizer
       // for each player in the current turn
       for( auto& p : m_game->states[ state ].players )
       {
-          cout<<"Name:" << p.second.playerName<<endl;
           // todo: I could resize this vector
           m_ReefInfo.push_back(ReefInfo(p.second.currentReefHealth,p.second.spawnFood));
           /*SmartPointer<HUDInfo> hud = new HUDInfo(p.second.id - 800,p.second.currentReefHealth,p.second.spawnFood);
@@ -463,7 +462,7 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            //cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
+           // cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -472,13 +471,10 @@ namespace visualizer
             }
             else if(j->type == parser::DROP || j->type == parser::PICKUP)
             {
-                cout<<"Move Trash!"<<endl;
-
                 if(j->type == parser::DROP)
                 {
                      // todo: do something with the drop
                     parser::drop& dropAnim = (parser::drop&)*j;
-
 
                     if(dropAnim.amount == 0)
                     {
@@ -488,6 +484,7 @@ namespace visualizer
                     {
                         BasicTrash& trash = m_Trash[state][dropAnim.targetID];
                         trash.amount += dropAnim.amount;
+                        cout<<dropAnim.amount<<endl;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
                     }
@@ -495,24 +492,26 @@ namespace visualizer
                 else
                 {
                     //todo: do something with the pickup
-                    cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
+                    //cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
 
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
                         BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
 
-                        cout<<"Picked Up: "<<pickupAnim.amount<<endl;
-
-                        trash.amount -= pickupAnim.amount;
-
-                        cout<<"New Amount: "<<trash.amount<<endl;
-                       // trash.x = pickupAnim.x;
-                        //trash.y = pickupAnim.y;
-
-                        if(trash.amount < 1)
+                        if(trash.amount >= 1)
                         {
-                            m_Trash[state].erase(pickupAnim.targetID);
+                            trash.amount -= pickupAnim.amount;
+
+                            if(trash.amount < 1)
+                            {
+                                m_Trash[state].erase(pickupAnim.targetID);
+                            }
+                        }
+                        else
+                        {
+                            cout<<"Turn: "<<state<<" "<<"This should not happen"<<endl;
+                            //m_Trash[state].erase(pickupAnim.targetID);
                         }
                     }
                     else
