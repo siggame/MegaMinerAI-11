@@ -130,6 +130,7 @@ attack = Animation('attack',
 
 spawn = Animation('spawn',
   data=[
+    Variable('playerID', int),
     Variable('x', int),
     Variable('y', int),
     Variable('species',str),
@@ -138,18 +139,20 @@ spawn = Animation('spawn',
 
 pickUp = Animation('pickUp',
   data=[
+    Variable('actingID', int),
+    Variable('targetID', int),
     Variable('x', int),
     Variable('y', int),
-    Variable('targetID', int),
     Variable('amount',int),
   ],
 )
 
 drop = Animation('drop',
   data=[
+    Variable('actingID', int),
+    Variable('targetID', int),
     Variable('x', int),
     Variable('y', int),
-    Variable('targetID', int),
     Variable('amount',int),
   ],
 )
@@ -160,6 +163,17 @@ death = Animation('death',
   ],
 )
 
+stealth = Animation('stealth',
+  data = [
+    Variable('actingID', int)
+  ],
+)
+
+deStealth = Animation('deStealth',
+  data = [
+    Variable('actingID', int)
+  ],
+)
 
 
 
