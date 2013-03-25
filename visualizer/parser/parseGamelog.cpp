@@ -551,9 +551,6 @@ static bool parsePickUp(pickUp& object, sexp_t* expression)
     cerr << "Error in parsepickUp.\n Parsing: " << *expression << endl;
     return false;
   }
-<<<<<<< HEAD
-  object.targetID = atoi(sub->val);
-=======
   object.x = atoi(sub->val);
   sub = sub->next;
   if( !sub ) 
@@ -562,7 +559,6 @@ static bool parsePickUp(pickUp& object, sexp_t* expression)
     return false;
   }
   object.y = atoi(sub->val);
->>>>>>> run-codegen
   sub = sub->next;
   if( !sub ) 
   {
@@ -615,9 +611,6 @@ static bool parseDrop(drop& object, sexp_t* expression)
     cerr << "Error in parsedrop.\n Parsing: " << *expression << endl;
     return false;
   }
-<<<<<<< HEAD
-  object.targetID = atoi(sub->val);
-=======
   object.x = atoi(sub->val);
   sub = sub->next;
   if( !sub ) 
@@ -626,7 +619,6 @@ static bool parseDrop(drop& object, sexp_t* expression)
     return false;
   }
   object.y = atoi(sub->val);
->>>>>>> run-codegen
   sub = sub->next;
   if( !sub ) 
   {

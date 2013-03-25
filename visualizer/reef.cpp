@@ -297,7 +297,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
+    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -334,7 +334,7 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
+            //cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -349,26 +349,49 @@ namespace visualizer
                 {
                      // todo: do something with the drop
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    BasicTrash& trash = m_Trash[state][dropAnim.targetID];
 
-                    trash.amount += dropAnim.amount;
-                    trash.x = dropAnim.x;
-                    trash.y = dropAnim.y;
 
+                    if(dropAnim.amount == 0)
+                    {
+                        cout<<"They are dropping nothing"<<endl;
+                    }
+                    else
+                    {
+                        BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+                        trash.amount += dropAnim.amount;
+                        trash.x = dropAnim.x;
+                        trash.y = dropAnim.y;
+                    }
                 }
                 else
                 {
                     //todo: do something with the pickup
+                    cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
 
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
-                    BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
-
-                    trash.amount -= pickupAnim.amount;
-                    
-                    if(trash.amount < 1)
+                    if(pickupAnim.amount > 0)
                     {
-                        m_Trash[state].erase(pickupAnim.targetID);
+                        BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
+
+                        cout<<"Picked Up: "<<pickupAnim.amount<<endl;
+
+                        trash.amount -= pickupAnim.amount;
+
+                        cout<<"New Amount: "<<trash.amount<<endl;
+                       // trash.x = pickupAnim.x;
+                        //trash.y = pickupAnim.y;
+
+                        if(trash.amount < 1)
+                        {
+                            m_Trash[state].erase(pickupAnim.targetID);
+                        }
                     }
+                    else
+                    {
+                        cout<<"They are picking up nothing"<<endl;
+                    }
+                    
+
                 }
 
             }
@@ -395,8 +418,10 @@ namespace visualizer
         //turn[p.second.id]["Owner"] = p.second.owner;
         //turn[p.second.id]["Type"] = "fish";
         turn[p.second.id]["Species"] = p.second.species;
+        turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
-        turn[p.second.id]["Y"] = p.second.y;
+        turn[p.second.id]["Y"] = p.second.y; //carryingWeight
+       // p.second.
 
 
         newFish->addKeyFrame( new DrawFish( newFish ) );

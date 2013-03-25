@@ -122,10 +122,6 @@ struct pickUp : public Animation
   int targetID;
   int x;
   int y;
-<<<<<<< HEAD
-  int targetID;
-=======
->>>>>>> run-codegen
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, pickUp obj);
@@ -144,10 +140,6 @@ struct drop : public Animation
   int targetID;
   int x;
   int y;
-<<<<<<< HEAD
-  int targetID;
-=======
->>>>>>> run-codegen
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, drop obj);

@@ -110,10 +110,6 @@ std::ostream& operator<<(std::ostream& stream, pickUp ob)
   stream << "targetID: " << ob.targetID  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
-<<<<<<< HEAD
-  stream << "targetID: " << ob.targetID  <<'\n';
-=======
->>>>>>> run-codegen
   stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }
@@ -134,10 +130,6 @@ std::ostream& operator<<(std::ostream& stream, drop ob)
   stream << "targetID: " << ob.targetID  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
-<<<<<<< HEAD
-  stream << "targetID: " << ob.targetID  <<'\n';
-=======
->>>>>>> run-codegen
   stream << "amount: " << ob.amount  <<'\n';
   return stream;
 }
