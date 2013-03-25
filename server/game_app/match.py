@@ -7,7 +7,6 @@ import itertools
 import scribe
 import jsonLogger
 import random
-import operator
 
 Scribe = scribe.Scribe
 

@@ -101,7 +101,7 @@ class Species(object):
   def spawn(self, x, y):
     player = self.game.objects.players[self.game.playerID]
     if player.spawnFood < self.cost:
-      return "You don'thave enough food to spawn this fish in"
+      return "You don't  have enough food to spawn this fish in"
     if not (0 <= x < self.game.mapWidth or 0 <= y < self.game.mapHeight):
       return "You can't spawn your fish out of the edges of the map"
     elif self.game.currentSeason != self.season:
@@ -146,6 +146,7 @@ class Fish(Mappable):
     self.range = range
     self.species = species
     self.updatedAt = game.turnNumber
+    self.attacked = []
 
   def toList(self):
     return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
@@ -160,7 +161,9 @@ class Fish(Mappable):
       fish.currentHealth = fish.maxHealth
 
   def distance(self,source,x,y):
-    return math.sqrt((source.x-x)**2 + (source.y-y)**2) 
+    #We want manhattan distance.. not a big issue
+    #return math.sqrt((source.x-x)**2 + (source.y-y)**2)
+    return abs(source.x-x) + abs(source.y-y)
   
   def addTrash(self,x,y,weight):
     if (x,y) not in self.game.trashDict:      
@@ -176,6 +179,7 @@ class Fish(Mappable):
   def nextTurn(self):
     #TODO set fish stats to 0 if stunned by an eel
     if self.owner == self.game.playerID:
+      self.attacked = []
       if self.game.getTile(self.x,self.y).owner == self.owner:
         self.heal(self)
       if self.movementLeft == -1:
@@ -299,6 +303,8 @@ class Fish(Mappable):
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
       return "You can only control your own fish."
+    elif target.id in self.attacked:
+      return "Fish %i has already attacked Fish %i this turn." % (self.id, target.id)
     elif self.distance(self, x, y) > self.range:
       return "You can't attack further than your fish's range."
     elif self.attacksLeft == 0:
@@ -315,7 +321,8 @@ class Fish(Mappable):
       return "A stealthed unit can't attack a fish above it."
 
     #print "attacking a dude with another dude"
-
+    #Add target to list of attacked targets
+    self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)
       target.isVisible = True
