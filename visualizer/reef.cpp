@@ -17,12 +17,18 @@ namespace visualizer
         return stream.str();
     }
 
+    float GetRandFloat(float a, float b)
+    {
+        float fRand = rand() / (RAND_MAX + 1.0f);
+        return fRand*(b - a) + a;
+    }
+
   glm::vec4 lerp( const glm::vec4& A, const glm::vec4& B, float t )
   {
       return A*(1.0f - t) + B*t;
   }
 
-  Reef::Reef()
+  Reef::Reef() : m_fDt(0.0f)
   {
     m_game = 0;
     m_suicide=false;
@@ -75,6 +81,45 @@ namespace visualizer
 
   void Reef::preDraw()
   {
+      m_WaterTimer.restart();
+
+      ProccessInput();
+      UpdateBubbles();
+  }
+
+  void Reef::UpdateBubbles()
+  {
+      bool bEnableBubbles = options->getNumber("Enable Bubbles") > 0;
+
+      if(bEnableBubbles && m_Bubbles.size() < 4)
+      {
+          int width = m_game->states[0].mapWidth;
+
+          glm::vec2 pos(GetRandFloat(0.0f,width),m_game->states[0].mapHeight - 0.5f);
+          Color color(1.0f,1.0f,1.0f,0.7f);
+          float maxAge = GetRandFloat(2.0f,5.0f);
+          float angle = GetRandFloat(0.523598f,2.61799f);
+          float speed = GetRandFloat(1.0f,5.0f);
+          m_Bubbles.push_back(Bubble(pos,color,speed,angle,maxAge));
+      }
+
+      for(auto iter = m_Bubbles.begin(); iter != m_Bubbles.end(); )
+      {
+          Bubble& bubble = *iter;
+
+          if(bubble.Update(m_fDt))
+          {
+              iter = m_Bubbles.erase(iter);
+          }
+          else
+          {
+              ++iter;
+          }
+      }
+  }
+
+  void Reef::ProccessInput()
+  {
       const Input& input = gui->getInput();
       if( input.leftRelease )
       {
@@ -88,7 +133,7 @@ namespace visualizer
           for(auto& iter : m_Trash[turn])
           {
               const auto& trash = iter.second;
-          
+
               if(trash.amount > 0)
               {
                   // todo: move this logic into another function
@@ -116,10 +161,14 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderBubbles();
       RenderPlayerInfo();
       RenderSpecies();
       RenderWorld();
       RenderObjectSelection();
+
+
+      m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
   void Reef::RenderPlayerName(unsigned int id, float xPos) const
@@ -139,12 +188,13 @@ namespace visualizer
 
   void Reef::RenderReefHealthBar(unsigned int id, float xPos) const
   {
+      //cout<<m_ReefInfo.size()<<endl;
       int turn = timeManager->getTurn();
-      const ReefInfo& info = m_ReefInfo[id + turn * 2];
+      const ReefInfo& info = m_ReefInfo[id + (turn) * 2];
 
       //renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
       renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 3.0f);
+      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 1.0f);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -181,12 +231,16 @@ namespace visualizer
       glClearColor(newColor.x,newColor.y,
                    newColor.z,newColor.w);
 
+      renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
       ostringstream stream;
       stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
@@ -197,14 +251,22 @@ namespace visualizer
 
   void Reef::RenderWorld() const
   {
+      static float counter = 0.0f;
+      counter += m_fDt;
+
+      if(counter > 53.0f)
+      {
+          counter = 0.0f;
+      }
+
       // todo: change the direction of the water based on time?
-      float fSeconds = m_WaterTimer.elapsed() / 1000.0f * options->getNumber("Enable Water Animation");
+      float fSeconds = (3.0f*counter) * options->getNumber("Enable Water Animation");
       float fTransparency = (float)options->getNumber("Water Transparency Level") / 100.0f;
 
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      for(unsigned int i = 0; i < m_game->states[0].mapWidth; ++i)
+      for(int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
-        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds)/2.0f,0.0f,1,1,"waves");
+        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds),0.0f,1,1,"waves");
       }
 
       //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");
@@ -213,6 +275,15 @@ namespace visualizer
       renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
       renderer->drawSubTexturedQuad(0,0,m_game->states[0].mapWidth,m_game->states[0].mapHeight,(fSeconds)/53.0f,-(fSeconds)/53.0f,1.0f,1.0f,"water");
 
+  }
+
+  void Reef::RenderBubbles() const
+  {
+     for(auto iter = m_Bubbles.begin(); iter != m_Bubbles.end(); ++iter)
+     {
+         const Bubble& bubble = *iter;
+         bubble.Render(*renderer);
+     }
   }
 
   void Reef::RenderObjectSelection() const
@@ -344,7 +415,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
+    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -391,7 +462,7 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
+           // cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -400,32 +471,55 @@ namespace visualizer
             }
             else if(j->type == parser::DROP || j->type == parser::PICKUP)
             {
-                cout<<"Move Trash!"<<endl;
-
                 if(j->type == parser::DROP)
                 {
                      // todo: do something with the drop
                     parser::drop& dropAnim = (parser::drop&)*j;
-                    BasicTrash& trash = m_Trash[state][dropAnim.targetID];
 
-                    trash.amount += dropAnim.amount;
-                    trash.x = dropAnim.x;
-                    trash.y = dropAnim.y;
-
+                    if(dropAnim.amount == 0)
+                    {
+                        cout<<"They are dropping nothing"<<endl;
+                    }
+                    else
+                    {
+                        BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+                        trash.amount += dropAnim.amount;
+                        cout<<dropAnim.amount<<endl;
+                        trash.x = dropAnim.x;
+                        trash.y = dropAnim.y;
+                    }
                 }
                 else
                 {
                     //todo: do something with the pickup
+                    //cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
 
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
-                    BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
-
-                    trash.amount -= pickupAnim.amount;
-                    
-                    if(trash.amount < 1)
+                    if(pickupAnim.amount > 0)
                     {
-                        m_Trash[state].erase(pickupAnim.targetID);
+                        BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
+
+                        if(trash.amount >= 1)
+                        {
+                            trash.amount -= pickupAnim.amount;
+
+                            if(trash.amount < 1)
+                            {
+                                m_Trash[state].erase(pickupAnim.targetID);
+                            }
+                        }
+                        else
+                        {
+                            cout<<"Turn: "<<state<<" "<<"This should not happen"<<endl;
+                            //m_Trash[state].erase(pickupAnim.targetID);
+                        }
                     }
+                    else
+                    {
+                        cout<<"They are picking up nothing"<<endl;
+                    }
+                    
+
                 }
 
             }
@@ -452,8 +546,10 @@ namespace visualizer
         //turn[p.second.id]["Owner"] = p.second.owner;
         //turn[p.second.id]["Type"] = "fish";
         turn[p.second.id]["Species"] = p.second.species;
+        turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
-        turn[p.second.id]["Y"] = p.second.y;
+        turn[p.second.id]["Y"] = p.second.y; //carryingWeight
+       // p.second.
 
 
         newFish->addKeyFrame( new DrawFish( newFish ) );

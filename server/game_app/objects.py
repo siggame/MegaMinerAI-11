@@ -62,7 +62,7 @@ class Tile(Mappable):
             species.maxAttacks, species.maxAttacks,
             species.range, species.name]
         newFish = self.game.addObject(Fish, stats)
-        self.game.addAnimation(SpawnAnimation(newFish.x,newFish.y,newFish.species))
+        self.game.addAnimation(SpawnAnimation(self.owner,newFish.x,newFish.y,newFish.species))
         self.game.grid[newFish.x][newFish.y].append(newFish)
         self.hasEgg = False
      
@@ -247,7 +247,9 @@ class Fish(Mappable):
       return "Cannot pick up a weight of 0."
     elif self.game.getTile(x,y).trashAmount < weight:
       return "You can't pick up more trash then there is trash present."
-    elif self.currentHealth < weight:
+    elif self.game.getTile(x,y).trashAmount == 0:
+      return "There is no trash here. This should also be redundant but...wat"
+    elif self.currentHealth < weight*self.game.trashDamage:
       return "Can't pick that up, would kill your fish"
     
     #don't need to bother checking for fish because a space with a
@@ -262,11 +264,14 @@ class Fish(Mappable):
       self.currentHealth -= self.game.trashDamage * weight
         
     #reduce weight of tile
-    self.game.getTile(x,y).trashAmount -= weight
+    tile = self.game.getTile(x,y) 
+    priorAmount = tile.trashAmount
+    tile.trashAmount-= weight
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
-    self.game.addAnimation(PickUpAnimation(x,y,self.id,weight))
+    print "pickup fish id is %i tile id is %i weight is %i priorAmount was %i new amount is %i"%(self.id, tile.id, weight, priorAmount, tile.trashAmount)
+    self.game.addAnimation(PickUpAnimation(self.id,tile.id, x,y,weight))
     #print "dude picked up some trash"
     return True
 
@@ -279,20 +284,24 @@ class Fish(Mappable):
       return "Can only drop onto adjacent locations"
     elif weight > self.carryingWeight:
       return "You cannot drop more than you're carrying"      
+    elif weight == 0:
+     return "Cannot drop a  weight of 0"
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         if fish.isVisible:
           return "Cannot drop onto a fish"
         else:
-          return "Fringe case: dropping onto a stealthed fish."    
+          pass #TODO: "Fringe case: dropping onto a stealthed fish."    
 
     if not self.isVisible:
       self.isVisible = True #unstealth while dropping    
 
-    self.game.getTile(x,y).trashAmount += weight
+    tile = self.game.getTile(x,y)
+    tile.trashAmount += weight
     self.carryingWeight -= weight
-    self.game.addAnimation(DropAnimation(self.x, self.y, self.id, weight))
+    print "drop tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
+    self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, weight))
     self.addTrash(x,y,weight)
     return True
 
@@ -407,16 +416,17 @@ class Player(object):
 
 # The following are animations and do not need to have any logic added
 class SpawnAnimation:
-  def __init__(self, x, y, species):
+  def __init__(self, playerID, x, y, species):
+    self.playerID = playerID
     self.x = x
     self.y = y
     self.species = species
 
   def toList(self):
-    return ["spawn", self.x, self.y, self.species, ]
+    return ["spawn", self.playerID, self.x, self.y, self.species, ]
 
   def toJson(self):
-    return dict(type = "spawn", x = self.x, y = self.y, species = self.species)
+    return dict(type = "spawn", playerID = self.playerID, x = self.x, y = self.y, species = self.species)
 
 class MoveAnimation:
   def __init__(self, actingID, fromX, fromY, toX, toY):
@@ -433,17 +443,18 @@ class MoveAnimation:
     return dict(type = "move", actingID = self.actingID, fromX = self.fromX, fromY = self.fromY, toX = self.toX, toY = self.toY)
 
 class PickUpAnimation:
-  def __init__(self, x, y, targetID, amount):
+  def __init__(self, actingID, targetID, x, y, amount):
+    self.actingID = actingID
+    self.targetID = targetID
     self.x = x
     self.y = y
-    self.targetID = targetID
     self.amount = amount
 
   def toList(self):
-    return ["pickUp", self.x, self.y, self.targetID, self.amount, ]
+    return ["pickUp", self.actingID, self.targetID, self.x, self.y, self.amount, ]
 
   def toJson(self):
-    return dict(type = "pickUp", x = self.x, y = self.y, targetID = self.targetID, amount = self.amount)
+    return dict(type = "pickUp", actingID = self.actingID, targetID = self.targetID, x = self.x, y = self.y, amount = self.amount)
 
 class DeathAnimation:
   def __init__(self, actingID):
@@ -456,17 +467,18 @@ class DeathAnimation:
     return dict(type = "death", actingID = self.actingID)
 
 class DropAnimation:
-  def __init__(self, x, y, targetID, amount):
+  def __init__(self, actingID, targetID, x, y, amount):
+    self.actingID = actingID
+    self.targetID = targetID
     self.x = x
     self.y = y
-    self.targetID = targetID
     self.amount = amount
 
   def toList(self):
-    return ["drop", self.x, self.y, self.targetID, self.amount, ]
+    return ["drop", self.actingID, self.targetID, self.x, self.y, self.amount, ]
 
   def toJson(self):
-    return dict(type = "drop", x = self.x, y = self.y, targetID = self.targetID, amount = self.amount)
+    return dict(type = "drop", actingID = self.actingID, targetID = self.targetID, x = self.x, y = self.y, amount = self.amount)
 
 class AttackAnimation:
   def __init__(self, actingID, targetID):
@@ -479,6 +491,16 @@ class AttackAnimation:
   def toJson(self):
     return dict(type = "attack", actingID = self.actingID, targetID = self.targetID)
 
+class StealthAnimation:
+  def __init__(self, actingID):
+    self.actingID = actingID
+
+  def toList(self):
+    return ["stealth", self.actingID, ]
+
+  def toJson(self):
+    return dict(type = "stealth", actingID = self.actingID)
+
 class PlayerTalkAnimation:
   def __init__(self, actingID, message):
     self.actingID = actingID
@@ -489,4 +511,14 @@ class PlayerTalkAnimation:
 
   def toJson(self):
     return dict(type = "playerTalk", actingID = self.actingID, message = self.message)
+
+class DeStealthAnimation:
+  def __init__(self, actingID):
+    self.actingID = actingID
+
+  def toList(self):
+    return ["deStealth", self.actingID, ]
+
+  def toJson(self):
+    return dict(type = "deStealth", actingID = self.actingID)
 
