@@ -20,7 +20,9 @@ const int PICKUP = 2;
 const int DEATH = 3;
 const int DROP = 4;
 const int ATTACK = 5;
-const int PLAYERTALK = 6;
+const int STEALTH = 6;
+const int PLAYERTALK = 7;
+const int DESTEALTH = 8;
 
 struct Mappable
 {
@@ -95,6 +97,7 @@ struct Animation
 
 struct spawn : public Animation
 {
+  int playerID;
   int x;
   int y;
   char* species;
@@ -115,9 +118,14 @@ struct move : public Animation
 
 struct pickUp : public Animation
 {
+  int actingID;
+  int targetID;
   int x;
   int y;
+<<<<<<< HEAD
   int targetID;
+=======
+>>>>>>> run-codegen
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, pickUp obj);
@@ -132,9 +140,14 @@ struct death : public Animation
 
 struct drop : public Animation
 {
+  int actingID;
+  int targetID;
   int x;
   int y;
+<<<<<<< HEAD
   int targetID;
+=======
+>>>>>>> run-codegen
   int amount;
 
   friend std::ostream& operator<<(std::ostream& stream, drop obj);
@@ -148,12 +161,26 @@ struct attack : public Animation
   friend std::ostream& operator<<(std::ostream& stream, attack obj);
 };
 
+struct stealth : public Animation
+{
+  int actingID;
+
+  friend std::ostream& operator<<(std::ostream& stream, stealth obj);
+};
+
 struct playerTalk : public Animation
 {
   int actingID;
   char* message;
 
   friend std::ostream& operator<<(std::ostream& stream, playerTalk obj);
+};
+
+struct deStealth : public Animation
+{
+  int actingID;
+
+  friend std::ostream& operator<<(std::ostream& stream, deStealth obj);
 };
 
 
