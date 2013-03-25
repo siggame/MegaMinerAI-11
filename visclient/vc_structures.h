@@ -61,6 +61,7 @@ struct _Fish
   int carryCap;
   int carryingWeight;
   int attackPower;
+  int isVisible;
   int maxAttacks;
   int attacksLeft;
   int range;

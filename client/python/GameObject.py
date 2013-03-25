@@ -414,6 +414,14 @@ class Fish(Mappable):
   attackPower = property(getAttackPower)
 
   #\cond
+  def getIsVisible(self):
+    self.validify()
+    return library.fishGetIsVisible(self._ptr)
+  #\endcond
+  ##The visibleness of the fish
+  isVisible = property(getIsVisible)
+
+  #\cond
   def getMaxAttacks(self):
     self.validify()
     return library.fishGetMaxAttacks(self._ptr)
@@ -460,6 +468,7 @@ class Fish(Mappable):
     ret += "carryCap: %s\n" % self.getCarryCap()
     ret += "carryingWeight: %s\n" % self.getCarryingWeight()
     ret += "attackPower: %s\n" % self.getAttackPower()
+    ret += "isVisible: %s\n" % self.getIsVisible()
     ret += "maxAttacks: %s\n" % self.getMaxAttacks()
     ret += "attacksLeft: %s\n" % self.getAttacksLeft()
     ret += "range: %s\n" % self.getRange()

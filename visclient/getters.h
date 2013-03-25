@@ -52,6 +52,7 @@ DLLEXPORT int fishGetMovementLeft(_Fish* ptr);
 DLLEXPORT int fishGetCarryCap(_Fish* ptr);
 DLLEXPORT int fishGetCarryingWeight(_Fish* ptr);
 DLLEXPORT int fishGetAttackPower(_Fish* ptr);
+DLLEXPORT int fishGetIsVisible(_Fish* ptr);
 DLLEXPORT int fishGetMaxAttacks(_Fish* ptr);
 DLLEXPORT int fishGetAttacksLeft(_Fish* ptr);
 DLLEXPORT int fishGetRange(_Fish* ptr);

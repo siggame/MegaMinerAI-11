@@ -82,6 +82,7 @@ Fish = Model('Fish',
     Variable('carryCap', int, 'The total weight the fish can carry'),
     Variable('carryingWeight', int, 'The current amount of weight the fish is carrying'),
     Variable('attackPower', int, 'The power of the fish\'s attack'),
+    Variable('isVisible', int, 'The visibleness of the fish'),
     Variable('maxAttacks',int, 'The maximum number of attacks this fish has per turn'),
     Variable('attacksLeft', int, 'The number of attacks a fish has left'),
     Variable('range',int,'The attack range of the fish'),
@@ -129,6 +130,7 @@ attack = Animation('attack',
 
 spawn = Animation('spawn',
   data=[
+    Variable('playerID', int),
     Variable('x', int),
     Variable('y', int),
     Variable('species',str),
@@ -138,6 +140,7 @@ spawn = Animation('spawn',
 pickUp = Animation('pickUp',
   data=[
     Variable('actingID', int),
+    Variable('targetID', int),
     Variable('x', int),
     Variable('y', int),
     Variable('amount',int),
@@ -147,6 +150,7 @@ pickUp = Animation('pickUp',
 drop = Animation('drop',
   data=[
     Variable('actingID', int),
+    Variable('targetID', int),
     Variable('x', int),
     Variable('y', int),
     Variable('amount',int),
@@ -159,6 +163,17 @@ death = Animation('death',
   ],
 )
 
+stealth = Animation('stealth',
+  data = [
+    Variable('actingID', int)
+  ],
+)
+
+deStealth = Animation('deStealth',
+  data = [
+    Variable('actingID', int)
+  ],
+)
 
 
 

@@ -68,6 +68,11 @@ int Fish::attackPower()
   return ((_Fish*)ptr)->attackPower;
 }
 
+int Fish::isVisible()
+{
+  return ((_Fish*)ptr)->isVisible;
+}
+
 int Fish::maxAttacks()
 {
   return ((_Fish*)ptr)->maxAttacks;
@@ -124,6 +129,7 @@ std::ostream& operator<<(std::ostream& stream,Fish ob)
   stream << "carryCap: " << ((_Fish*)ob.ptr)->carryCap  <<'\n';
   stream << "carryingWeight: " << ((_Fish*)ob.ptr)->carryingWeight  <<'\n';
   stream << "attackPower: " << ((_Fish*)ob.ptr)->attackPower  <<'\n';
+  stream << "isVisible: " << ((_Fish*)ob.ptr)->isVisible  <<'\n';
   stream << "maxAttacks: " << ((_Fish*)ob.ptr)->maxAttacks  <<'\n';
   stream << "attacksLeft: " << ((_Fish*)ob.ptr)->attacksLeft  <<'\n';
   stream << "range: " << ((_Fish*)ob.ptr)->range  <<'\n';

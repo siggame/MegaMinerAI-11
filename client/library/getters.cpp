@@ -124,6 +124,10 @@ DLLEXPORT int fishGetAttackPower(_Fish* ptr)
 {
   return ptr->attackPower;
 }
+DLLEXPORT int fishGetIsVisible(_Fish* ptr)
+{
+  return ptr->isVisible;
+}
 DLLEXPORT int fishGetMaxAttacks(_Fish* ptr)
 {
   return ptr->maxAttacks;

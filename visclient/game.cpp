@@ -401,6 +401,8 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   sub = sub->next;
   object->attackPower = atoi(sub->val);
   sub = sub->next;
+  object->isVisible = atoi(sub->val);
+  sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
   object->attacksLeft = atoi(sub->val);

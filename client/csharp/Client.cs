@@ -150,6 +150,8 @@ public class Client {
   [DllImport("client")]
   public static extern int fishGetAttackPower(IntPtr ptr);
   [DllImport("client")]
+  public static extern int fishGetIsVisible(IntPtr ptr);
+  [DllImport("client")]
   public static extern int fishGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttacksLeft(IntPtr ptr);

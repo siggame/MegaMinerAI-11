@@ -59,6 +59,7 @@ std::ostream& operator<<(std::ostream& stream, Fish ob)
   stream << "carryCap: " << ob.carryCap  <<'\n';
   stream << "carryingWeight: " << ob.carryingWeight  <<'\n';
   stream << "attackPower: " << ob.attackPower  <<'\n';
+  stream << "isVisible: " << ob.isVisible  <<'\n';
   stream << "maxAttacks: " << ob.maxAttacks  <<'\n';
   stream << "attacksLeft: " << ob.attacksLeft  <<'\n';
   stream << "range: " << ob.range  <<'\n';
@@ -82,6 +83,7 @@ std::ostream& operator<<(std::ostream& stream, Player ob)
 std::ostream& operator<<(std::ostream& stream, spawn ob)
 {
   stream << "spawn" << "\n";
+  stream << "playerID: " << ob.playerID  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "species: " << ob.species  <<'\n';
@@ -105,6 +107,7 @@ std::ostream& operator<<(std::ostream& stream, pickUp ob)
 {
   stream << "pickUp" << "\n";
   stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "targetID: " << ob.targetID  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "amount: " << ob.amount  <<'\n';
@@ -124,6 +127,7 @@ std::ostream& operator<<(std::ostream& stream, drop ob)
 {
   stream << "drop" << "\n";
   stream << "actingID: " << ob.actingID  <<'\n';
+  stream << "targetID: " << ob.targetID  <<'\n';
   stream << "x: " << ob.x  <<'\n';
   stream << "y: " << ob.y  <<'\n';
   stream << "amount: " << ob.amount  <<'\n';
@@ -140,11 +144,27 @@ std::ostream& operator<<(std::ostream& stream, attack ob)
 }
 
 
+std::ostream& operator<<(std::ostream& stream, stealth ob)
+{
+  stream << "stealth" << "\n";
+  stream << "actingID: " << ob.actingID  <<'\n';
+  return stream;
+}
+
+
 std::ostream& operator<<(std::ostream& stream, playerTalk ob)
 {
   stream << "playerTalk" << "\n";
   stream << "actingID: " << ob.actingID  <<'\n';
   stream << "message: " << ob.message  <<'\n';
+  return stream;
+}
+
+
+std::ostream& operator<<(std::ostream& stream, deStealth ob)
+{
+  stream << "deStealth" << "\n";
+  stream << "actingID: " << ob.actingID  <<'\n';
   return stream;
 }
 
@@ -200,8 +220,12 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
 //      stream << *((drop*)*i) << "\n";
 //    if((*(*i)).type == ATTACK)
 //      stream << *((attack*)*i) << "\n";
+//    if((*(*i)).type == STEALTH)
+//      stream << *((stealth*)*i) << "\n";
 //    if((*(*i)).type == PLAYERTALK)
 //      stream << *((playerTalk*)*i) << "\n";
+//    if((*(*i)).type == DESTEALTH)
+//      stream << *((deStealth*)*i) << "\n";
   }
   
 
