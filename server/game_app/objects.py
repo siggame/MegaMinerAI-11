@@ -243,6 +243,8 @@ class Fish(Mappable):
       return "Cannot pick up a weight of 0."
     elif self.game.getTile(x,y).trashAmount < weight:
       return "You can't pick up more trash then there is trash present."
+    elif self.game.getTile(x,y).trashAmount == 0:
+      return "There is no trash here. This should also be redundant but...wat"
     elif self.currentHealth < weight*self.game.trashDamage:
       return "Can't pick that up, would kill your fish"
     
@@ -264,7 +266,7 @@ class Fish(Mappable):
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
-    print "fish id is %i tile id is %i weight is %i priorAmount was %i new amount is %i"%(self.id, tile.id, weight, priorAmount, tile.trashAmount)
+    print "pickup fish id is %i tile id is %i weight is %i priorAmount was %i new amount is %i"%(self.id, tile.id, weight, priorAmount, tile.trashAmount)
     self.game.addAnimation(PickUpAnimation(self.id,tile.id, x,y,weight))
     #print "dude picked up some trash"
     return True
@@ -278,6 +280,8 @@ class Fish(Mappable):
       return "Can only drop onto adjacent locations"
     elif weight > self.carryingWeight:
       return "You cannot drop more than you're carrying"      
+    elif weight == 0:
+     return "Cannot drop a  weight of 0"
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
@@ -292,7 +296,7 @@ class Fish(Mappable):
     tile = self.game.getTile(x,y)
     tile.trashAmount += weight
     self.carryingWeight -= weight
-    print "pickup tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
+    print "drop tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
     self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, weight))
     self.addTrash(x,y,weight)
     return True
