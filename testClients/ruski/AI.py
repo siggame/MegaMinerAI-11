@@ -14,6 +14,7 @@ class AI(BaseAI):
   enemyFish = []
   myTrash = []
   charGrid = [[]]
+  gridHistory = []
 
   @staticmethod
   def username():
@@ -33,6 +34,7 @@ class AI(BaseAI):
   ##This function is called once, after your last turn
   def end(self):
     print "The End"
+    self.replayGrid()
     return
 
   #GET COVES
@@ -78,6 +80,8 @@ class AI(BaseAI):
       #COVE
       if tile.owner != 2:
         self.charGrid[tile.x][tile.y] = 'C'
+      if tile.hasEgg:
+        self.charGrid[tile.x][tile.y] = 'E'
       #TRASH
       if tile.trashAmount > 0:
         self.charGrid[tile.x][tile.y] = 'T'
@@ -88,29 +92,57 @@ class AI(BaseAI):
 
     return
 
+  def replayGrid(self):
+    wantReplay = True
+    while wantReplay:
+      for grid in self.gridHistory:
+        time.sleep(0.25)
+        self.printCharGrid(grid)
+      print "Do you want to replay?: "
+      usrinput = raw_input()
+      if "y" in usrinput:
+        wantReplay = True
+      else:
+        wantReplay = False
+    return
+
   #PRINT CHARACTER GRID
-  def printCharGrid(self):
+  def printCharGrid(self, grid):
     for y in range(self.getMapHeight()):
       for x in range(self.getMapWidth()):
-        print self.charGrid[x][y],
+        if x == self.mapWidth/2 - self.boundLength:
+          print "|",
+        elif x == self.mapWidth/2 + self.boundLength:
+          print "|",
+
+        print grid[x][y],
       print
     return
 
   #VALID MOVE
-  def validMove(self, x, y):
-    if x < 0 or x >= self.mapWidth:
+  def validMove(self, x, y, tx, ty):
+    self.getMyTrash()
+    if tx < 0 or tx >= self.mapWidth:
       return False
-    if y < 0 or y >= self.mapHeight:
+    if ty < 0 or ty >= self.mapHeight:
+      return False
+
+    taxiDist = self.taxicabDist(x, y, tx, ty)
+    #print "Taxi Dist: %i" % taxiDist
+    if taxiDist > 1:
       return False
     for fish in self.fishes:
-      if fish.x == x and fish.y == y:
+      if fish.x == tx and fish.y == ty:
         return False
-    for trash in self.myTrash:
-      if trash.x == x and trash.y == y:
-        return False
-    for cove in self.coves:
-      if cove.x == x and cove.y == y and cove.owner != self.playerID:
-        return False
+
+    intoTile = self.tiles[ ty*self.mapWidth + tx ]
+    #Cannot move onto trash
+    if intoTile.trashAmount > 0:
+      return False
+
+    #Cannot move onto opponent cove
+    if intoTile.owner == abs(self.playerID - 1):
+      return False
 
     return True
 
@@ -161,27 +193,29 @@ class AI(BaseAI):
     return
 
   def handleDrop(self, fish):
-    self.getMyTrash()
     #Drop trash if ind enemy territory
     if fish.x > self.mapWidth/2 - self.boundLength:
       if fish.carryingWeight > 0:
-        if self.validMove(fish.x, fish.y+1):
+        if self.validMove(fish.x, fish.y, fish.x, fish.y+1):
           fish.drop(fish.x, fish.y+1, fish.carryingWeight)
-        elif self.validMove(fish.x, fish.y-1):
+
+        elif self.validMove(fish.x, fish.y, fish.x, fish.y-1):
           fish.drop(fish.x, fish.y-1, fish.carryingWeight)
-        elif self.validMove(fish.x+1, fish.y):
+
+        elif self.validMove(fish.x, fish.y, fish.x+1, fish.y):
           fish.drop(fish.x+1, fish.y, fish.carryingWeight)
-        elif self.validMove(fish.x-1, fish.y):
+
+        elif self.validMove(fish.x, fish.y, fish.x-1, fish.y):
           fish.drop(fish.x-1, fish.y, fish.carryingWeight)
+
     return
 
 
   def handlePickUp(self, fish):
-    self.getMyTrash()
     for trash in self.myTrash:
       #If trash is nearby
       if self.taxicabDist(fish.x, fish.y, trash.x, trash.y) == 1:
-        if fish.carryingWeight < fish.carryCap:
+        if fish.carryingWeight < 2*fish.carryCap/3:
           pickAmount = fish.carryCap - fish.carryingWeight
           if pickAmount > trash.trashAmount:
             pickAmount = trash.trashAmount
@@ -190,21 +224,29 @@ class AI(BaseAI):
     return
 
   def handleEnemy(self, fish):
-    self.getEnemyFish()
     for enemyF in self.enemyFish:
       if self.taxicabDist(fish.x, fish.y, enemyF.x, enemyF.y) == 1:
         fish.attack(enemyF)
     return
 
   def handleMovement(self, fish):
-    self.getMyTrash()
     for _ in range(fish.maxMovement):
-      if self.validMove(fish.x+1, fish.y):
-        fish.move(fish.x+1, fish.y)
-      elif self.validMove(fish.x, fish.y+1):
-        fish.move(fish.x, fish.y+1)
-      elif self.validMove(fish.x, fish.y-1):
-        fish.move(fish.x, fish.y-1)
+      if self.validMove(fish.x, fish.y, fish.x+1, fish.y) == True:
+        if not fish.move(fish.x+1, fish.y):
+          print "Bad movement"
+
+      elif self.validMove(fish.x, fish.y, fish.x, fish.y+1 == True):
+        if not fish.move(fish.x, fish.y+1):
+          print "Bad movement"
+
+      elif self.validMove(fish.x, fish.y, fish.x, fish.y-1) == True:
+        if not fish.move(fish.x, fish.y-1):
+          print "Bad movement"
+
+      elif self.validMove(fish.x, fish.y, fish.x-1, fish.y) == True:
+        if not fish.move(fish.x-1, fish.y):
+          print "Bad movement"
+
     return
 
   ##This function is called each time it is your turn
@@ -213,16 +255,22 @@ class AI(BaseAI):
     print "Starting Turn #%i P1: %i P2: %i" % (self.turnNumber, self.players[0].currentReefHealth, self.players[1].currentReefHealth)
     #GET LOCAL LISTS
     self.getMyFish()
+    self.getEnemyFish()
     self.getMyTrash()
 
     #PRINT GRID
     self.getCharGrid()
-    self.printCharGrid()
+    self.gridHistory.append(self.charGrid)
 
     self.actMyFish()
 
-    for spec in self.species:
-      for cove in self.coves:
+    #PRINT GRID
+    self.getCharGrid()
+    self.gridHistory.append(self.charGrid)
+
+    for _ in range(10):
+      for spec in self.species:
+        cove = random.choice(self.coves)
         self.attemptSpawn(cove.x, cove.y, spec)
 
 
