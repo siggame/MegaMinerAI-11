@@ -9,7 +9,7 @@ class AI(BaseAI):
   """The class implementing gameplay logic."""
   @staticmethod
   def username():
-    return "Shell AI"
+    return "Kellogg"
 
   @staticmethod
   def password():
@@ -124,16 +124,18 @@ class AI(BaseAI):
     self.moveTo(fish,trash)
     if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
       x = trash.trashAmount
-      amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount)   
-      y = fish.pickUp(trash.x,trash.y,amount) 
-      print "picking up trash",y
-      if y==1:
-        self.coorDict[(trash.x,trash.y)]-=amount 
+      amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount, fish.currentHealth-1)   
+      if amount>0:
+        y = fish.pickUp(trash.x,trash.y,amount) 
+        if y:
+          self.coorDict[(trash.x,trash.y)]-=amount 
+          if self.coorDict[(trash.x,trash.y)] == 0:
+           del self.coorDict[(trash.x,trash.y)]
 
   def isSafe(self,x,):
     if self.playerID==0 and x>self.mapWidth/2+self.boundLength:
       return True
-    elif self.playerID==1 and x<self.mapWidth/2+self.boundLength:
+    elif self.playerID==1 and x<self.mapWidth/2-self.boundLength:
       return True
     return False
 
@@ -142,11 +144,21 @@ class AI(BaseAI):
    # print [tile for tile in self.tiles if not self.isSafe(tile.x) and tile.owner==2]
     tile = random.choice(theirTiles)
     self.moveTo(fish,tile)
-    if self.distance(fish.x,fish.y,tile.x,tile.y) == 1:
-      fish.drop(tile.x,tile.y,fish.carryingWeight)
+    if self.distance(fish.x,fish.y,tile.x,tile.y) == 1 and fish.carryingWeight>0:
+      y = fish.drop(tile.x,tile.y,fish.carryingWeight)
+      if (tile.x,tile.y) not in self.coorDict:      
+        self.coorDict[(tile.x,tile.y)] = fish.carryingWeight
+      else:
+        self.coorDict[(tile.x,tile.y)] += fish.carryingWeight 
     elif self.isSafe(fish.x):
       for adj in self.adjacentList:
-        print "fish drop", fish.drop(adj[0],adj[1],fish.carryingWeight)
+        if fish.carryingWeight>0:
+          y = fish.drop(fish.x+adj[0],fish.y+adj[1],fish.carryingWeight)  
+        if y:
+          if (fish.x+adj[0],fish.y+adj[1]) not in self.coorDict:      
+            self.coorDict[(fish.x+adj[0],fish.y+adj[1])] = fish.carryingWeight
+          else:
+            self.coorDict[(fish.x+adj[0],fish.y+adj[1])] += fish.carryingWeight
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
@@ -165,11 +177,11 @@ class AI(BaseAI):
     seasonal = self.seasonDict[self.currentSeason]
     for cove in self.coves:
       for species in seasonal:
-        if cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and self.myPlayer.spawnFood>=species.cost:
+        if species.carryCap>0 and cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and self.myPlayer.spawnFood>=species.cost:
           species.spawn(cove.x,cove.y)
         
     for fish in self.fishes: 
-      if fish.owner==self.playerID:
+      if fish.owner==self.playerID and fish.carryCap>0:
         if fish.carryCap != fish.carryingWeight:    
           self.pickUpNearestTrash(fish)
         else:
