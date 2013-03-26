@@ -189,6 +189,9 @@ class Fish(Mappable):
         self.movementLeft = self.maxMovement
         self.attacksLeft = self.maxAttacks
       if self.species == 8: #Cuttlefish
+        #Set to invisible
+        if self.isVisible is True:
+          self.game.addAnimation(StealthAnimation(self.id))
         self.isVisible = False
       if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
@@ -258,8 +261,9 @@ class Fish(Mappable):
     #fish shouldn't have any trash, right?
     
     #unstealth fish... because that's what drop did
-    if not self.isVisible:
-      self.isVisible = True
+    if self.isVisible is False:
+      self.game.addAnimation(DeStealthAnimation(self.id))
+    self.isVisible = True
     
     #take damage if not immune to it
     if self.species != 6: #Tomcod
@@ -296,8 +300,9 @@ class Fish(Mappable):
         else:
           pass #TODO: "Fringe case: dropping onto a stealthed fish."    
 
-    if not self.isVisible:
-      self.isVisible = True #unstealth while dropping    
+    if self.isVisible is False:
+      self.game.addAnimation(DeStealthAnimation(self.id))
+    self.isVisible = True #unstealth while dropping
 
     tile = self.game.getTile(x,y)
     tile.trashAmount += weight
@@ -336,6 +341,8 @@ class Fish(Mappable):
     self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)
+      if target.isVisible is False:
+        self.game.addAnimation(DeStealthAnimation(target.id))
       target.isVisible = True
 
     #eel stun
@@ -347,6 +354,8 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
+      if self.isVisible is False:
+        self.game.addAnimation(DeStealthAnimation(self.id))
       self.isVisible = True  
     
     #check if target is dead
