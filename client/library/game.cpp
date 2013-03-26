@@ -5,6 +5,7 @@
 
 #include <string>
 #include <cstring>
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
@@ -318,6 +319,10 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   {
     return 0;
   }
+  //Do not move on top of the enemy's cove
+  if(c->Tiles[x*c->mapHeight +y].owner == abs(c->playerID - 1)) {
+    return 0;
+  }
 
   //Decrement movement
   object->movementLeft = object->movementLeft-1;
@@ -368,7 +373,7 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
     return 0;
   }
   //cannot pick up something that will kill you
-  else if(object->currentHealth < weight)
+  else if(object->currentHealth < weight * c->trashDamage)
   {
     return 0;
   }

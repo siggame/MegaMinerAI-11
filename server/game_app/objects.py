@@ -260,7 +260,7 @@ class Fish(Mappable):
       self.isVisible = True
     
     #take damage if not immune to it
-    if self.species != "TomCod":
+    if self.species != 6: #Tomcod
       self.currentHealth -= self.game.trashDamage * weight
         
     #reduce weight of tile
