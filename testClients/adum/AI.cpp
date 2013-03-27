@@ -73,13 +73,15 @@ bool AI::run()
          {
             if(y>fishes[i].y())
             {
+               int crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()+1].trashAmount();
                fishes[i].move(fishes[i].x(),fishes[i].y()+1);
-               fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,1);
+               fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,crap);
             }
             else
             {
+               int crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()-1].trashAmount();
                fishes[i].move(fishes[i].x(),fishes[i].y()-1);
-               fishes[i].pickUp(fishes[i].x(),fishes[i].y()-1,1);
+               fishes[i].pickUp(fishes[i].x(),fishes[i].y()-1,crap);
             }
          }
          else
@@ -95,7 +97,7 @@ bool AI::run()
          }
          if(fishes[i].x() > mapWidth()/2+boundLength())
          {
-            fishes[i].drop(fishes[i].x()+1,fishes[i].y(),1);
+            fishes[i].drop(fishes[i].x()+1,fishes[i].y(),fishes[i].carryingWeight());
          }
       }
    }
