@@ -177,7 +177,6 @@ class Match(DefaultGameWorld):
     self.spawnTrash()
 
     for species in cfgSpecies.keys():
-      print species
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
 
     self.initSeasons()

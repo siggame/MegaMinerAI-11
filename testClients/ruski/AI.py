@@ -98,6 +98,7 @@ class AI(BaseAI):
       for grid in self.gridHistory:
         time.sleep(0.25)
         self.printCharGrid(grid)
+        print "--" * (self.mapWidth +2)
       print "Do you want to replay?: "
       usrinput = raw_input()
       if "y" in usrinput:
@@ -231,21 +232,17 @@ class AI(BaseAI):
 
   def handleMovement(self, fish):
     for _ in range(fish.maxMovement):
-      if self.validMove(fish.x, fish.y, fish.x+1, fish.y) == True:
-        if not fish.move(fish.x+1, fish.y):
-          print "Bad movement"
+      if self.validMove(fish.x, fish.y, fish.x+1, fish.y):
+        fish.move(fish.x+1, fish.y)
 
-      elif self.validMove(fish.x, fish.y, fish.x, fish.y+1 == True):
-        if not fish.move(fish.x, fish.y+1):
-          print "Bad movement"
+      elif self.validMove(fish.x, fish.y, fish.x, fish.y+1):
+        fish.move(fish.x, fish.y+1)
 
-      elif self.validMove(fish.x, fish.y, fish.x, fish.y-1) == True:
-        if not fish.move(fish.x, fish.y-1):
-          print "Bad movement"
+      elif self.validMove(fish.x, fish.y, fish.x, fish.y-1):
+        fish.move(fish.x, fish.y-1)
 
-      elif self.validMove(fish.x, fish.y, fish.x-1, fish.y) == True:
-        if not fish.move(fish.x-1, fish.y):
-          print "Bad movement"
+      elif self.validMove(fish.x, fish.y, fish.x-1, fish.y):
+        fish.move(fish.x-1, fish.y)
 
     return
 
