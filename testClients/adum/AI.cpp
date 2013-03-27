@@ -67,7 +67,7 @@ bool AI::run()
    for(int i=0;i<fishes.size();i++)
    {
       int y=findTrashY(tiles,mapWidth());
-      for(int i=0;i<fishes[i].movementLeft();i++)
+      for(int p=0;p<fishes[i].movementLeft();p++)
       {
          if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
          {
@@ -88,13 +88,11 @@ bool AI::run()
          }
 
          fishes[i].pickUp(fishes[i].x()+1,fishes[i].y(),1);
-         /*
          Fish* target=getFish(fishes[i].x()+1,fishes[i].y(),fishes);
          if(target!=NULL)
          {
             fishes[i].attack(*target);
          }
-         */
          if(fishes[i].x() > mapWidth()/2+boundLength())
          {
             fishes[i].drop(fishes[i].x()+1,fishes[i].y(),1);
