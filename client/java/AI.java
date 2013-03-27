@@ -5,8 +5,7 @@ import com.sun.jna.Pointer;
 ///The class implementing gameplay logic.
 public class AI extends BaseAI
 {
-  public static enum speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
-
+  public static final int SEA_STAR=0, SPONGE=1, ANGELFISH=2, CONESHELL_SNAIL=3, SEA_URCHIN=4, OCTOPUS=5, TOMCOD=6, REEF_SHARK=7, CUTTLEFISH=8, CLEANER_SHRIMP=9, ELECTRIC_EEL=10, JELLYFISH=11;
 
   public String username()
   {
