@@ -28,6 +28,7 @@ namespace visualizer
             bool bCove; // teh cove, need to make it look nice, this value does not change between frames
             bool bEgg; // teh egg
             int spriteId;
+            int id;
 
            // int turn;
            // todo: add more?
