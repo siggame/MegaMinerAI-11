@@ -3,6 +3,9 @@
 
 AI::AI(Connection* conn) : BaseAI(conn) {}
 
+enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
+
+
 const char* AI::username()
 {
   return "Shell AI";

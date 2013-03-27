@@ -1,8 +1,13 @@
 import com.sun.jna.Pointer;
 
+
+
 ///The class implementing gameplay logic.
 public class AI extends BaseAI
 {
+  public enum speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
+
+
   public String username()
   {
     return "Shell AI";

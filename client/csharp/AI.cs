@@ -1,9 +1,12 @@
 using System;
 using System.Runtime.InteropServices;
 
+
 ///The class implementing gameplay logic.
 class AI : BaseAI
 {
+  enum speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
+
   public override string username()
   {
     return "Shell AI";

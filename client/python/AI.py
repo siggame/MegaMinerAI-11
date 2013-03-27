@@ -2,8 +2,12 @@
 from BaseAI import BaseAI
 from GameObject import *
 
+
 class AI(BaseAI):
   """The class implementing gameplay logic."""
+
+  speciesIndex = { "SEA_STAR": 0, "SPONGE": 1, "ANGELFISH":2, "CONESHELL_SNAIL":3, "SEA_URCHIN":4, "OCTOPUS":5, "TOMCOD":6, "REEF_SHARK":7, "CUTTLEFISH":8, "CLEANER_SHRIMP":9, "ELECTRIC_EEL":10, "JELLYFISH":11 }
+
   @staticmethod
   def username():
     return "Shell AI"
