@@ -68,21 +68,21 @@ class Match(DefaultGameWorld):
     coves = self.coveLimit
     self.adjDict[seed[0],seed[1]] = 0
     while coves>0 and len(open)>0:
-        current = random.choice(open)
-        open.remove(current)
-        coves-=1
-        self.getTile(current[0],current[1]).owner=0
-	self.getTile(self.mapWidth-1-current[0],current[1]).owner = 1
-        closed.add(current)
-        neighbors = self.getAdjacent(current)
-        for node in open:
-          if self.adjDict[(node[0],node[1])] > 1:
-            open.remove(node)
-        for neighbor in neighbors:
-           if neighbor in closed:
-                continue
-           else:
-                open.append(neighbor)
+      current = random.choice(open)
+      open.remove(current)
+      coves-=1
+      self.getTile(current[0],current[1]).owner=0
+      self.getTile(self.mapWidth-1-current[0],current[1]).owner = 1
+      closed.add(current)
+      neighbors = self.getAdjacent(current)
+      for node in open:
+        if self.adjDict[(node[0],node[1])] > 1:
+          open.remove(node)
+      for neighbor in neighbors:
+        if neighbor in closed:
+          continue
+        else:
+          open.append(neighbor)
     return True
     
   #getTile RETURN TILE
