@@ -60,7 +60,7 @@ class Tile(Mappable):
             species.maxMovement, species.maxMovement,
             species.carryCap, 0, species.attackPower, True,
             species.maxAttacks, species.maxAttacks,
-            species.range, species.name]
+            species.range, species.index]
         newFish = self.game.addObject(Fish, stats)
         self.game.addAnimation(SpawnAnimation(self.owner,newFish.x,newFish.y,newFish.species))
         self.game.grid[newFish.x][newFish.y].append(newFish)
@@ -160,10 +160,13 @@ class Fish(Mappable):
     if fish.currentHealth > fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
-  def distance(self,source,x,y):
-    #We want manhattan distance.. not a big issue
-    #return math.sqrt((source.x-x)**2 + (source.y-y)**2)
+  #Distance for Taxicab Distance
+  def taxiDist(self, source, x, y):
     return abs(source.x-x) + abs(source.y-y)
+
+  #Distance for Euclidean Distance
+  def eucDist(self,source,x,y):
+    return math.sqrt( (source.x-x)**2 + (source.y-y)**2 )
   
   def addTrash(self,x,y,weight):
     if (x,y) not in self.game.trashDict:      
@@ -204,30 +207,45 @@ class Fish(Mappable):
      #     print "dude died from carrying so much trash"
     return True
 
+  def specName(self, index):
+    for spec in self.game.objects.species:
+      if index == spec.index:
+        return spec.name
+    return "Invalid"
+
   def move(self, x, y):
+    speciesName = self.specName(self.species)
     if self.owner != self.game.playerID: #check that you own the fish
-      return "You cannot move the other player's fish."
+      return "You cannot move the other player's %s %i." % (speciesName, self.id)
+
     elif self.movementLeft <= 0: #check that there are moves left
-      return "Your fish has no moves left."
+      return "Your %s %i has no moves left." % (speciesName, self.id)
+
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
-      return "Your fish cannot move off the map."
-    elif self.distance(self,x,y)!=1:
-      return "You can only move to adjacent locations."
+      return "Your %s %i cannot move off the map. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y,  x, y)
+
+    elif self.taxiDist(self,x,y)!=1:
+      return "Your %s %i can only move to adjacent locations. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
-      return "You can't move on top of trash"
+      return "Your %s %i can't move on top of trash. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     elif T.owner == self.owner^1:
-      return "Can't go into an opponent's cove."
+      return "Your %s %i can't move into an opponent's cove. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     elif T.hasEgg:
-      return "A fish is about to be spawned here"
+      return "Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     Fishes = self.game.getFish(x,y)
-   # print Fishes
+    # print Fishes
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         if fish.isVisible:
-          return "You can't move onto a fish."
+          return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
-          return "Fringe case: moving onto a stealthed fish."    
+          #return "Fringe case: moving onto a stealthed fish."
+          pass
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
     self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))        
@@ -238,22 +256,31 @@ class Fish(Mappable):
     return True
 
   def pickUp(self, x, y, weight):
+    speciesName = self.specName(self.id)
+    T = self.game.getTile(x,y)
     if self.owner != self.game.playerID:
-      return "You can only control your own fish."
+      return "You cannot control your opponent's %s %i." % (speciesName, self.id)
+
     elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-      return "Cannot pick up trash off the map."
-    elif self.distance(self,x,y) !=1:
-      return "Can only pick up adjacent trash."
+      return "Your %s %i cannot pick up trash off the map. (%i, %i)" % (speciesName, self.id, x, y)
+
+    elif self.taxiDist(self,x,y) != 1:
+      return "Your %s %i can only pick up adjacent trash. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
+
     elif (self.carryingWeight + weight) > self.carryCap:
-      return "Cannot carry more weight than the fish's carry cap."
+      return "Your %s %i cannot carry more weight than %i." % (speciesName, self.id, self.carryCap)
+
     elif weight == 0:
-      return "Cannot pick up a weight of 0."
-    elif self.game.getTile(x,y).trashAmount < weight:
-      return "You can't pick up more trash then there is trash present."
-    elif self.game.getTile(x,y).trashAmount == 0:
-      return "There is no trash here. This should also be redundant but...wat"
+      return "Your %s %i cannot pick up a weight of 0." % (speciesName, self.id)
+
+    elif T.trashAmount < weight:
+      return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, T.trashAmount)
+
+    elif T.trashAmount == 0:
+      return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
+
     elif self.currentHealth < weight*self.game.trashDamage:
-      return "Can't pick that up, would kill your fish"
+      return "Your %s %i cannot pick up trash that would kill it. Health: %i Damage: %i" % (speciesName, self.id, self.currentHealth, weight * self.game.trashDamage)
     
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
@@ -280,21 +307,27 @@ class Fish(Mappable):
     return True
 
   def drop(self, x, y, weight):
+    speciesName = self.specName(self.species)
     if self.owner != self.game.playerID:
-      return "You can only control your own fish"
+      return "You cannot control the opponent's %s %i." % (speciesName, self.id)
+
     elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-      return "Cannot drop off the map"
-    elif abs(self.x-x) + abs(self.y-y) != 1:
-      return "Can only drop onto adjacent locations"
+      return "Your %s %i cannot drop trash off the map. (%i, %i)" % (speciesName, self.id, x, y)
+
+    elif self.taxiDist(self, x, y) != 1:
+      return "Your %s %i can only drop onto adjacent locations. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
+
     elif weight > self.carryingWeight:
-      return "You cannot drop more than you're carrying"      
+      return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
+
     elif weight == 0:
-     return "Cannot drop a  weight of 0"
+     return "Your %s %i cannot drop a weight of 0." % (speciesName, self.id)
+
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         if fish.isVisible:
-          return "Cannot drop onto a fish"
+          return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
           pass #TODO: "Fringe case: dropping onto a stealthed fish."    
 
@@ -313,26 +346,36 @@ class Fish(Mappable):
   def attack(self, target):  
     x = target.x
     y = target.y
-  
+    speciesName = self.specName(self.species)
+    targetName = self.specName(target.species)
+
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
-      return "You can only control your own fish."
+      return "You cannot control the opponent's %s %i." % (speciesName, self.id)
+
     elif target.id in self.attacked:
-      return "Fish %i has already attacked Fish %i this turn." % (self.id, target.id)
-    elif self.distance(self, x, y) > self.range:
-      return "You can't attack further than your fish's range."
+      return "%s %i has already attacked %s %i this turn." % (speciesName, self.id, targetName, target.id)
+
+    elif self.eucDist(self, x, y) > self.range:
+      return "Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i" % (speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
+
     elif self.attacksLeft == 0:
-      return "This fish has no attacks left."
+      return "Your %s %i has no attacks left." % (speciesName, self.id)
+
     elif not isinstance(target, Fish):
-      return "You  can only attack Fish"
+      return "Your %s %i can only attack other Fish." % (speciesName, self.id)
+
     elif target.isVisible is False and target.owner != self.game.playerID:
-      return "You aren't even supposed to see invisible fish, let alone attack them."
+      return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
+
     elif target.owner != self.owner and self.attackPower < 0:
-      return "You can't heal the opponent's fish."
+      return "Your %s %i cannot heal the opponent's %s %i." % (speciesName, self.id, targetName, target.id)
+
     elif target.owner == self.owner and self.attackPower > 0:
-      return "You can't attack your own fish."
+      return "Your %s %i cannot attack a friendly %s %i." % (speciesName, self.id, targetName, target.id)
+
     elif self.x == x and self.y == y:
-      return "A stealthed unit can't attack a fish above it."
+      return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
 
     #print "attacking a dude with another dude"
     #Add target to list of attacked targets
