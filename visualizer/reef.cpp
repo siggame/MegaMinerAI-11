@@ -398,6 +398,8 @@ namespace visualizer
               tile.spriteId = 2;
           }
 
+          (*pMap)(iter->second.y,iter->second.x).id = iter->second.id;
+
       }
 
       // Draw other coral on the bottom of the map.
@@ -462,7 +464,6 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-           // cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -482,44 +483,55 @@ namespace visualizer
                     }
                     else
                     {
+                        /*bool bEqual = (*pMap)(dropAnim.y,dropAnim.x).id == dropAnim.targetID;
+                        cout<<"Turn: "<<state<<" Drop: " << bEqual <<endl;
+                        if(!bEqual)
+                        {
+                            cout<<"Map: "<<(*pMap)(dropAnim.y,dropAnim.x).id<<endl;
+                            cout<<"TargetID: "<<dropAnim.targetID<<endl;
+                            cout<<"X: "<<dropAnim.x<<endl;
+                            cout<<"Y: "<<dropAnim.y<<endl;
+                        }
+                        cout<<endl;*/
+                       // BasicTrash& trash = m_Trash[state][(*pMap)(dropAnim.y,dropAnim.x).id];
                         BasicTrash& trash = m_Trash[state][dropAnim.targetID];
                         trash.amount += dropAnim.amount;
-                        cout<<dropAnim.amount<<endl;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
                     }
                 }
                 else
                 {
-                    //todo: do something with the pickup
-                    //cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
-
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
+                        //BasicTrash& trash = m_Trash[state][(*pMap)(pickupAnim.y,pickupAnim.x).id];
                         BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
 
-                        if(trash.amount >= 1)
+                        /*bool bEqual = (*pMap)(pickupAnim.y,pickupAnim.x).id == pickupAnim.targetID;
+                        cout<<"Turn: "<<state<<" Pickup: " << bEqual <<endl;
+                        if(!bEqual)
                         {
-                            trash.amount -= pickupAnim.amount;
+                            cout<<"Map: "<<(*pMap)(pickupAnim.y,pickupAnim.x).id<<endl;
+                            cout<<"TargetID: "<<pickupAnim.targetID<<endl;
+                        }*/
 
-                            if(trash.amount < 1)
-                            {
-                                m_Trash[state].erase(pickupAnim.targetID);
-                            }
-                        }
-                        else
+                        if(trash.amount == 0)
                         {
-                            cout<<"Turn: "<<state<<" "<<"This should not happen"<<endl;
-                            //m_Trash[state].erase(pickupAnim.targetID);
+                            cout<<"\n\nTurn: "<<state<<" No Trash on the tile for pickup"<<endl;
+                            cout<<'('<<pickupAnim.x<<','<<pickupAnim.y<<')'<<endl<<endl;
+                        }
+
+                        trash.amount -= pickupAnim.amount;
+
+                        if(trash.amount < 1)
+                        {
+
+                           m_Trash[state].erase(pickupAnim.targetID);
+                           //m_Trash[state].erase( (*pMap)(pickupAnim.y,pickupAnim.x).id);
+
                         }
                     }
-                    else
-                    {
-                        cout<<"They are picking up nothing"<<endl;
-                    }
-                    
-
                 }
 
             }
@@ -528,6 +540,20 @@ namespace visualizer
         if(newFish->m_moves.empty())
         {
             newFish->m_moves.push_back(Fish::Moves(glm::vec2(p.second.x, p.second.y),glm::vec2(p.second.x, p.second.y)));
+        }
+
+        // the fish is dead next turn
+        // todo: check to make sure this is correct
+        if( (state + 1) < m_game->states.size() )
+        {
+          if(m_game->states[ state + 1 ].fishes.find( p.second.id ) == m_game->states[ state + 1 ].fishes.end())
+          {
+              BasicTrash& trash = m_Trash[state][(*pMap)(p.second.y,p.second.x).id];
+              trash.amount += p.second.carryingWeight;
+              trash.x = p.second.x;
+              trash.y = p.second.y;
+          }
+
         }
 
         newFish->owner = p.second.owner;
@@ -557,6 +583,7 @@ namespace visualizer
         //cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
 
      }
+
 
       //cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
 
