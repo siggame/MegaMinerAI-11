@@ -170,28 +170,17 @@ namespace visualizer
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
-  void Reef::RenderPlayerName(unsigned int id, float xPos) const
+  void Reef::RenderPlayerName(int id, float xPos) const
   {
-      if(m_game->players[id].empty())
-      {
-          ostringstream stream;
-          stream << "Player " << id << " Has No Name" ;
-
-          renderer->drawText(xPos,-4.0f,"Roboto",stream.str(),4.0f);
-      }
-      else
-      {
-          renderer->drawText(xPos,-4.0f,"Roboto",this->m_game->players[id],4.0f);
-      }
+      const char* name = m_game->states[0].players[id].playerName;
+      renderer->drawText(xPos,-4.0f,"Roboto",name,4.0f);
   }
 
-  void Reef::RenderReefHealthBar(unsigned int id, float xPos) const
+  void Reef::RenderReefHealthBar(int id, float xPos) const
   {
-      //cout<<m_ReefInfo.size()<<endl;
       int turn = timeManager->getTurn();
-      const ReefInfo& info = m_ReefInfo[id + (turn) * 2];
+      const ReefInfo& info = m_ReefInfo[id + turn * 2];
 
-      //renderer->drawText(xPos,-3.0f,"Roboto","Reef Health:" + toString(info.currentReefHealth),4.0f);
       renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
       renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 1.0f);
   }
@@ -414,7 +403,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" << "Fish Health" << "Max Health" << "Attack Power" /*<< "Owner" << "Type"*/;
+    header<<"Species" << "carryingWeight" << "Trash Amount" << "Fish Health" << "Max Health" << "Attack Power" << "X" << "Y" ;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -450,9 +439,6 @@ namespace visualizer
       {
           // todo: I could resize this vector
           m_ReefInfo.push_back(ReefInfo(p.second.currentReefHealth,p.second.spawnFood));
-          /*SmartPointer<HUDInfo> hud = new HUDInfo(p.second.id - 800,p.second.currentReefHealth,p.second.spawnFood);
-          hud->addKeyFrame( new DrawHUD( hud ) );
-          turn.addAnimatable(hud);*/
       }
 
       // for each fish in the current turn
@@ -559,9 +545,6 @@ namespace visualizer
         newFish->range = p.second.range;
         newFish->species = p.second.species;
 
-
-        //turn[p.second.id]["Owner"] = p.second.owner;
-        //turn[p.second.id]["Type"] = "fish";
         turn[p.second.id]["Species"] = p.second.species;
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
@@ -569,38 +552,10 @@ namespace visualizer
         turn[p.second.id]["Fish Health"] = p.second.currentHealth;
         turn[p.second.id]["Max Health"] = p.second.maxHealth;
         turn[p.second.id]["Attack Power"] = p.second.attackPower;
-       // p.second.
-
 
         newFish->addKeyFrame( new DrawFish( newFish ) );
         turn.addAnimatable(newFish);
-        //cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
-
      }
-
-
-      //cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
-
-      // this code does not do anything
-     /* for(auto iter = m_game->states[state].tiles.begin(); iter != m_game->states[state].tiles.end(); ++iter)
-      {
-          if(iter->second.trashAmount > 0)
-          {
-              // Draw the trash
-              SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.trashAmount);
-              trashSprite->addKeyFrame(new DrawTrash(trashSprite));
-
-              turn.addAnimatable(trashSprite);
-
-              //turn[trashList[i].id]["Owner"] = trashList[i].owner;
-
-              // Add trash to debug table
-              turn[iter->first]["Species"] = "Trash";
-              turn[iter->first]["Trash Amount"] = iter->second.trashAmount;
-              turn[iter->first]["X"] = iter->second.x;
-              turn[iter->first]["Y"] = iter->second.y;
-          }
-      }*/
 
       // Loop over all the trash in the current turn
       for(auto iter = m_Trash[state].begin(); iter != m_Trash[state].end(); ++iter)
@@ -612,20 +567,12 @@ namespace visualizer
 
           turn.addAnimatable(trashSprite);
 
-          //turn[trashList[i].id]["Owner"] = trashList[i].owner;
-
           // Add trash to debug table
           turn[iter->first]["Species"] = "Trash";
           turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
-
-          //turn[iter->first]["Type"] = "trash";
       }
-
-      /*SmartPointer<HUDInfo> pHud = new HUDInfo(m_game->states[state].currentSeason);
-      pHud->addKeyFrame(new DrawHUD(pHud));
-      turn.addAnimatable(pHud);*/
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);

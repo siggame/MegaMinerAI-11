@@ -124,8 +124,8 @@ namespace visualizer
 
             void RenderBubbles() const;
 
-            void RenderPlayerName(unsigned int id, float xPos = 1.0f) const;
-            void RenderReefHealthBar(unsigned int id, float xPos = 1.0f) const;
+            void RenderPlayerName(int id, float xPos = 1.0f) const;
+            void RenderReefHealthBar(int id, float xPos = 1.0f) const;
 
             template< class T >
             bool DrawQuadAroundObj(const T& datastruct, const typename T::key_type& key) const
