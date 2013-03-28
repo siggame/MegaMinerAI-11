@@ -5,6 +5,11 @@
 
 namespace visualizer
 {
+    Color GetTeamColor(int team)
+    {
+        // todo: need to change these colors
+        return (team == 1) ? Color(1.0f,.7f,0.1f,1.0f) : Color(0.1f,1.0f,0.1f,1.0f);
+    }
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
@@ -55,8 +60,8 @@ namespace visualizer
         glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-        game->renderer->setColor( Color( 1, 1, 1, 1 ) );
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish",m_Fish->flipped || (diff.x > 0.0f));
+        game->renderer->setColor( GetTeamColor(m_Fish->owner) );
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,"fish",m_Fish->flipped || (diff.x > 0.0f));
     }
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
