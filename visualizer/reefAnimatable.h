@@ -73,6 +73,9 @@ namespace visualizer
 
     struct Fish : public Animatable
     {
+        // todo: maybe use the ctor for more init
+        Fish() : flipped(false) {}
+
         struct Moves
         {
             Moves() {}
@@ -85,6 +88,7 @@ namespace visualizer
             glm::vec2 from;
         };
 
+        // todo: need to remove some of these
         int owner;          // color of the fish
         int maxHealth;      // would this effect the way the fish will be rendered?
         int currentHealth;  // A healthbar?
@@ -98,6 +102,7 @@ namespace visualizer
         int attacksLeft;    //
         int range;          //
         int species;      //
+        bool flipped;
 
         std::vector<Moves> m_moves;
 
@@ -116,6 +121,7 @@ namespace visualizer
         float x;
         float y;
         int amount;
+       // int moveTurn;
     };
 
     struct Trash : public Animatable, public BasicTrash

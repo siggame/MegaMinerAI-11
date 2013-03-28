@@ -167,7 +167,6 @@ namespace visualizer
       RenderWorld();
       RenderObjectSelection();
 
-
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
@@ -239,8 +238,6 @@ namespace visualizer
       ostringstream stream;
       stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
-
-
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
@@ -423,6 +420,8 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
+    std::map<int,bool> dirMap;
+
     SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
     pMap->addKeyFrame( new DrawMap( pMap ) );
 
@@ -483,21 +482,15 @@ namespace visualizer
                     }
                     else
                     {
-                        /*bool bEqual = (*pMap)(dropAnim.y,dropAnim.x).id == dropAnim.targetID;
-                        cout<<"Turn: "<<state<<" Drop: " << bEqual <<endl;
-                        if(!bEqual)
-                        {
-                            cout<<"Map: "<<(*pMap)(dropAnim.y,dropAnim.x).id<<endl;
-                            cout<<"TargetID: "<<dropAnim.targetID<<endl;
-                            cout<<"X: "<<dropAnim.x<<endl;
-                            cout<<"Y: "<<dropAnim.y<<endl;
-                        }
-                        cout<<endl;*/
-                       // BasicTrash& trash = m_Trash[state][(*pMap)(dropAnim.y,dropAnim.x).id];
-                        BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+                        BasicTrash& trash = m_Trash[state][(*pMap)(dropAnim.y,dropAnim.x).id];
                         trash.amount += dropAnim.amount;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
+
+                        /*if(trash.amount == 0)
+                        {
+                            trash.moveTurn = state;
+                        }*/
                     }
                 }
                 else
@@ -505,16 +498,8 @@ namespace visualizer
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
-                        //BasicTrash& trash = m_Trash[state][(*pMap)(pickupAnim.y,pickupAnim.x).id];
-                        BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
-
-                        /*bool bEqual = (*pMap)(pickupAnim.y,pickupAnim.x).id == pickupAnim.targetID;
-                        cout<<"Turn: "<<state<<" Pickup: " << bEqual <<endl;
-                        if(!bEqual)
-                        {
-                            cout<<"Map: "<<(*pMap)(pickupAnim.y,pickupAnim.x).id<<endl;
-                            cout<<"TargetID: "<<pickupAnim.targetID<<endl;
-                        }*/
+                        BasicTrash& trash = m_Trash[state][(*pMap)(pickupAnim.y,pickupAnim.x).id];
+                        //trash.moveTurn = state;
 
                         if(trash.amount == 0)
                         {
@@ -526,10 +511,7 @@ namespace visualizer
 
                         if(trash.amount < 1)
                         {
-
-                           m_Trash[state].erase(pickupAnim.targetID);
-                           //m_Trash[state].erase( (*pMap)(pickupAnim.y,pickupAnim.x).id);
-
+                           m_Trash[state].erase( (*pMap)(pickupAnim.y,pickupAnim.x).id);
                         }
                     }
                 }
@@ -540,6 +522,15 @@ namespace visualizer
         if(newFish->m_moves.empty())
         {
             newFish->m_moves.push_back(Fish::Moves(glm::vec2(p.second.x, p.second.y),glm::vec2(p.second.x, p.second.y)));
+
+            auto iter = dirMap.find(p.second.id);
+            newFish->flipped = (iter != dirMap.end() ? iter->second : false);
+        }
+        else if(newFish->m_moves.size() > 0)
+        {
+            glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
+                             (newFish->m_moves[newFish->m_moves.size() - 1].from);
+            dirMap[p.second.id] = diff.x > 0.0f;
         }
 
         // the fish is dead next turn
@@ -553,7 +544,6 @@ namespace visualizer
               trash.x = p.second.x;
               trash.y = p.second.y;
           }
-
         }
 
         newFish->owner = p.second.owner;
@@ -568,6 +558,7 @@ namespace visualizer
         newFish->attacksLeft = p.second.attacksLeft;
         newFish->range = p.second.range;
         newFish->species = p.second.species;
+
 
         //turn[p.second.id]["Owner"] = p.second.owner;
         //turn[p.second.id]["Type"] = "fish";
@@ -616,6 +607,7 @@ namespace visualizer
       {
           // Draw the trash
           SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.amount);
+          //trashSprite->moveTurn = iter->second.moveTurn;
           trashSprite->addKeyFrame(new DrawTrash(trashSprite));
 
           turn.addAnimatable(trashSprite);
