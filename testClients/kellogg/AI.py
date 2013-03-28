@@ -17,11 +17,8 @@ class AI(BaseAI):
 
   ##This function is called once, before your first turn
   def init(self):
-    self.coves = []
+    self.coves = [tile for tile in self.tiles if tile.owner==self.playerID]
     self.adjacentList = [(-1,0),(1,0),(0,1),(0,-1)]
-    for tile in self.tiles:
-      if tile.owner == self.playerID:
-        self.coves.append(tile)
     self.seasonDict = {0:[],2:[],3:[],1:[]}
     for species in self.species:
       self.seasonDict[species.season].append(species)
@@ -160,6 +157,11 @@ class AI(BaseAI):
           else:
             self.coorDict[(fish.x+adj[0],fish.y+adj[1])] += fish.carryingWeight
 
+  def smartSpawn(self):
+    seasonal = self.seasonDict[self.currentSeason]
+    speciesList = [species.name for species in seasonal]
+    #print speciesList
+
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
@@ -172,7 +174,7 @@ class AI(BaseAI):
     self.amountDict = {value:key for key,value in self.coorDict.items()}
 
     self.myPlayer.talk("I'm so happy to be olive")
-
+    self.smartSpawn()
     #spawn some dudes
     seasonal = self.seasonDict[self.currentSeason]
     for cove in self.coves:
@@ -187,8 +189,6 @@ class AI(BaseAI):
         else:
           self.pushTrash(fish) 
     return 1
-
-
 
   def __init__(self, conn):
     BaseAI.__init__(self, conn)
