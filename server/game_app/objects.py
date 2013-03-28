@@ -54,7 +54,6 @@ class Tile(Mappable):
     if self.game.playerID == self.owner:
       if self.hasEgg:
         species = self.species
-        print 'Spawning ' + species.name
         stats = [self.x, self.y, self.owner,
             species.maxHealth, species.maxHealth,
             species.maxMovement, species.maxMovement,
@@ -206,7 +205,6 @@ class Fish(Mappable):
 #          self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, self.carryingWeight))
           self.addTrash(self.x,self.y,self.carryingWeight)
           self.game.removeObject(self)
-     #     print "dude died from carrying so much trash"
     return True
 
   def specName(self, index):
@@ -240,7 +238,6 @@ class Fish(Mappable):
       return "Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
 
     Fishes = self.game.getFish(x,y)
-    # print Fishes
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         if fish.isVisible:
@@ -254,7 +251,6 @@ class Fish(Mappable):
     self.movementLeft -= 1
     self.x = x
     self.y = y
-    #print "moving a dude"
     return True
 
   def pickUp(self, x, y, weight):
@@ -303,9 +299,7 @@ class Fish(Mappable):
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
-    print "pickup fish id is %i tile id is %i weight is %i priorAmount was %i new amount is %i"%(self.id, tile.id, weight, priorAmount, tile.trashAmount)
     self.game.addAnimation(PickUpAnimation(self.id,tile.id, tile.x, tile.y,weight))
-    #print "dude picked up some trash"
     return True
 
   def drop(self, x, y, weight):
@@ -340,13 +334,7 @@ class Fish(Mappable):
     tile = self.game.getTile(x,y)
     tile.trashAmount += weight
     self.carryingWeight -= weight
-<<<<<<< HEAD
- #   print "drop tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
-    self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, weight))
-=======
-    print "drop tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
     self.game.addAnimation(DropAnimation(self.id,tile.id, tile.x, tile.y, weight))
->>>>>>> 576ce52e799d199dafbb0f2c3439698ea51c4aa2
     self.addTrash(x,y,weight)
     return True
 
@@ -384,7 +372,6 @@ class Fish(Mappable):
     elif self.x == x and self.y == y:
       return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
 
-    #print "attacking a dude with another dude"
     #Add target to list of attacked targets
     self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp

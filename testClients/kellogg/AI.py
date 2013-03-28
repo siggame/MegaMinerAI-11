@@ -116,7 +116,9 @@ class AI(BaseAI):
 
   def pickUpNearestTrash(self,fish):
     #find nearest trash
-    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.coorDict}
+    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.coorDict if not self.isSafe(key[0])}
+    if len(trashDir)<1:
+      return False
     trash = self.getTile(trashDir[min(trashDir)][0],trashDir[min(trashDir)][1])
     self.moveTo(fish,trash)
     if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
@@ -125,11 +127,22 @@ class AI(BaseAI):
       if amount>0:
         y = fish.pickUp(trash.x,trash.y,amount) 
         if y:
-          self.coorDict[(trash.x,trash.y)]-=amount 
-          if self.coorDict[(trash.x,trash.y)] == 0:
-           del self.coorDict[(trash.x,trash.y)]
+          self.removeTrash(trash.x,trash.y,amount)
+      return True
+    return False
 
-  def isSafe(self,x,):
+  def addTrash(self,x,y,weight):
+    if (x,y) not in self.coorDict:      
+      self.coorDict[(x,y)] = weight
+    else:
+      self.coorDict[(x,y)] += weight 
+  
+  def removeTrash(self,x,y,weight):
+    self.coorDict[(x,y)]-=weight
+    if self.coorDict[(x,y)] == 0:
+      del self.coorDict[(x,y)]
+
+  def isSafe(self,x):
     if self.playerID==0 and x>self.mapWidth/2+self.boundLength:
       return True
     elif self.playerID==1 and x<self.mapWidth/2-self.boundLength:
@@ -138,24 +151,20 @@ class AI(BaseAI):
 
   def pushTrash(self,fish):
     theirTiles = [tile for tile in self.tiles if self.isSafe(tile.x) and tile.owner==2]
-   # print [tile for tile in self.tiles if not self.isSafe(tile.x) and tile.owner==2]
     tile = random.choice(theirTiles)
     self.moveTo(fish,tile)
     if self.distance(fish.x,fish.y,tile.x,tile.y) == 1 and fish.carryingWeight>0:
       y = fish.drop(tile.x,tile.y,fish.carryingWeight)
-      if (tile.x,tile.y) not in self.coorDict:      
-        self.coorDict[(tile.x,tile.y)] = fish.carryingWeight
-      else:
-        self.coorDict[(tile.x,tile.y)] += fish.carryingWeight 
+      self.addTrash(tile.x,tile.y,fish.carryingWeight)
+      return True
     elif self.isSafe(fish.x):
       for adj in self.adjacentList:
         if fish.carryingWeight>0:
           y = fish.drop(fish.x+adj[0],fish.y+adj[1],fish.carryingWeight)  
         if y:
-          if (fish.x+adj[0],fish.y+adj[1]) not in self.coorDict:      
-            self.coorDict[(fish.x+adj[0],fish.y+adj[1])] = fish.carryingWeight
-          else:
-            self.coorDict[(fish.x+adj[0],fish.y+adj[1])] += fish.carryingWeight
+          self.addTrash(fish.x+adj[0],fish.y+adj[1],fish.carryingWeight)
+        return True
+    return False
 
   def smartSpawn(self):
     seasonal = self.seasonDict[self.currentSeason]
@@ -171,7 +180,6 @@ class AI(BaseAI):
     self.myPlayer = self.players[self.playerID]
     
     self.coorDict = {(tile.x,tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount>0}
-    self.amountDict = {value:key for key,value in self.coorDict.items()}
 
     self.myPlayer.talk("I'm so happy to be olive")
     self.smartSpawn()
@@ -184,7 +192,7 @@ class AI(BaseAI):
         
     for fish in self.fishes: 
       if fish.owner==self.playerID and fish.carryCap>0:
-        if fish.carryCap != fish.carryingWeight:    
+        if fish.carryCap >= fish.carryingWeight:    
           self.pickUpNearestTrash(fish)
         else:
           self.pushTrash(fish) 
