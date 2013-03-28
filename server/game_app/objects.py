@@ -302,7 +302,7 @@ class Fish(Mappable):
     #add weight to fish
     self.carryingWeight += weight
     print "pickup fish id is %i tile id is %i weight is %i priorAmount was %i new amount is %i"%(self.id, tile.id, weight, priorAmount, tile.trashAmount)
-    self.game.addAnimation(PickUpAnimation(self.id,tile.id, x,y,weight))
+    self.game.addAnimation(PickUpAnimation(self.id,tile.id, tile.x, tile.y,weight))
     #print "dude picked up some trash"
     return True
 
@@ -339,7 +339,7 @@ class Fish(Mappable):
     tile.trashAmount += weight
     self.carryingWeight -= weight
     print "drop tile id is %i fish id is %i trash amount is %i, weight is %i"%(tile.id,self.id,tile.trashAmount,weight)
-    self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, weight))
+    self.game.addAnimation(DropAnimation(self.id,tile.id, tile.x, tile.y, weight))
     self.addTrash(x,y,weight)
     return True
 
