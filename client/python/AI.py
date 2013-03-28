@@ -2,8 +2,11 @@
 from BaseAI import BaseAI
 from GameObject import *
 
+SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH = range(12)
+
 class AI(BaseAI):
   """The class implementing gameplay logic."""
+
   @staticmethod
   def username():
     return "Shell AI"

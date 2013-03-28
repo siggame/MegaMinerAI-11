@@ -20,7 +20,7 @@ public class Mappable
     iteration = BaseAI.iteration;
   }
 
-  public bool validify()
+  virtual public bool validify()
   {
     if(iteration == BaseAI.iteration) return true;
     for(int i = 0; i < BaseAI.mappables.Length; i++)

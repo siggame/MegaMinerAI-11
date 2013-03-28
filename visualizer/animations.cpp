@@ -49,25 +49,30 @@ namespace visualizer
 
     void DrawFish::animate(const float &t, AnimData *d, IGame *game)
     {
-        game->renderer->setColor( Color( 1, 1, 1, 1 ) );
-
         unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
         float subT = m_Fish->m_moves.size() * t - index;
 
-        glm::vec2 pos = m_Fish->m_moves[index].from + (m_Fish->m_moves[index].to - m_Fish->m_moves[index].from) * subT;
+        glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
+        glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish");
+        game->renderer->setColor( Color( 1, 1, 1, 1 ) );
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1,1,"fish",m_Fish->flipped || (diff.x > 0.0f));
     }
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
     {
+        /*if((m_Trash->moveTurn == game->timeManager->getTurn()) && t < 0.8f)
+            return;*/
+
         // todo: someone needs to make the trash get darker based on the amount of trash
         game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
         game->renderer->drawTexturedQuad(m_Trash->x,m_Trash->y,1,1,"trash");
 
         stringstream stream;
         stream << m_Trash->amount;
+        game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
         game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),5);
+
     }
 
 }

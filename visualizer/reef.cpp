@@ -167,7 +167,6 @@ namespace visualizer
       RenderWorld();
       RenderObjectSelection();
 
-
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
@@ -239,8 +238,6 @@ namespace visualizer
       ostringstream stream;
       stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
-
-
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
@@ -398,6 +395,8 @@ namespace visualizer
               tile.spriteId = 2;
           }
 
+          (*pMap)(iter->second.y,iter->second.x).id = iter->second.id;
+
       }
 
       // Draw other coral on the bottom of the map.
@@ -415,11 +414,13 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
+    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" << "Fish Health" << "Max Health" << "Attack Power" /*<< "Owner" << "Type"*/;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
     animationEngine->registerGame(0, 0);
+
+    std::map<int,bool> dirMap;
 
     SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
     pMap->addKeyFrame( new DrawMap( pMap ) );
@@ -462,7 +463,6 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-           // cout<<"Turn: "<<state<<" animation:"<<j->type<<endl;
             if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
@@ -482,44 +482,38 @@ namespace visualizer
                     }
                     else
                     {
-                        BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+                        BasicTrash& trash = m_Trash[state][(*pMap)(dropAnim.y,dropAnim.x).id];
                         trash.amount += dropAnim.amount;
-                        cout<<dropAnim.amount<<endl;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
+
+                        /*if(trash.amount == 0)
+                        {
+                            trash.moveTurn = state;
+                        }*/
                     }
                 }
                 else
                 {
-                    //todo: do something with the pickup
-                    //cout<<"Pickup~!!!!!!!!!!!!!1?"<<endl;
-
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
-                        BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
+                        BasicTrash& trash = m_Trash[state][(*pMap)(pickupAnim.y,pickupAnim.x).id];
+                        //trash.moveTurn = state;
 
-                        if(trash.amount >= 1)
+                        if(trash.amount == 0)
                         {
-                            trash.amount -= pickupAnim.amount;
-
-                            if(trash.amount < 1)
-                            {
-                                m_Trash[state].erase(pickupAnim.targetID);
-                            }
+                            cout<<"\n\nTurn: "<<state<<" No Trash on the tile for pickup"<<endl;
+                            cout<<'('<<pickupAnim.x<<','<<pickupAnim.y<<')'<<endl<<endl;
                         }
-                        else
+
+                        trash.amount -= pickupAnim.amount;
+
+                        if(trash.amount < 1)
                         {
-                            cout<<"Turn: "<<state<<" "<<"This should not happen"<<endl;
-                            //m_Trash[state].erase(pickupAnim.targetID);
+                           m_Trash[state].erase( (*pMap)(pickupAnim.y,pickupAnim.x).id);
                         }
                     }
-                    else
-                    {
-                        cout<<"They are picking up nothing"<<endl;
-                    }
-                    
-
                 }
 
             }
@@ -528,6 +522,28 @@ namespace visualizer
         if(newFish->m_moves.empty())
         {
             newFish->m_moves.push_back(Fish::Moves(glm::vec2(p.second.x, p.second.y),glm::vec2(p.second.x, p.second.y)));
+
+            auto iter = dirMap.find(p.second.id);
+            newFish->flipped = (iter != dirMap.end() ? iter->second : false);
+        }
+        else if(newFish->m_moves.size() > 0)
+        {
+            glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
+                             (newFish->m_moves[newFish->m_moves.size() - 1].from);
+            dirMap[p.second.id] = diff.x > 0.0f;
+        }
+
+        // the fish is dead next turn
+        // todo: check to make sure this is correct
+        if( (state + 1) < m_game->states.size() )
+        {
+          if(m_game->states[ state + 1 ].fishes.find( p.second.id ) == m_game->states[ state + 1 ].fishes.end())
+          {
+              BasicTrash& trash = m_Trash[state][(*pMap)(p.second.y,p.second.x).id];
+              trash.amount += p.second.carryingWeight;
+              trash.x = p.second.x;
+              trash.y = p.second.y;
+          }
         }
 
         newFish->owner = p.second.owner;
@@ -543,12 +559,16 @@ namespace visualizer
         newFish->range = p.second.range;
         newFish->species = p.second.species;
 
+
         //turn[p.second.id]["Owner"] = p.second.owner;
         //turn[p.second.id]["Type"] = "fish";
         turn[p.second.id]["Species"] = p.second.species;
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y; //carryingWeight
+        turn[p.second.id]["Fish Health"] = p.second.currentHealth;
+        turn[p.second.id]["Max Health"] = p.second.maxHealth;
+        turn[p.second.id]["Attack Power"] = p.second.attackPower;
        // p.second.
 
 
@@ -557,6 +577,7 @@ namespace visualizer
         //cout<<"created a fish! "<<newFish->m_moves[0].from.x<<endl;
 
      }
+
 
       //cout<<"Trash Amount: " <<  m_Trash[state].size() << endl;
 
@@ -586,6 +607,7 @@ namespace visualizer
       {
           // Draw the trash
           SmartPointer<Trash> trashSprite = new Trash(iter->second.x,iter->second.y,iter->second.amount);
+          //trashSprite->moveTurn = iter->second.moveTurn;
           trashSprite->addKeyFrame(new DrawTrash(trashSprite));
 
           turn.addAnimatable(trashSprite);
