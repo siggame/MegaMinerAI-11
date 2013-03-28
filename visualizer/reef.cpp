@@ -417,7 +417,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" /*<< "Owner" << "Type"*/;
+    header<<"Species" << "carryingWeight" << "Trash Amount" << "X" << "Y" << "Fish Health" << "Max Health" << "Attack Power" /*<< "Owner" << "Type"*/;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -575,6 +575,9 @@ namespace visualizer
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y; //carryingWeight
+        turn[p.second.id]["Fish Health"] = p.second.currentHealth;
+        turn[p.second.id]["Max Health"] = p.second.maxHealth;
+        turn[p.second.id]["Attack Power"] = p.second.attackPower;
        // p.second.
 
 
