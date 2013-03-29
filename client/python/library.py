@@ -62,6 +62,9 @@ library.playerTalk.argtypes = [c_void_p, c_char_p]
 # accessors
 
 #Globals
+library.getMaxReefHealth.restype = c_int
+library.getMaxReefHealth.argtypes = [c_void_p]
+
 library.getBoundLength.restype = c_int
 library.getBoundLength.argtypes = [c_void_p]
 

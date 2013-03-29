@@ -26,6 +26,7 @@ public interface Client extends Library {
   int playerTalk(Pointer object, String message);
 
     //accessors
+  int getMaxReefHealth(Pointer connection);
   int getBoundLength(Pointer connection);
   int getTurnNumber(Pointer connection);
   int getPlayerID(Pointer connection);

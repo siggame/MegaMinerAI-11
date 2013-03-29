@@ -8,6 +8,10 @@
 namespace client
 {
 
+int BaseAI::maxReefHealth()
+{
+  return getMaxReefHealth(c);
+}
 int BaseAI::boundLength()
 {
   return getBoundLength(c);

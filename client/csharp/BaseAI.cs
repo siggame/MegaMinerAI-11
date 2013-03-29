@@ -86,6 +86,12 @@ public abstract class BaseAI
   }
 
 
+  ///The maximum and initial health of each player's reef.
+  public int maxReefHealth()
+  {
+    int value = Client.getMaxReefHealth(connection);
+    return value;
+  }
   ///How far the shared zone extends from the center
   public int boundLength()
   {

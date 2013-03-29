@@ -32,6 +32,8 @@ protected:
   std::vector<Fish> fishes;
   std::vector<Player> players;
 public:
+  ///The maximum and initial health of each player's reef.
+  int maxReefHealth();
   ///How far the shared zone extends from the center
   int boundLength();
   ///How many turns it has been since the beginning of the game

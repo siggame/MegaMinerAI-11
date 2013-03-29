@@ -30,6 +30,7 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
+    self.maxReefHealth = None
     self.boundLength = None
     self.turnNumber = None
     self.playerID = None
@@ -110,6 +111,7 @@ class Match(DefaultGameWorld):
     if( self.logJson ):
       self.dictLog['turns'].append(
         dict(
+          maxReefHealth = self.maxReefHealth,
           boundLength = self.boundLength,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
@@ -219,7 +221,7 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
+    msg.append(["game", self.maxReefHealth, self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])
