@@ -189,6 +189,7 @@ struct GameState
   std::map<int,Fish> fishes;
   std::map<int,Player> players;
 
+  int maxReefHealth;
   int boundLength;
   int turnNumber;
   int playerID;

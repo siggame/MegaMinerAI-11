@@ -171,6 +171,7 @@ std::ostream& operator<<(std::ostream& stream, deStealth ob)
 
 std::ostream& operator<<(std::ostream& stream, GameState ob)
 {
+  stream << "maxReefHealth: " << ob.maxReefHealth  <<'\n';
   stream << "boundLength: " << ob.boundLength  <<'\n';
   stream << "turnNumber: " << ob.turnNumber  <<'\n';
   stream << "playerID: " << ob.playerID  <<'\n';

@@ -729,6 +729,9 @@ static bool parseSexp(Game& game, sexp_t* expression)
       {
           sub = sub->next;
           if ( !sub ) return false;
+          gs.maxReefHealth = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
           gs.boundLength = atoi(sub->val);
           sub = sub->next;
           if ( !sub ) return false;

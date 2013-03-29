@@ -39,6 +39,8 @@ public class Client {
 
     //accessors
   [DllImport("client")]
+  public static extern int getMaxReefHealth(IntPtr connection);
+  [DllImport("client")]
   public static extern int getBoundLength(IntPtr connection);
   [DllImport("client")]
   public static extern int getTurnNumber(IntPtr connection);

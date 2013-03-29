@@ -55,6 +55,7 @@ DLLEXPORT Connection* createConnection()
   pthread_mutex_init(&c->mutex, NULL);
   #endif
 
+  c->maxReefHealth = 0;
   c->boundLength = 0;
   c->turnNumber = 0;
   c->playerID = 0;
@@ -754,6 +755,9 @@ DLLEXPORT int networkLoop(Connection* c)
         if(string(sub->val) == "game")
         {
           sub = sub->next;
+          c->maxReefHealth = atoi(sub->val);
+          sub = sub->next;
+
           c->boundLength = atoi(sub->val);
           sub = sub->next;
 
@@ -961,6 +965,10 @@ DLLEXPORT int getPlayerCount(Connection* c)
 }
 
 
+DLLEXPORT int getMaxReefHealth(Connection* c)
+{
+  return c->maxReefHealth;
+}
 DLLEXPORT int getBoundLength(Connection* c)
 {
   return c->boundLength;

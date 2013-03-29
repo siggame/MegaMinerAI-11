@@ -26,6 +26,7 @@ Mappable = Model('Mappable',
 )
 
 globals = [
+  Variable('maxReefHealth', int, 'The maximum and initial health of each player\'s reef.'),
   Variable('boundLength', int, 'How far the shared zone extends from the center'),
   Variable('turnNumber', int, 'How many turns it has been since the beginning of the game'),
   Variable('playerID', int, 'Player Number; either 0 or 1'),

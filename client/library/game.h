@@ -31,6 +31,7 @@ struct Connection
   pthread_mutex_t mutex;
   #endif
   
+  int maxReefHealth;
   int boundLength;
   int turnNumber;
   int playerID;
@@ -92,6 +93,7 @@ extern "C"
 
 //accessors
 
+DLLEXPORT int getMaxReefHealth(Connection* c);
 DLLEXPORT int getBoundLength(Connection* c);
 DLLEXPORT int getTurnNumber(Connection* c);
 DLLEXPORT int getPlayerID(Connection* c);

@@ -14,6 +14,9 @@ client/library/sexp/lex.yy.*
 *.gamelog
 *.glog
 
+#Pycharm IDE Info doesn't go in the repository.
+.idea/
+
 #Visual studio files don't go in the repository
 #Visual Studio files
 *.[Oo]bj

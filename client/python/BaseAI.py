@@ -50,6 +50,11 @@ class BaseAI:
     return r
   #\endcond
   #\cond
+  def getMaxReefHealth(self):
+    return library.getMaxReefHealth(self.connection)
+  #\endcond
+  maxReefHealth = property(getMaxReefHealth)
+  #\cond
   def getBoundLength(self):
     return library.getBoundLength(self.connection)
   #\endcond
