@@ -170,30 +170,43 @@ namespace visualizer
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
-  void Reef::RenderPlayerName(int id, float xPos) const
-  {
-      const char* name = m_game->states[0].players[id].playerName;
-      renderer->drawText(xPos,-4.0f,"Roboto",name,4.0f);
-  }
 
-  void Reef::RenderReefHealthBar(int id, float xPos) const
+  void Reef::RenderPlayerInfo(int id, float xPos) const
   {
       int turn = timeManager->getTurn();
-      const ReefInfo& info = m_ReefInfo[id + turn * 2];
+      int index = id + turn * 2; // index into the player info vector
+      const char* name = m_game->states[0].players[id].playerName;
+      const ReefPlayerInfo& info = m_ReefPlayerInfo[index];
+      float currentPercent = info.currentReefHealth/15000.0f; // current power lvl
+
+      stringstream stream;
+      stream << m_ReefPlayerInfo[index].time;
+
+      // Render AI's time
+      renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
+      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+
+      // Render the health bars
+      renderer->setColor(Color(.2f,0.2f,0.2f,1.0f));
+      renderer->drawQuad(xPos + m_game->states[0].mapWidth/3.0f, // x
+                         -SEA_OFFSET + 0.7f, // y
+                         -(1.0f - currentPercent) *m_game->states[0].mapWidth/3.0f, // width
+                         0.5f); // height
 
       renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-      renderer->drawQuad(xPos, -3.0f, info.currentReefHealth/10000.0f * m_game->states[0].mapWidth/3.0f, 1.0f);
+      renderer->drawQuad(xPos, // x
+                         -SEA_OFFSET + 0.7f, // y
+                         currentPercent * m_game->states[0].mapWidth/3.0f, // width
+                         0.5f); // height
   }
 
   void Reef::RenderPlayerInfo() const
   {
-      float xPos = 2.0f * m_game->states[0].mapWidth / 3.0f;
+      float xPos = 1.8f * m_game->states[0].mapWidth / 3.0f;
 
-      RenderPlayerName(0);
-      RenderPlayerName(1,xPos);
-
-      RenderReefHealthBar(0);
-      RenderReefHealthBar(1,xPos);
+      RenderPlayerInfo(0);
+      RenderPlayerInfo(1,xPos);
   }
 
   void Reef::RenderSpecies() const
@@ -203,10 +216,10 @@ namespace visualizer
       static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
-          glm::vec4(1.0f,0.8f,0.8f,0.0f),
-          glm::vec4(.2f,0.8f,0.2f,0.0f),
+          glm::vec4(0.8f,0.8f,0.8f,0.0f),
+          glm::vec4(.2f,0.7f,0.2f,0.0f),
           glm::vec4(1.0f,0.3f,0.1f,0.0f),
-          glm::vec4(.8f,0.4f,0.5f,0.0f)
+          glm::vec4(.4f,0.4f,0.5f,0.0f)
       };
 
       int turn = timeManager->getTurn();
@@ -252,7 +265,8 @@ namespace visualizer
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
       for(int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
-        renderer->drawSubTexturedQuad(i,-1.0f,1.0f,1.0f,(fSeconds),0.0f,1,1,"waves");
+        renderer->drawSubTexturedQuad(i,-0.5f,0.5f,0.5f,(fSeconds),0.0f,1,1,"waves");
+        renderer->drawSubTexturedQuad(i+ 0.5f,-0.5f,0.5f,0.5f,(fSeconds),0.0f,1,1,"waves");
       }
 
       //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");
@@ -344,7 +358,7 @@ namespace visualizer
     // Setup the renderer as a 4 x 4 map by default
     // TODO: Change board size to something useful
     renderer->setCamera( 0, SEA_OFFSET, m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET);
-    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight+SEA_OFFSET );
+    renderer->setGridDimensions( m_game->states[0].mapWidth, m_game->states[0].mapHeight + SEA_OFFSET );
 
     // we must clear the previous games data
     m_selectedUnitIDs.clear();
@@ -353,8 +367,9 @@ namespace visualizer
     m_Species.clear();
     m_Species.resize(4);
 
-    m_ReefInfo.clear();
- 
+    m_ReefPlayerInfo.clear();
+    m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
+
     start();
   } // Reef::loadGamelog()
 
@@ -411,6 +426,7 @@ namespace visualizer
 
     std::map<int,bool> dirMap;
 
+    // todo: this map should be removed
     SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
     pMap->addKeyFrame( new DrawMap( pMap ) );
 
@@ -438,7 +454,7 @@ namespace visualizer
       for( auto& p : m_game->states[ state ].players )
       {
           // todo: I could resize this vector
-          m_ReefInfo.push_back(ReefInfo(p.second.currentReefHealth,p.second.spawnFood));
+          m_ReefPlayerInfo.push_back(ReefPlayerInfo(p.second.currentReefHealth,p.second.spawnFood,p.second.time));
       }
 
       // for each fish in the current turn
@@ -572,6 +588,20 @@ namespace visualizer
           turn[iter->first]["Trash Amount"] = iter->second.amount;
           turn[iter->first]["X"] = iter->second.x;
           turn[iter->first]["Y"] = iter->second.y;
+      }
+
+      // When the game if over, display who won
+      if( m_game->states.size() == state + 1)
+      {
+          const char* playerName = m_game->states[state].players[m_game->winner].playerName;
+          SmartPointer<SplashScreen> splashScreen = new SplashScreen(m_game->winReason,playerName,
+                                                                     m_game->states[state].mapWidth,
+                                                                     m_game->states[state].mapHeight
+                                                                     );
+
+          splashScreen->addKeyFrame(new DrawSplashScreen(splashScreen));
+
+          turn.addAnimatable(splashScreen);
       }
 
       animationEngine->buildAnimations(turn);
