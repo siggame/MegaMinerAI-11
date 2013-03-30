@@ -5,6 +5,10 @@
 #include "BaseAI.h"
 #include "game.h"
 
+int BaseAI::maxReefHealth()
+{
+  return getMaxReefHealth(c);
+}
 int BaseAI::boundLength()
 {
   return getBoundLength(c);
