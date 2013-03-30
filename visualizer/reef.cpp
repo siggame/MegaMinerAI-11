@@ -173,11 +173,11 @@ namespace visualizer
 
   void Reef::RenderPlayerInfo(int id, float xPos) const
   {
+      const char* name = m_game->states[0].players[id].playerName;
       int turn = timeManager->getTurn();
       int index = id + turn * 2; // index into the player info vector
-      const char* name = m_game->states[0].players[id].playerName;
       const ReefPlayerInfo& info = m_ReefPlayerInfo[index];
-      float currentPercent = info.currentReefHealth/15000.0f; // current power lvl
+      float currentPercent = (float)info.currentReefHealth / (float)m_game->states[0].maxReefHealth; // current power lvl
 
       stringstream stream;
       stream << m_ReefPlayerInfo[index].time;

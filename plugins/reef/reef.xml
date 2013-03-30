@@ -2,7 +2,7 @@
   <option>
     <key>Enable Bubbles</key>
     <type>Integer</type>
-    <value>0</value>
+    <value>1</value>
     <minvalue>0</minvalue>
     <maxvalue>1</maxvalue>
   </option>
@@ -16,7 +16,7 @@
   <option>
     <key>Water Transparency Level</key>
     <type>Float</type>
-    <value>25</value>
+    <value>16</value>
     <minvalue>0</minvalue>
     <maxvalue>100</maxvalue>
   </option>
