@@ -8,7 +8,7 @@ enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN
 
 const char* AI::username()
 {
-  return "Shell AI";
+  return "Anthony";
 }
 
 const char* AI::password()
@@ -23,6 +23,7 @@ void AI::init(){}
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
 {
+  //
   return true;
 }
 
