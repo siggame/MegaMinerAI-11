@@ -79,6 +79,8 @@ namespace visualizer
             "cleaner_shrimp",
         };*/
 
+	
+
         unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
         float subT = m_Fish->m_moves.size() * t - index;
 
@@ -87,6 +89,15 @@ namespace visualizer
 
         game->renderer->setColor( GetTeamColor(m_Fish->owner) );
         game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,"angelfish",m_Fish->flipped || (diff.x > 0.0f));
+
+	if(m_Fish->carryingWeight > 0)
+	{
+		ostringstream stream;
+        stream << m_Fish->carryingWeight;
+		game->renderer->setColor( Color(1.0f,1.0f,0.0f,1.0f) );
+		game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),3.0f);
+	}
+
     }
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)

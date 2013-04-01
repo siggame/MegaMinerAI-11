@@ -216,10 +216,11 @@ namespace visualizer
       static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
-          glm::vec4(0.8f,0.8f,0.8f,0.0f),
-          glm::vec4(.2f,0.7f,0.2f,0.0f),
-          glm::vec4(1.0f,0.3f,0.1f,0.0f),
-          glm::vec4(.4f,0.4f,0.5f,0.0f)
+          glm::vec4(0.5f,0.5f,0.5f,0.0f), // white
+          glm::vec4(.2f,0.7f,0.2f,0.0f), // greenish
+ 	  glm::vec4(.4f,0.4f,0.5f,0.0f), // silverish blue
+          glm::vec4(1.0f,0.3f,0.1f,0.0f) // red-orange
+         
       };
 
       int turn = timeManager->getTurn();
@@ -525,12 +526,16 @@ namespace visualizer
         {
             newFish->m_moves.push_back(Fish::Moves(glm::vec2(p.second.x, p.second.y),glm::vec2(p.second.x, p.second.y)));
 
+	    //take current direction of the fish
             auto iter = dirMap.find(p.second.id);
+	    //permanently flips the fish for a turn
+	    // todo: conditional operator can be removed
             newFish->flipped = (iter != dirMap.end() ? iter->second : false);
         }
         else if(newFish->m_moves.size() > 0)
         {
-            glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
+            //caching the fish's direction at end of turn
+	    glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
                              (newFish->m_moves[newFish->m_moves.size() - 1].from);
             dirMap[p.second.id] = diff.x > 0.0f;
         }
@@ -553,13 +558,14 @@ namespace visualizer
         newFish->currentHealth = p.second.currentHealth;
         newFish->maxMovement = p.second.maxMovement;
         newFish->movementLeft = p.second.movementLeft;
-        newFish->carryCap = p.second.carryingWeight;
+        newFish->carryCap = p.second.carryCap;
         newFish->attackPower = p.second.attackPower;
         newFish->isVisible = p.second.isVisible;
         newFish->maxAttacks = p.second.maxAttacks;
         newFish->attacksLeft = p.second.attacksLeft;
         newFish->range = p.second.range;
         newFish->species = p.second.species;
+	newFish->carryingWeight = p.second.carryingWeight;
 
         turn[p.second.id]["Species"] = p.second.species;
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
