@@ -34,6 +34,7 @@ namespace visualizer
     m_suicide=false;
 
     m_WaterTimer.start();
+    m_BubbleTimer.start();
 
     srand(time(0));
   } // Reef::Reef()
@@ -88,20 +89,35 @@ namespace visualizer
   }
 
   void Reef::UpdateBubbles()
-  {
-      bool bEnableBubbles = options->getNumber("Enable Bubbles") > 0;
+  { 
+      int delay = (int)options->getNumber("Bubble Emitting Delay(ms)");
 
-      if(bEnableBubbles && m_Bubbles.size() < 4)
+      if(m_BubbleTimer.elapsed() > delay )
       {
-          int width = m_game->states[0].mapWidth;
+          m_BubbleTimer.restart();
 
-          glm::vec2 pos(GetRandFloat(0.0f,width),m_game->states[0].mapHeight - 0.5f);
-          Color color(1.0f,1.0f,1.0f,0.7f);
-          float maxAge = GetRandFloat(2.0f,5.0f);
-          float angle = GetRandFloat(0.523598f,2.61799f);
-          float speed = GetRandFloat(1.0f,5.0f);
-          m_Bubbles.push_back(Bubble(pos,color,speed,angle,maxAge));
+          bool bEnableBubbles = options->getNumber("Enable Bubbles") > 0;
+          if(bEnableBubbles /*&& m_Bubbles.size() < 120*/)
+          {
+              int width = m_game->states[0].mapWidth;
+              int sharedLength = m_game->states[0].boundLength;
+
+              float xPos = (rand() % 2 == 0) ? (sharedLength + 1.0f): (width - sharedLength - 1.5f);
+
+              glm::vec2 pos(xPos,m_game->states[0].mapHeight - 0.5f);
+              Color color(1.0f,1.0f,1.0f,0.5f); // todo: maybe change the color of the bubbles
+
+              float maxAge = GetRandFloat(1.0f,3.0f);
+              //float angle = GetRandFloat(0.523598f,2.61799f);
+              float angle = 1.570796f; // pi/2, up
+              float speed = GetRandFloat(3.0f,6.0f);
+
+              // Add a bubble to be rendered
+              m_Bubbles.push_back(Bubble(pos,color,speed,angle,maxAge));
+          }
+
       }
+
 
       for(auto iter = m_Bubbles.begin(); iter != m_Bubbles.end(); )
       {
@@ -218,7 +234,7 @@ namespace visualizer
       {
           glm::vec4(0.5f,0.5f,0.5f,0.0f), // white
           glm::vec4(.2f,0.7f,0.2f,0.0f), // greenish
- 	  glm::vec4(.4f,0.4f,0.5f,0.0f), // silverish blue
+          glm::vec4(.4f,0.4f,0.5f,0.0f), // silverish blue
           glm::vec4(1.0f,0.3f,0.1f,0.0f) // red-orange
          
       };

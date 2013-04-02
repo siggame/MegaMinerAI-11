@@ -1,5 +1,12 @@
 <options>
   <option>
+    <key>Bubble Emitting Delay(ms)</key>
+    <type>Float</type>
+    <value>83</value>
+    <minvalue>1</minvalue>
+    <maxvalue>200</maxvalue>
+  </option>
+  <option>
     <key>Enable Bubbles</key>
     <type>Integer</type>
     <value>1</value>
@@ -16,7 +23,7 @@
   <option>
     <key>Water Transparency Level</key>
     <type>Float</type>
-    <value>16</value>
+    <value>31</value>
     <minvalue>0</minvalue>
     <maxvalue>100</maxvalue>
   </option>
