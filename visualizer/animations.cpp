@@ -55,31 +55,21 @@ namespace visualizer
     void DrawFish::animate(const float &t, AnimData *d, IGame *game)
     {
         // todo: we could just combine all of these sprites into a sprite sheet
-       /* const char* const speciesNames[12] =
+        const char* const speciesNames[12] =
         {
             "seastar",
-            "spong",
+            "jellyfish", // spong, not added yet
             "angelfish",
-            "coneshell_snail",
-            "sea_urchin",
-            "octopus",
+            "coneshell",
+            "seaurchin", //
+            "coneshell", // octopus not added yet
             "tomcod",
-            "reef_shark",
-            "cuttlefish",
-            "cleaner_shrimp",
+            "shark",
+            "tomcod", // cuttlefish not added yet
+            "shrimp",
             "electric_eel",
             "jellyfish"
-        };*/
-
-        // currently available sprites
-        /*const char* const speciesNames[3] =
-        {
-            "angelfish",
-            "sea_urchin",
-            "cleaner_shrimp",
-        };*/
-
-	
+        };
 
         unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
         float subT = m_Fish->m_moves.size() * t - index;
@@ -87,8 +77,9 @@ namespace visualizer
         glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-        game->renderer->setColor( GetTeamColor(m_Fish->owner) );
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,"angelfish",m_Fish->flipped || (diff.x > 0.0f));
+        game->renderer->setColor( GetTeamColor(m_Fish->owner) ); //
+
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,speciesNames[m_Fish->species],m_Fish->flipped || (diff.x > 0.0f));
 
 	if(m_Fish->carryingWeight > 0)
 	{
