@@ -12,6 +12,7 @@ texture tomcod textures/TomCod.png
 texture electric_eel textures/ElectricEel.png
 texture coneshell textures/ConeShell.png
 texture seastar textures/SeaStar.png
+texture sponge textures/sponge.png
 
 animation coral textures/coral.png
 animation trash textures/Trash.png

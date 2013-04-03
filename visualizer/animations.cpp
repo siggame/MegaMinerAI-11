@@ -58,7 +58,7 @@ namespace visualizer
         const char* const speciesNames[12] =
         {
             "seastar",
-            "jellyfish", // spong, not added yet
+            "sponge",
             "angelfish",
             "coneshell",
             "seaurchin", //
@@ -77,7 +77,7 @@ namespace visualizer
         glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-        game->renderer->setColor( GetTeamColor(m_Fish->owner) ); //
+        game->renderer->setColor( GetTeamColor(m_Fish->owner) );
 
         game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,speciesNames[m_Fish->species],m_Fish->flipped || (diff.x > 0.0f));
 
