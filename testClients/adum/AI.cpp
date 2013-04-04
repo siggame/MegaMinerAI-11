@@ -13,8 +13,20 @@ const char* AI::password()
    return "password";
 }
 
+int xChange;
+
 //This function is run once, before your first turn.
-void AI::init(){}
+void AI::init()
+{
+   if(playerID() == 0)
+   {
+      xChange = 1;
+   }
+   else
+   {
+      xChange = -1;
+   }
+}
 
 Fish* getFish(int x,int y,std::vector<Fish>& fishes)
 {
@@ -74,36 +86,63 @@ bool AI::run()
             if(y>fishes[i].y())
             {
                int crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()+1].trashAmount();
-               fishes[i].move(fishes[i].x(),fishes[i].y()+1);
+               if(crap > fishes[i].carryCap())
+               {
+                  crap = fishes[i].carryCap();
+               }
                fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,crap);
+               if(fishes[i].move(fishes[i].x(),fishes[i].y()+1));
+               else(fishes[i].move(fishes[i].x()+xChange,fishes[i].y()));
             }
             else
             {
                int crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()-1].trashAmount();
-               fishes[i].move(fishes[i].x(),fishes[i].y()-1);
+               if(crap > fishes[i].carryCap())
+               {
+                  crap = fishes[i].carryCap();
+               }
                fishes[i].pickUp(fishes[i].x(),fishes[i].y()-1,crap);
+               if(fishes[i].move(fishes[i].x(),fishes[i].y()-1));
+               else(fishes[i].move(fishes[i].x()+xChange,fishes[i].y()));
             }
          }
          else
          {
-            fishes[i].move(fishes[i].x()+1,fishes[i].y());
+            //hahaha this code
+            if(fishes[i].move(fishes[i].x() + xChange,fishes[i].y()));
+            else if(fishes[i].move(fishes[i].x(),fishes[i].y() - 1));
+            else(fishes[i].move(fishes[i].x(),fishes[i].y() + 1));
          }
 
-         fishes[i].pickUp(fishes[i].x()+1,fishes[i].y(),1);
-         Fish* target=getFish(fishes[i].x()+1,fishes[i].y(),fishes);
+         int pickUpJunk = tiles[fishes[i].x() * mapHeight() + fishes[i].y()].trashAmount();
+         if(pickUpJunk > fishes[i].carryCap() - fishes[i].carryingWeight())
+         {
+            pickUpJunk = fishes[i].carryCap() - fishes[i].carryingWeight();
+         }
+
+         fishes[i].pickUp(fishes[i].x()+xChange,fishes[i].y(),pickUpJunk);
+
+         Fish* target=getFish(fishes[i].x()+xChange,fishes[i].y(),fishes);
          if(target!=NULL)
          {
             fishes[i].attack(*target);
          }
-         if(fishes[i].x() > mapWidth()/2+boundLength())
+         if(xChange == 1)
          {
-            fishes[i].drop(fishes[i].x()+1,fishes[i].y(),fishes[i].carryingWeight());
+            if(fishes[i].x() > mapWidth()/2+boundLength()+2)
+            {
+               fishes[i].drop(fishes[i].x()-1,fishes[i].y(),fishes[i].carryingWeight());
+            }
+         }
+         else
+         {
+            if(fishes[i].x() < mapWidth()/2-boundLength()-2)
+            {
+               fishes[i].drop(fishes[i].x()+1,fishes[i].y(),fishes[i].carryingWeight());
+            }
          }
       }
    }
-
-   //how wealthy I am by fish
-   std::cout<<"Fishes: "<<fishes.size()<<"\n";
    return true;
 }
 
