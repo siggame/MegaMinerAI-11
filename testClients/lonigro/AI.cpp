@@ -23,22 +23,6 @@ void AI::init(){}
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
 {
-   //spawns fish
-   for(int i=0;i<species.size();i++)
-   {
-      if(species[i].season() == currentSeason() &&
-         species[i].carryCap() > 0)
-      {
-         for(int p=0;p<tiles.size();p++)
-         {
-            if(tiles[p].hasEgg()==false && tiles[p].trashAmount()== 0)
-            {
-               species[i].spawn(tiles[p].x(),tiles[p].y());
-            }
-            
-         }
-      }
-   }
   return true;
 }
 
