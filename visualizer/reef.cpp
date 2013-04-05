@@ -106,7 +106,7 @@ namespace visualizer
               float xPos = middle + sharedLength;
               xPos -= 2*bLeft*sharedLength;
 
-              glm::vec2 pos(xPos - 1.0f,m_game->states[0].mapHeight - 0.5f);
+              glm::vec2 pos(xPos - 0.5f,m_game->states[0].mapHeight - 0.5f);
               Color color(1.0f,1.0f,1.0f,0.5f); // todo: maybe change the color of the bubbles
 
               float maxAge = GetRandFloat(1.0f,3.0f);
