@@ -8,7 +8,7 @@ namespace visualizer
     Color GetTeamColor(int team)
     {
         // todo: need to change these colors
-        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,1.0f,0.1f,1.0f);
+        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
     }
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
@@ -79,16 +79,22 @@ namespace visualizer
 
         game->renderer->setColor( GetTeamColor(m_Fish->owner) );
 
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1.5,1.5,speciesNames[m_Fish->species],m_Fish->flipped || (diff.x > 0.0f));
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1.0f,1.0f,speciesNames[m_Fish->species],m_Fish->flipped || (diff.x > 0.0f));
 
 	if(m_Fish->carryingWeight > 0)
 	{
 		ostringstream stream;
         stream << m_Fish->carryingWeight;
-		game->renderer->setColor( Color(1.0f,1.0f,0.0f,1.0f) );
+		game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
 		game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),3.0f);
 	}
 
+        /*renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
+        renderer->drawQuad(xPos, // x
+                         -SEA_OFFSET + 0.7f, // y
+                         currentPercent * m_game->states[0].mapWidth/3.0f, // width
+                         0.5f); // height
+	*/
     }
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
@@ -103,7 +109,7 @@ namespace visualizer
         stringstream stream;
         stream << m_Trash->amount;
         game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
-        game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),5);
+        game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),3.0f);
 
     }
 

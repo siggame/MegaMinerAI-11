@@ -13,10 +13,6 @@ public:
   virtual void init();
   virtual bool run();
   virtual void end();
-
-  Tile& getTile(int x,int y);
-  int getSpecies(int SpeciesNum);
-  Fish* getFish(int x,int y);
 };
 
 #endif

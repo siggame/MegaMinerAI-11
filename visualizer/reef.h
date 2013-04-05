@@ -50,13 +50,13 @@ namespace visualizer
 
             m_fAge += dt;
 
-            return m_fAge >= m_fMaxAge;
+            return m_fAge >= m_fMaxAge || m_pos.y <= 0.0f;
         }
 
         void Render(const IRenderer& renderer) const
         {
             renderer.setColor(m_color);
-            renderer.drawTexturedQuad(m_pos.x,m_pos.y,1.0f,1.0f,"bubble");
+            renderer.drawTexturedQuad(m_pos.x,m_pos.y,0.5f,0.5f,"bubble");
         }
 
     private:

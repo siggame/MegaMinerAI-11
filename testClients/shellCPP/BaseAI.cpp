@@ -71,7 +71,8 @@ bool BaseAI::startTurn()
   tiles.resize(count);
   for(int i = 0; i < count; i++)
   {
-    tiles[i] = Tile(getTile(c, i));
+    //force global scoping because of the added function
+    tiles[i] = Tile(::getTile(c, i));
   }
 
   count = getSpeciesCount(c);
@@ -79,7 +80,8 @@ bool BaseAI::startTurn()
   species.resize(count);
   for(int i = 0; i < count; i++)
   {
-    species[i] = Species(getSpecies(c, i));
+    //global scope modification
+    species[i] = Species(::getSpecies(c, i));
   }
 
   count = getFishCount(c);
@@ -104,6 +106,40 @@ bool BaseAI::startTurn()
     init();
   }
   return run();
+}
+
+Tile& BaseAI::getTile(int x,int y)
+{
+  //return the tile at the x and y location
+  return tiles[x * mapHeight() + y];
+}
+
+Species& BaseAI::getSpecies(int speciesNum)
+{
+  //loop through all of the species
+  for(int i = 0;i < species.size();i++)
+  {
+    //if the index is the same as the desired species return that index
+    //into the species vector
+    if(species[i].index() == speciesNum)
+    {
+      return species[i];
+    }
+  }
+}
+
+int BaseAI::getFishIndex(int x,int y)
+{
+  //get the fish at location x,y
+  //returns NULL if no fish is found
+  for(int i = 0;i < fishes.size(); i++)
+  {
+    if(fishes[i].x() == x && fishes[i].y() == y)
+    {
+      return i;
+    }
+  }
+  return -1;
 }
 
 BaseAI::BaseAI(Connection* conn) : c(conn) {}
