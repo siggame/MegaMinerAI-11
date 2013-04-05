@@ -176,10 +176,6 @@ class Fish(Mappable):
 
   def nextTurn(self):
     speciesName = self.specName(self.species)
-    if self.isVisible is 1:
-      print "%s %i is visible." % (speciesName, self.id)
-    else:
-      print "%s %i is not visible."%(speciesName, self.id)
     #TODO set fish stats to 0 if stunned by an eel
     if self.owner == self.game.playerID:
       self.attacked = []
