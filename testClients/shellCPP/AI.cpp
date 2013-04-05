@@ -7,7 +7,7 @@ AI::AI(Connection* conn) : BaseAI(conn) {}
 //Accessing the species as followes:
 //species[SEA_STAR]
 //Will NOT work.
-//Use getSpecies instead.
+//Use getSpeciesNum instead.
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
 
 
@@ -37,40 +37,6 @@ void AI::init()
   }
 }
 
-Tile& AI::getTile(int x,int y)
-{
-  //return the tile at the x and y location
-  return tiles[x * mapHeight() + y];
-}
-
-int AI::getSpecies(int speciesNum)
-{
-  //loop through all of the species
-  for(int i = 0;i < species.size();i++)
-  {
-    //if the index is the same as the desired species return that index
-    //into the species vector
-    if(species[i].index() == speciesNum)
-    {
-      return i;
-    }
-  }
-}
-
-Fish* AI::getFish(int x,int y)
-{
-  //get the fish at location x,y
-  //returns NULL if no fish is found
-  for(int i = 0;i < fishes.size(); i++)
-  {
-    if(fishes[i].x() == x && fishes[i].y() == y)
-    {
-      return &fishes[i];
-    }
-  }
-  return NULL;
-}
-
 //This function is called each time it is your turn.
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
@@ -80,7 +46,7 @@ bool AI::run()
   {
     //if this tile is one of my coves and does not have a fish on it
     if(tiles[i].owner() == playerID() &&
-       getFish(tiles[i].x(), tiles[i].y()) == NULL)
+       getFishIndex(tiles[i].x(), tiles[i].y()) == -1)
     {
       //loop through all of the species
       for(int p = 0;p<species.size(); p++)
@@ -104,10 +70,6 @@ bool AI::run()
   //loop through all of the fish
   for(int i = 0;i < fishes.size();i++)
   {
-    if(fishes[i].isVisible())
-    {
-       std::cout<<"I am visible."<<std::endl;
-    }
     //if this is my fish
     if(fishes[i].owner() == playerID())
     {
@@ -138,7 +100,7 @@ bool AI::run()
           if(fishes[i].y() != 0)
           {
             //if the tile above the fish is not a cove and has no fish
-            if(getTile(x, y - 1).owner() == 2 && getFish(x, y + 1) == NULL)
+            if(getTile(x, y - 1).owner() == 2 && getFishIndex(x, y + 1) == -1)
             {
               //drop all of the trash the fish is carrying
               fishes[i].drop(x, y - 1, fishes[i].carryingWeight());
@@ -147,7 +109,7 @@ bool AI::run()
           else if(fishes[i].y() != mapHeight() - 1)
           {
             //if the tile below the fish is not a cove and has no fish
-            if(getTile(x,y + 1).owner() == 2 && getFish(x,y + 1) == NULL)
+            if(getTile(x,y + 1).owner() == 2 && getFishIndex(x,y + 1) == -1)
             {
               //drop all of the trash the fish is carrying
               fishes[i].drop(x, y + 1, fishes[i].carryingWeight());
@@ -163,7 +125,7 @@ bool AI::run()
         {
           //if the tile to the left does not have a fish and does not have an
           //egg
-          if(getFish(x - 1, y) == NULL &&
+          if(getFishIndex(x - 1, y) == -1 &&
              getTile(x - 1, y).hasEgg() == false)
           {
             //move to the left
@@ -171,30 +133,29 @@ bool AI::run()
           }
         }
         //get the fish to the left
-        Fish* target = getFish(x - 1, y);
+        int target = getFishIndex(x - 1, y);
         //if there is a fish to the left and the fish has attacks left
-        if(target != NULL && fishes[i].attacksLeft() > 0)
+        if(target != -1 && fishes[i].attacksLeft() > 0)
         {
           //if the fish is not a cleaner shrimp
           if(fishes[i].species() != CLEANER_SHRIMP)
           {
             //if the fish to the left is an enemy fish
-            if(target->owner() == enemyAI_ID)
+            if(fishes[target].owner() == enemyAI_ID)
             {
                //attack the fish
-               fishes[i].attack(*target);
+               fishes[i].attack(fishes[target]);
             }
           }
           else
           {
              //this is if the fish is a cleaner shrimp
 
-             std::cout<<"I am visible : "<<fishes[i].isVisible()<<std::endl;
              //if the fish to the left is a friendly fish
-             if(target->owner() != enemyAI_ID)
+             if(fishes[target].owner() != enemyAI_ID)
              {
                 //heal the fish
-                fishes[i].attack(*target);
+                fishes[i].attack(fishes[target]);
              }
           }
         }

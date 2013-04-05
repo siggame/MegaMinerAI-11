@@ -53,7 +53,7 @@ public:
   int seasonLength();
   ///Percentage of max health a fish gets back whenever it is healed, by either cove or other fish
   int healPercent();
-  
+
   BaseAI(Connection* c);
   virtual ~BaseAI();
   ///
@@ -72,6 +72,17 @@ public:
   ///
   ///This function is called after the last turn.
   virtual void end() = 0;
+
+
+
+  ///Returns the tile at (x, y)
+  Tile& getTile(int x,int y);
+
+  ///Returns the index of the species
+  int getSpeciesNum(int SpeciesNum);
+
+  ///Returns the index of the fish at (x, y); or -1 if no fish
+  int getFishIndex(int x,int y);
 
 
   bool startTurn();
