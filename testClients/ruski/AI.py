@@ -84,7 +84,7 @@ class AI(BaseAI):
       if tile.trashAmount > 0:
         self.charGrid[tile.x][tile.y] = 'T'
     for fish in self.fishes:
-      if fish.index is CLEANER_SHRIMP:
+      if fish.species is CLEANER_SHRIMP:
         if fish.isVisible is True:
           self.charGrid[fish.x][fish.y] = 'S'
         else:

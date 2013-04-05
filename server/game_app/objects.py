@@ -57,7 +57,7 @@ class Tile(Mappable):
         stats = [self.x, self.y, self.owner,
             species.maxHealth, species.maxHealth,
             species.maxMovement, species.maxMovement,
-            species.carryCap, 0, species.attackPower, True,
+            species.carryCap, species.attackPower, True,
             species.maxAttacks, species.maxAttacks,
             species.range, species.index]
         newFish = self.game.addObject(Fish, stats)
@@ -139,7 +139,7 @@ class Fish(Mappable):
     self.carryCap = carryCap
     self.carryingWeight = carryingWeight
     self.attackPower = attackPower
-    self.isVisible = isVisible
+    self.isVisible = True
     self.maxAttacks = maxAttacks
     self.attacksLeft = attacksLeft
     self.range = range
