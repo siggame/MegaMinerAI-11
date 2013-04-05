@@ -109,7 +109,7 @@ namespace visualizer
               glm::vec2 pos(xPos - 0.5f,m_game->states[0].mapHeight - 0.5f);
               Color color(1.0f,1.0f,1.0f,0.5f); // todo: maybe change the color of the bubbles
 
-              float maxAge = GetRandFloat(1.0f,3.0f);
+              float maxAge = GetRandFloat(3.0f,5.0f);
               //float angle = GetRandFloat(0.523598f,2.61799f);
               float angle = 1.570796f; // pi/2, up
               float speed = GetRandFloat(3.0f,6.0f);
@@ -198,6 +198,7 @@ namespace visualizer
       float currentPercent = (float)info.currentReefHealth / (float)m_game->states[0].maxReefHealth; // current power lvl
 
       stringstream stream;
+
       stream << m_ReefPlayerInfo[index].time;
 
       // Render AI's time
