@@ -99,12 +99,14 @@ namespace visualizer
           bool bEnableBubbles = options->getNumber("Enable Bubbles") > 0;
           if(bEnableBubbles /*&& m_Bubbles.size() < 120*/)
           {
-              int width = m_game->states[0].mapWidth;
+              int middle = m_game->states[0].mapWidth / 2;
               int sharedLength = m_game->states[0].boundLength;
 
-              float xPos = (rand() % 2 == 0) ? (sharedLength + 1.0f): (width - sharedLength - 1.5f);
+              bool bLeft = (rand() % 2 == 0);
+              float xPos = middle + sharedLength;
+              xPos -= 2*bLeft*sharedLength;
 
-              glm::vec2 pos(xPos,m_game->states[0].mapHeight - 0.5f);
+              glm::vec2 pos(xPos - 1.0f,m_game->states[0].mapHeight - 0.5f);
               Color color(1.0f,1.0f,1.0f,0.5f); // todo: maybe change the color of the bubbles
 
               float maxAge = GetRandFloat(1.0f,3.0f);
@@ -558,7 +560,7 @@ namespace visualizer
 
         // the fish is dead next turn
         // todo: check to make sure this is correct
-        if( (state + 1) < m_game->states.size() )
+        if( (state + 1) < (int)m_game->states.size() )
         {
           if(m_game->states[ state + 1 ].fishes.find( p.second.id ) == m_game->states[ state + 1 ].fishes.end())
           {
@@ -613,7 +615,7 @@ namespace visualizer
       }
 
       // When the game if over, display who won
-      if( m_game->states.size() == state + 1)
+      if( (int)m_game->states.size() == state + 1)
       {
           const char* playerName = m_game->states[state].players[m_game->winner].playerName;
           SmartPointer<SplashScreen> splashScreen = new SplashScreen(m_game->winReason,playerName,
