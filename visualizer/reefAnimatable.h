@@ -74,7 +74,7 @@ namespace visualizer
     struct Fish : public Animatable
     {
         // todo: maybe use the ctor for more init
-        Fish() : flipped(false) {}
+        Fish() : flipped(false), isVisible(true) {}
 
         struct Moves
         {
@@ -97,12 +97,12 @@ namespace visualizer
         int carryCap;       //
         int carryingWeight; //
         int attackPower;    //
-        int isVisible;      //
         int maxAttacks;     //
         int attacksLeft;    //
         int range;          //
         int species;      //
         bool flipped;
+        bool isVisible;      //
 
         std::vector<Moves> m_moves;
 

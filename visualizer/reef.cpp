@@ -6,6 +6,7 @@
 #include <utility>
 #include <time.h>
 #include <list>
+#include <iomanip>
 
 namespace visualizer
 {
@@ -199,17 +200,19 @@ namespace visualizer
 
       stringstream stream;
 
-      stream << m_ReefPlayerInfo[index].time;
+      stream << fixed << setprecision(1) << m_ReefPlayerInfo[index].time;
 
       // Render AI's time
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
-      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
+      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+      
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,m_game->states[0].mapWidth/3.0f,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f));
 
       // Render the health bars
-      renderer->setColor(Color(.2f,0.2f,0.2f,1.0f));
+      /*renderer->setColor(Color(.2f,0.2f,0.2f,1.0f));
       renderer->drawQuad(xPos + m_game->states[0].mapWidth/3.0f, // x
-                         -SEA_OFFSET + 0.7f, // y
+                         , // y
                          -(1.0f - currentPercent) *m_game->states[0].mapWidth/3.0f, // width
                          0.5f); // height
 
@@ -217,7 +220,7 @@ namespace visualizer
       renderer->drawQuad(xPos, // x
                          -SEA_OFFSET + 0.7f, // y
                          currentPercent * m_game->states[0].mapWidth/3.0f, // width
-                         0.5f); // height
+                         0.5f); // height*/
   }
 
   void Reef::RenderPlayerInfo() const
@@ -258,13 +261,13 @@ namespace visualizer
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
       ostringstream stream;
-      stream << "Next season begins in: " << 100.0f*(1.0f - seasonPercent);
+      stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          renderer->drawText(12.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
-          renderer->drawText(12.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
   }
 
@@ -485,7 +488,19 @@ namespace visualizer
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            if(j->type == parser::MOVE)
+            if(j->type == parser::STEALTH)
+            {
+            	 //parser::stealth& stealthAnim = (parser::stealth&)*j;
+            	 //newFish->isVisible = tr
+            	 cout<<"Stealth!"<<endl;
+            }
+            else if(j->type == parser::DESTEALTH)
+            {
+            	 //parser::deStealth& destealthAnim = (parser::deStealth&)*j;
+            	 newFish->isVisible = false;
+            	 cout<<"DEStealth!"<<endl;
+            }
+            else if(j->type == parser::MOVE)
             {
                 //cout<<"Move!"<<endl;
                 parser::move& move = (parser::move&)*j;
@@ -565,10 +580,15 @@ namespace visualizer
         {
           if(m_game->states[ state + 1 ].fishes.find( p.second.id ) == m_game->states[ state + 1 ].fishes.end())
           {
-              BasicTrash& trash = m_Trash[state][(*pMap)(p.second.y,p.second.x).id];
-              trash.amount += p.second.carryingWeight;
-              trash.x = p.second.x;
-              trash.y = p.second.y;
+             if(p.second.carryingWeight > 0)
+             {
+          
+              	BasicTrash& trash = m_Trash[state][(*pMap)(p.second.y,p.second.x).id];
+              	trash.amount += p.second.carryingWeight;
+              	trash.x = p.second.x;
+              	trash.y = p.second.y;
+              
+              }
           }
         }
 
