@@ -84,7 +84,13 @@ class AI(BaseAI):
       if tile.trashAmount > 0:
         self.charGrid[tile.x][tile.y] = 'T'
     for fish in self.fishes:
-      self.charGrid[fish.x][fish.y] = 'F'
+      if fish.index is CLEANER_SHRIMP:
+        if fish.isVisible is True:
+          self.charGrid[fish.x][fish.y] = 'S'
+        else:
+          self.charGrid[fish.x][fish.y] = 's'
+      else:
+        self.charGrid[fish.x][fish.y] = 'F'
     return
   def replayGrid(self):
     wantReplay = True
