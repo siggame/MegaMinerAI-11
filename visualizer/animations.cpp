@@ -8,7 +8,7 @@ namespace visualizer
     Color GetTeamColor(int team)
     {
         // todo: need to change these colors
-        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,1.0f,0.1f,1.0f);
+        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
     }
 
     void DrawMap::animate(const float& t, AnimData*, IGame* game)
@@ -85,7 +85,7 @@ namespace visualizer
 	{
 		ostringstream stream;
         stream << m_Fish->carryingWeight;
-		game->renderer->setColor( Color(1.0f,1.0f,0.0f,1.0f) );
+		game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
 		game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),3.0f);
 	}
 
@@ -109,7 +109,7 @@ namespace visualizer
         stringstream stream;
         stream << m_Trash->amount;
         game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
-        game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),4);
+        game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),3.0f);
 
     }
 
