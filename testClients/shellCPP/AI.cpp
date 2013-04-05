@@ -104,6 +104,10 @@ bool AI::run()
   //loop through all of the fish
   for(int i = 0;i < fishes.size();i++)
   {
+    if(fishes[i].isVisible())
+    {
+       std::cout<<"I am visible."<<std::endl;
+    }
     //if this is my fish
     if(fishes[i].owner() == playerID())
     {
