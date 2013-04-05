@@ -80,7 +80,8 @@ bool BaseAI::startTurn()
   species.resize(count);
   for(int i = 0; i < count; i++)
   {
-    species[i] = Species(getSpecies(c, i));
+    //global scope modification
+    species[i] = Species(::getSpecies(c, i));
   }
 
   count = getFishCount(c);
@@ -113,7 +114,7 @@ Tile& BaseAI::getTile(int x,int y)
   return tiles[x * mapHeight() + y];
 }
 
-int BaseAI::getSpeciesNum(int speciesNum)
+Species& BaseAI::getSpecies(int speciesNum)
 {
   //loop through all of the species
   for(int i = 0;i < species.size();i++)
@@ -122,7 +123,7 @@ int BaseAI::getSpeciesNum(int speciesNum)
     //into the species vector
     if(species[i].index() == speciesNum)
     {
-      return i;
+      return species[i];
     }
   }
 }
