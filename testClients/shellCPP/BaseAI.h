@@ -78,8 +78,8 @@ public:
   ///Returns the tile at (x, y)
   Tile& getTile(int x,int y);
 
-  ///Returns the index of the species
-  int getSpeciesNum(int SpeciesNum);
+  ///Returns the species
+  Species& getSpecies(int SpeciesNum);
 
   ///Returns the index of the fish at (x, y); or -1 if no fish
   int getFishIndex(int x,int y);

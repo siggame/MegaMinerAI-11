@@ -7,7 +7,7 @@ AI::AI(Connection* conn) : BaseAI(conn) {}
 //Accessing the species as followes:
 //species[SEA_STAR]
 //Will NOT work.
-//Use getSpeciesNum instead.
+//Use getSpecies(SEA_STAR) instead.
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
 
 
