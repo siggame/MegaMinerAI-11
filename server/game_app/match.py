@@ -7,6 +7,7 @@ import itertools
 import scribe
 import jsonLogger
 import random
+from operator import itemgetter
 
 Scribe = scribe.Scribe
 
@@ -133,7 +134,7 @@ class Match(DefaultGameWorld):
       if randTile.owner==2:
         trashableTiles.remove(randTile)
       while randTile.owner!=2:
-        randTile = random.choice(trashableTiles)  
+        randTile = random.choice(trashableTiles)
         trashableTiles.remove(randTile)
       oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
       
@@ -170,16 +171,18 @@ class Match(DefaultGameWorld):
 
     print "Starting game"
 
-    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)] 
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)
     self.covePath(self.seed)
     self.spawnTrash()
-
-    for species in cfgSpecies.keys():
-      self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
+    
+    species = cfgSpecies.values()
+    species.sort(key=itemgetter('index'))
+    for s in species:
+      self.addObject(Species, [s[value] for value in self.statList])
 
     self.initSeasons()
     self.speciesDict = {species.index:species for species in self.objects.species}
