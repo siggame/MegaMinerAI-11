@@ -50,6 +50,7 @@ class Match(DefaultGameWorld):
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
+   
   def getAdjacent(self,node):
      adjacent = []
      for adj in self.offset:
@@ -181,6 +182,7 @@ class Match(DefaultGameWorld):
       self.addObject(Species, [cfgSpecies[species][value] for value in self.statList])
 
     self.initSeasons()
+    self.speciesDict = {species.index:species for species in self.objects.species}
     self.nextTurn()
     return True
 

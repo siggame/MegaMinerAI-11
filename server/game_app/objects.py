@@ -117,6 +117,7 @@ class Species(object):
       tile.hasEgg = True
       tile.species = self
       player.spawnFood -= self.cost
+      player.spawnQueue.append(self.cost)
     return True
 
   def __setattr__(self, name, value):
@@ -431,7 +432,9 @@ class Player(object):
     self.currentReefHealth = currentReefHealth
     self.spawnFood = spawnFood
     self.updatedAt = game.turnNumber
-
+    self.turnNumber = game.turnNumber
+    self.spawnQueue = []
+    
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
 
@@ -442,8 +445,27 @@ class Player(object):
   def nextTurn(self):
     #TODO: Give food back to player
     #Fish spawn in at beginning of turn
+    #if self.game.playerID == self.id:
+    #  self.spawnFood += self.game.spawnFoodPerTurn
+    #
+    # Identify player who is getting money
     if self.game.playerID == self.id:
-      self.spawnFood += self.game.spawnFoodPerTurn
+      # Get current value of fish owned by each player
+      fishWorth = [0, 0]
+      for fish in self.game.objects.fishes:
+        #fishWorth[fish.owner] += cfgSpecies[fish.species]["cost"]
+        fishWorth[fish.owner] += self.game.speciesDict[fish.species].cost
+      # Get value of fish in spawnQueue
+      inSpawnQueue = sum(self.spawnQueue)
+      self.spawnQueue = []
+      # Calculate currentPlayer's net worth by adding value of owned fish and spawning fish to available spawn food
+      netWorth = fishWorth[self.id] + self.spawnFood + inSpawnQueue
+      # How much your net worth should be if you have not lost any units
+      foodYouShouldHave = 250 + (self.game.spawnFoodPerTurn * (self.game.turnNumber / 2))
+      # How much spawn food you get
+      foodYouGet = int(self.game.spawnFoodPerTurn + math.ceil((foodYouShouldHave - netWorth) * 0.5))
+      self.spawnFood += foodYouGet
+      #print "Giving player", self.id, foodYouGet, "spawn food"
       
     return True
     
