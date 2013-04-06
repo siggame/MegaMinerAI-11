@@ -267,7 +267,7 @@ class Match(DefaultGameWorld):
         # Start by computing the total value of all fish for each player
         fishValues = [0, 0]
         for fish in self.objects.fishes:
-          fishValues[fish.owner] += cfgSpecies[fish.species]["cost"]
+          fishValues[fish.owner] += self.speciesDict[fish.species].cost
         # Now compare!
         # Player 1 wins if they have the higher value school of fish
         if fishValues[0] > fishValues[1]:
