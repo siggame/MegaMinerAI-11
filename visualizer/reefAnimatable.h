@@ -96,13 +96,15 @@ namespace visualizer
         int movementLeft;   //
         int carryCap;       //
         int carryingWeight; //
-        int attackPower;    //
-        int maxAttacks;     //
-        int attacksLeft;    //
+        //int attackPower;    //
+        //int maxAttacks;     //
+       // int attacksLeft;    //
         int range;          //
         int species;      //
         bool flipped;
         bool isVisible;      //
+
+        SmartPointer<std::vector<string>> speciesList;
 
         std::vector<Moves> m_moves;
 

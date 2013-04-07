@@ -7,6 +7,7 @@
 #include <time.h>
 #include <list>
 #include <iomanip>
+#include <algorithm>
 
 namespace visualizer
 {
@@ -27,6 +28,11 @@ namespace visualizer
   glm::vec4 lerp( const glm::vec4& A, const glm::vec4& B, float t )
   {
       return A*(1.0f - t) + B*t;
+  }
+
+  void StringToLower(std::string& str)
+  {
+      std::transform(str.begin(),str.end(),str.begin(),::tolower);
   }
 
   Reef::Reef() : m_fDt(0.0f)
@@ -449,6 +455,8 @@ namespace visualizer
 
     std::map<int,bool> dirMap;
 
+    SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].species.size());
+
     // todo: this map should be removed
     SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
     pMap->addKeyFrame( new DrawMap( pMap ) );
@@ -458,6 +466,18 @@ namespace visualizer
     for(auto iter = m_game->states[0].species.begin(); iter != m_game->states[0].species.end(); ++iter)
     {
         m_Species[iter->second.season].push_back(iter->second);
+        (*speciesList)[iter->second.index] = iter->second.name;
+
+        string& speciesStr = (*speciesList)[iter->second.index];
+
+        StringToLower(speciesStr);
+        auto spacePos = speciesStr.find(' ');
+
+        if(spacePos != string::npos)
+        {
+            speciesStr[spacePos] = '_';
+        }
+
     }
 
     // Look through each turn in the gamelog
@@ -569,7 +589,7 @@ namespace visualizer
         else if(newFish->m_moves.size() > 0)
         {
             //caching the fish's direction at end of turn
-	    glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
+            glm::vec2 diff = (newFish->m_moves[newFish->m_moves.size() - 1].to) -
                              (newFish->m_moves[newFish->m_moves.size() - 1].from);
             dirMap[p.second.id] = diff.x > 0.0f;
         }
@@ -592,21 +612,24 @@ namespace visualizer
           }
         }
 
+
         newFish->owner = p.second.owner;
         newFish->maxHealth = p.second.maxHealth;
         newFish->currentHealth = p.second.currentHealth;
         newFish->maxMovement = p.second.maxMovement;
         newFish->movementLeft = p.second.movementLeft;
         newFish->carryCap = p.second.carryCap;
-        newFish->attackPower = p.second.attackPower;
+        //newFish->attackPower = p.second.attackPower;
         newFish->isVisible = p.second.isVisible;
-        newFish->maxAttacks = p.second.maxAttacks;
-        newFish->attacksLeft = p.second.attacksLeft;
+        //newFish->maxAttacks = p.second.maxAttacks;
+       // newFish->attacksLeft = p.second.attacksLeft;
         newFish->range = p.second.range;
         newFish->species = p.second.species;
-	newFish->carryingWeight = p.second.carryingWeight;
+        newFish->carryingWeight = p.second.carryingWeight;
+        newFish->speciesList = speciesList;
 
-        turn[p.second.id]["Species"] = p.second.species;
+        //cout<<(*speciesList)[p.second.species].c_str()<<endl;
+        turn[p.second.id]["Species"] = (*speciesList)[p.second.species].c_str();
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y; //carryingWeight

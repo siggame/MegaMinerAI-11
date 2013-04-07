@@ -7,19 +7,12 @@ namespace visualizer
 {
     void RenderProgressBar(const IRenderer& renderer,float xPos, float yPos, float width, float height, float percent, const Color& col)
     {
-	
-	// Render the health bars
-	renderer.setColor(Color(0.0f,0.0f,0.0f,1.0f));
-	renderer.drawQuad(xPos + width, // x
-		 	   yPos, // y
-		 	   -(1.0f - percent) * width, // width
-		 	   height); // height
-		 
-	renderer.setColor(col);
-	renderer.drawQuad(xPos, // x
-		           yPos, // y
-		         percent * width, // width
-		         height); // height
+        // Render the health bars
+        renderer.setColor(Color(0.0f,0.0f,0.0f,1.0f));
+        renderer.drawQuad(xPos + width,yPos, -(1.0f - percent) * width, height); // height
+
+        renderer.setColor(col);
+        renderer.drawQuad(xPos,yPos, percent * width, height);
     }
 
     Color GetTeamColor(int team)
@@ -71,51 +64,32 @@ namespace visualizer
 
     void DrawFish::animate(const float &t, AnimData *d, IGame *game)
     {
-        // todo: we could just combine all of these sprites into a sprite sheet
-        const char* const speciesNames[12] =
-        {
-            "seastar",
-            "sponge",
-            "angelfish",
-            "coneshell",
-            "seaurchin", 
-            "octopus",
-            "tomcod",
-            "shark",
-            "cuttlefish",
-            "shrimp",
-            "electric_eel",
-            "jellyfish"
-        };
-
         unsigned int index = (unsigned int)(m_Fish->m_moves.size() * t);
         float subT = m_Fish->m_moves.size() * t - index;
 
         glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-	Color teamColor = GetTeamColor(m_Fish->owner);
-	//teamColor.a = (!m_Fish->isVisible) * 0.5f;
+        Color teamColor = GetTeamColor(m_Fish->owner);
+        //teamColor.a = (!m_Fish->isVisible) * 0.5f;
 	
+        // todo: we could just combine all of these sprites into a sprite sheet
         game->renderer->setColor( teamColor );
-        game->renderer->drawTexturedQuad(pos.x,pos.y,1.0f,1.0f,speciesNames[m_Fish->species],m_Fish->flipped || (diff.x > 0.0f));
+        game->renderer->drawTexturedQuad(pos.x,pos.y,1.0f,1.0f,
+                                         (*m_Fish->speciesList)[m_Fish->species],
+                                         m_Fish->flipped || (diff.x > 0.0f));
 
-	if(m_Fish->carryingWeight > 0)
-	{
-		ostringstream stream;
-        stream << m_Fish->carryingWeight;
-		game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
-		game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),2.5f); // 3.0f
-	}
+        if(m_Fish->carryingWeight > 0)
+        {
+            ostringstream stream;
+            stream << m_Fish->carryingWeight;
+            game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
+            game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),2.5f); // 3.0f
+        }
 	
-	RenderProgressBar(*game->renderer,pos.x,pos.y - 0.2f,0.8f,0.2f,(float)m_Fish->currentHealth / (float)m_Fish->maxHealth,Color(0.8f,0.1f,0.1f,1.0f));
-
-        /*renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-        renderer->drawQuad(xPos, // x
-                         -SEA_OFFSET + 0.7f, // y
-                         currentPercent * m_game->states[0].mapWidth/3.0f, // width
-                         0.5f); // height
-	*/
+        RenderProgressBar(*game->renderer,pos.x,pos.y - 0.2f,
+                          0.8f,0.2f,(float)m_Fish->currentHealth / (float)m_Fish->maxHealth,
+                          Color(0.8f,0.1f,0.1f,1.0f));
     }
     
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
