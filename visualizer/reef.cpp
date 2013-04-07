@@ -466,10 +466,8 @@ namespace visualizer
     for(auto iter = m_game->states[0].species.begin(); iter != m_game->states[0].species.end(); ++iter)
     {
         m_Species[iter->second.season].push_back(iter->second);
-        (*speciesList)[iter->second.index] = iter->second.name;
 
-        string& speciesStr = (*speciesList)[iter->second.index];
-
+        string& speciesStr = (*speciesList)[iter->second.index] = iter->second.name;
         StringToLower(speciesStr);
         auto spacePos = speciesStr.find(' ');
 
