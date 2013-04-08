@@ -23,6 +23,7 @@ int enemyAI_ID;
 //This function is run once, before your first turn.
 void AI::init()
 {
+  //Determines which player you are
   if(playerID() == 0)
   {
     enemyAI_ID = 1;
@@ -33,11 +34,13 @@ void AI::init()
   }
 }
 
+//Function to get the tile in front of you
 Tile& getTile(int x,int y,int mapHeight,std::vector<Tile>& tiles)
 {
   return tiles[x * mapHeight + y];
 }
 
+//Puts the species in order
 int getSpecies(int speciesNum,std::vector<Species>& species)
 {
   for(int i = 0;i < species.size();i++)
