@@ -3,6 +3,8 @@
 
 #include <cstdlib>
 
+enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
+
 AI::AI(Connection* conn) : BaseAI(conn) {}
 
 const char* AI::username()
@@ -43,12 +45,12 @@ Fish* getFish(int x,int y,std::vector<Fish>& fishes)
    return NULL;
 }
 
-int findTrashY(std::vector<Tile>& tiles,int mapWidth,int mapHeight)
+void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int& y)
 {
-   int y=255;
-   for(int i=rand()%mapHeight;y == 255;i=rand()%mapHeight)
+   bool cool = false;
+   for(int p = 0; p <123 ; p++)
    {
-      std::cout<<"i: "<<i<<std::endl;
+      int i = rand()%mapHeight;
       int garbage=0;
       if(xChange == 1)
       {
@@ -67,28 +69,52 @@ int findTrashY(std::vector<Tile>& tiles,int mapWidth,int mapHeight)
       if(garbage > 0)
       {
          y=tiles[i].y();
+         x=tiles[i].x();
+         cool = true;
       }
    }
-   return y;
+   if(!cool)
+   {
+      x=0;
+      y=0;
+   }
+   return;
 }
 
 //This function is called each time it is your turn.
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
 {
+   Species* toSpawn = NULL;
    //spawn da fish
    for(int i=0;i<species.size();i++)
    {
       if(species[i].season() == currentSeason() &&
-         species[i].carryCap() > 0 &&
-         species[i].cost() < players[playerID()].spawnFood())
+         species[i].carryCap() > 0)
       {
-         for(int p=0;p<tiles.size();p++)
+         if(species[i].index() != CUTTLEFISH)
          {
-            if(tiles[p].hasEgg()==false)
+            if(toSpawn == NULL)
             {
-               species[i].spawn(tiles[p].x(),tiles[p].y());
+               toSpawn = &species[i];
             }
+            else if(toSpawn->maxMovement() * toSpawn->carryCap() <
+                    species[i].maxMovement() * species[i].carryCap())
+            {
+               toSpawn = &species[i];
+            }
+         }
+      }
+   }
+
+   if(toSpawn != NULL)
+   {
+      for(int p=0;p<tiles.size();p++)
+      {
+         if(tiles[p].hasEgg()==false &&
+            toSpawn->cost() < players[playerID()].spawnFood())
+         {
+            toSpawn->spawn(tiles[p].x(),tiles[p].y());
          }
       }
    }
@@ -97,38 +123,18 @@ bool AI::run()
    //be a slave driver to da fish
    for(int i=0;i<fishes.size();i++)
    {
-      int y=findTrashY(tiles,mapWidth(),mapHeight());
+      int y,x;
+      findTrashYX(tiles,mapWidth(),mapHeight(),x,y);
       for(int p=0;p<fishes[i].movementLeft();p++)
       {
+         std::cout<<i<<std::endl;
+         std::cout<<fishes[i].x()<<std::endl;
          if(fishes[i].owner() == playerID())
          {
             if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
             {
-               int crap;
-               if(fishes[i].y()!=mapHeight()-1)
-               {
-                  crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()+1].trashAmount();
-                  if(crap > fishes[i].carryCap())
-                  {
-                     crap = fishes[i].carryCap();
-                  }
-                  if(crap > 0)
-                  {
-                     fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,crap);
-                  }
-               }
-               if(fishes[i].y()!=0)
-               {
-                  crap=tiles[fishes[i].x()*mapHeight()+fishes[i].y()-1].trashAmount();
-                  if(crap > fishes[i].carryCap())
-                  {
-                     crap = fishes[i].carryCap();
-                  }
-                  if(crap > 0)
-                  {
-                     fishes[i].pickUp(fishes[i].x(),fishes[i].y()-1,crap);
-                  }
-               }
+               fishes[i].pickUp(fishes[i].x()+1,fishes[i].y(),1);
+               fishes[i].pickUp(fishes[i].x()-1,fishes[i].y(),1);
                if(y>fishes[i].y())
                {
                   if(fishes[i].move(fishes[i].x(),fishes[i].y()+1));
@@ -179,10 +185,24 @@ bool AI::run()
                      fishes[i].pickUp(fishes[i].x()+xChange,fishes[i].y(),crap);
                   }
                }
-               //hahaha this code
-               if(fishes[i].move(fishes[i].x() + xChange,fishes[i].y()));
-               else if(fishes[i].move(fishes[i].x(),fishes[i].y() - 1));
-               else(fishes[i].move(fishes[i].x(),fishes[i].y() + 1));
+               if(fishes[i].carryingWeight() == 0)
+               {
+                  if(fishes[i].x() < x)
+                  {
+                     fishes[i].move(fishes[i].x() + 1,fishes[i].y());
+                  }
+                  else
+                  {
+                     fishes[i].move(fishes[i].x() - 1,fishes[i].y());
+                  }
+               }
+               else
+               {
+                  //hahaha this code
+                  if(fishes[i].move(fishes[i].x() + xChange,fishes[i].y()));
+                  else if(fishes[i].move(fishes[i].x(),fishes[i].y() - 1));
+                  else(fishes[i].move(fishes[i].x(),fishes[i].y() + 1));
+               }
             }
 
             Fish* target=getFish(fishes[i].x()+xChange,fishes[i].y(),fishes);

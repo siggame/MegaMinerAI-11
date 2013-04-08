@@ -48,6 +48,9 @@ bool AI::run()
     if(tiles[i].owner() == playerID() &&
        getFishIndex(tiles[i].x(), tiles[i].y()) == -1)
     {
+       if(getSpecies(SEA_STAR).spawn(tiles[i].x(),tiles[i].y()))
+          std::cout<<"I am fish"<<std::endl;
+       /*
       //loop through all of the species
       for(int p = 0;p<species.size(); p++)
       {
@@ -63,7 +66,7 @@ bool AI::run()
             species[p].spawn(tiles[i].x(), tiles[i].y());
           }
         }
-      }
+      }*/
     }
   }
 

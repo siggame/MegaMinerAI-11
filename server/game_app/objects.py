@@ -45,11 +45,11 @@ class Tile(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
-  
+
   def nextTurn(self):
     if self.game.playerID == self.owner:
       if self.hasEgg:
@@ -60,7 +60,7 @@ class Tile(Mappable):
         self.game.addAnimation(SpawnAnimation(self.owner,newFish.x,newFish.y,newFish.species))
         self.game.grid[newFish.x][newFish.y].append(newFish)
         self.hasEgg = False
-     
+
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
@@ -85,11 +85,11 @@ class Species(object):
 
   def toList(self):
     return [self.id, self.name, self.index, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, name = self.name, index = self.index, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
-  
+
   def nextTurn(self):
     pass
 
@@ -163,13 +163,13 @@ class Fish(Mappable):
   #Distance for Euclidean Distance
   def eucDist(self,source,x,y):
     return math.sqrt( (source.x-x)**2 + (source.y-y)**2 )
-  
+
   def addTrash(self,x,y,weight):
-    if (x,y) not in self.game.trashDict:      
+    if (x,y) not in self.game.trashDict:
       self.game.trashDict[(x,y)] = weight
     else:
-      self.game.trashDict[(x,y)] += weight 
-  
+      self.game.trashDict[(x,y)] += weight
+
   def removeTrash(self,x,y,weight):
     self.game.trashDict[(x,y)]-=weight
     if self.game.trashDict[(x,y)] == 0:
@@ -245,7 +245,7 @@ class Fish(Mappable):
           pass
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
-    self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))        
+    self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))
     self.movementLeft -= 1
     self.x = x
     self.y = y
@@ -277,21 +277,21 @@ class Fish(Mappable):
 
     elif self.currentHealth < weight*self.game.trashDamage:
       return "Your %s %i cannot pick up trash that would kill it. Health: %i Damage: %i" % (speciesName, self.id, self.currentHealth, weight * self.game.trashDamage)
-    
+
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
-    
+
     #unstealth fish... because that's what drop did IF ITS A CUTTLE FISH
     if self.isVisible is 0 and self.species == 8:
       self.game.addAnimation(DeStealthAnimation(self.id))
     self.isVisible = 1
-    
+
     #take damage if not immune to it
     if self.species != 6: #Tomcod
       self.currentHealth -= self.game.trashDamage * weight
-        
+
     #reduce weight of tile
-    tile = self.game.getTile(x,y) 
+    tile = self.game.getTile(x,y)
     priorAmount = tile.trashAmount
     tile.trashAmount-= weight
     self.removeTrash(x,y,weight)
@@ -336,7 +336,7 @@ class Fish(Mappable):
     self.addTrash(x,y,weight)
     return True
 
-  def attack(self, target):  
+  def attack(self, target):
     x = target.x
     y = target.y
     speciesName = self.specName(self.species)
@@ -382,24 +382,15 @@ class Fish(Mappable):
     elif self.species == 10: #Electric Eel
       target.movementLeft = -1
       target.attacksLeft = -1
-   
-    else:   
+
+    else:
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
       if self.isVisible is 0:
         self.game.addAnimation(DeStealthAnimation(self.id))
       self.isVisible = 1
-    
-    #check if target is dead
-    if target.currentHealth <= 0:
-      #drop trash on tile
-      self.game.grid[x][y].remove(target)
-      if target.carryingWeight > 0:
-        self.game.getTile(x, y).trashAmount += target.carryingWeight
-        self.addTrash(target.x, target.y, target.carryingWeight)
-      self.game.removeObject(target)
-     
+
     self.game.addAnimation(AttackAnimation(self.id, target.id))
     self.attacksLeft -= 1
     #check for sea urchin counter attacks
@@ -408,10 +399,20 @@ class Fish(Mappable):
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
         if self.carryingWeight > 0:
-          self.game.getTile(x, y).trashAmount += self.carryingWeight
+          self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
           self.addTrash(self.x, self.y, self.carryingWeight)
-        self.game.grid[x][y].remove(self)
+        self.game.grid[self.x][self.y].remove(self)
         self.game.removeObject(self)
+
+    #check if target is dead
+    if target.currentHealth <= 0:
+      #drop trash on tile
+      self.game.grid[x][y].remove(target)
+      if target.carryingWeight > 0:
+        self.game.getTile(x, y).trashAmount += target.carryingWeight
+        self.addTrash(target.x, target.y, target.carryingWeight)
+      self.game.removeObject(target)
+
     return True
 
   def __setattr__(self, name, value):
@@ -431,7 +432,7 @@ class Player(object):
     self.updatedAt = game.turnNumber
     self.turnNumber = game.turnNumber
     self.spawnQueue = []
-    
+
   def toList(self):
     return [self.id, self.playerName, self.time, self.currentReefHealth, self.spawnFood, ]
 
@@ -463,16 +464,16 @@ class Player(object):
       foodYouGet = int(self.game.spawnFoodPerTurn + math.ceil((foodYouShouldHave - netWorth) * 0.5))
       self.spawnFood += foodYouGet
       #print "Giving player", self.id, foodYouGet, "spawn food"
-      
+
     return True
-    
+
   def talk(self, message):
     if '\\' in message:
       return "No backslashes in your message, shame on you"
     else:
       self.game.addAnimation(PlayerTalkAnimation(self.id,message))
       return True
-  
+
   def __setattr__(self, name, value):
       if name in self.game_state_attributes:
         object.__setattr__(self, 'updatedAt', self.game.turnNumber)
