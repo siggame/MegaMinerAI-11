@@ -74,12 +74,12 @@ namespace visualizer
       // offset the input
 
       int x = input.x;
-      int y = input.y - SEA_OFFSET - 1;
+      int y = input.y - SEA_OFFSET;
       int width = input.sx - x;
-      int height = input.sy - y - SEA_OFFSET - 1;
+      int height = input.sy - y;
 
       int right = x + width;
-      int bottom = y + height;
+      int bottom = y + height - SEA_OFFSET;
 
       R.left = min(x,right);
       R.top = min(y,bottom);
@@ -447,7 +447,7 @@ namespace visualizer
   {
     // Build the Debug Table's Headers
     QStringList header;
-    header<<"Species" << "carryingWeight" << "Trash Amount" << "Fish Health" << "Max Health" << "Attack Power" << "X" << "Y" ;
+    header<<"Species" << "carryingWeight" << "Fish Health" << "Max Health" << "Attack Power" << "Trash Amount" << "X" << "Y" ;
     gui->setDebugHeader( header );
     timeManager->setNumTurns( 0 );
 
@@ -510,12 +510,14 @@ namespace visualizer
             {
             	 //parser::stealth& stealthAnim = (parser::stealth&)*j;
             	 //newFish->isVisible = tr
+                 newFish->isVisible = false;
             	 cout<<"Stealth!"<<endl;
+                 cout<<"Stealth!"<<endl;
             }
             else if(j->type == parser::DESTEALTH)
             {
             	 //parser::deStealth& destealthAnim = (parser::deStealth&)*j;
-            	 newFish->isVisible = false;
+
             	 cout<<"DEStealth!"<<endl;
             }
             else if(j->type == parser::MOVE)
@@ -618,7 +620,6 @@ namespace visualizer
         newFish->movementLeft = p.second.movementLeft;
         newFish->carryCap = p.second.carryCap;
         //newFish->attackPower = p.second.attackPower;
-        newFish->isVisible = p.second.isVisible;
         //newFish->maxAttacks = p.second.maxAttacks;
        // newFish->attacksLeft = p.second.attacksLeft;
         newFish->range = p.second.range;

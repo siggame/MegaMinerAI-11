@@ -71,7 +71,7 @@ namespace visualizer
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
         Color teamColor = GetTeamColor(m_Fish->owner);
-        //teamColor.a = (!m_Fish->isVisible) * 0.5f;
+        teamColor.a -= (!m_Fish->isVisible) * 0.5f;
 	
         // todo: we could just combine all of these sprites into a sprite sheet
         game->renderer->setColor( teamColor );
