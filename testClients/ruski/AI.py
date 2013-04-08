@@ -36,7 +36,7 @@ class AI(BaseAI):
     return
   def end(self):
     print "The End"
-    //self.replayGrid()
+    #self.replayGrid()
     return
 
   ########## LOCAL GETTERS ##########
