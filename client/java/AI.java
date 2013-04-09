@@ -23,57 +23,64 @@ public class AI extends BaseAI
         players[playerID()].talk("I appreciate it, BUT LOOK WHAT WE'RE DEALING WITH MAN!");
 
         // Iterate across all tiles
-        for(Tile tile : tiles){
+        for(Tile tile : tiles)
+        {
             // Check relevant tile info
-            if(tile.getOwner() == playerID() &&  // If this is true, the tile is a cove that belongs to you
-               tile.getHasEgg() == 0  && // If this is true, the tile is not already spawning a fish
-               getFishIndex(tile.getX(), tile.getY()) == -1){ // If this is true, the tile has no fish on it already
+            if(tile.getOwner() == playerID() &&                 // The tile is a cove that belongs to you
+               tile.getHasEgg() == 0  &&                        // The tile is not already spawning a fish
+               getFishIndex(tile.getX(), tile.getY()) == -1)    // The tile has no fish on it already
+            {
                 // Iterate across all species
-                for(int i=0; i<species.length; i++){
-                    // Ensure that species is in season
-                    if(getSpecies(i).getSeason() == currentSeason() &&
-                       // Ensure we can afford this species
-                       players[playerID()].getSpawnFood() >= getSpecies(i).getCost()){
-                        // If so, spawn it!
-                        getSpecies(i).spawn(tile.getX(),tile.getY());
-                        break; // Don't try to spawn multiple fish on the same cove
+                for(int i=0; i<species.length; i++)
+                {
+                    if(species[i].getSeason() == currentSeason() &&                      // Ensure that species is in season
+                        players[playerID()].getSpawnFood() >= species[i].getCost())      // Ensure we can afford this species
+                    {
+                        species[i].spawn(tile.getX(),tile.getY());      // If so, spawn it!
+                        break;                                          // Don't spawn multiple fish on the same cove
                     }
                 }
             }
         }
         // Iterate across all the fishes!
-        for(Fish fish : fishes){
+        for(Fish fish : fishes)
+        {
             // Only attempt to move fish I own
-            if(fish.getOwner() == playerID()){
-                // Check the tile to the right
-                if(fish.getX()+1 < mapWidth() && // Then we aren't moving off the map
-                   getTile(fish.getX()+1,fish.getY()).getHasEgg() == 0 && // Then we aren't moving onto an egg
-                   getTile(fish.getX()+1,fish.getY()).getOwner() != 1-playerID() &&  // Then we aren't moving onto an enemy cove
-                   getFishIndex(fish.getX()+1,fish.getY()) == -1 && // Then there is no fish at that spot
-                   fish.getMovementLeft() > 0 && // Then we have moves left
-                   getTile(fish.getX()+1, fish.getY()).getTrashAmount() == 0){ // Then there is no trash on the tile
-                    // We can move to the right one tile!
-                    fish.move(fish.getX()+1,fish.getY());
+            if(fish.getOwner() == playerID())
+            {
+                // Try to move to the right
+                if(fish.getX()+1 < mapWidth() &&                                        // We aren't moving off the map
+                    getTile(fish.getX()+1,fish.getY()).getOwner() != 1-playerID() &&    // We aren't moving onto an enemy cove
+                    getTile(fish.getX()+1,fish.getY()).getHasEgg() == 0 &&              // We aren't moving onto an egg
+                    getFishIndex(fish.getX()+1,fish.getY()) == -1 &&                    // There is no fish at that spot
+                    getTile(fish.getX()+1, fish.getY()).getTrashAmount() == 0 &&        // There is no trash on the tile
+                    fish.getMovementLeft() > 0)                                         // We have moves left
+                {
+                    fish.move(fish.getX()+1,fish.getY());                               // We can move to the right one tile!
                 }
-                if(fish.getY()+1 < mapHeight() && // Ensure we do not pick up off the map
-                   fish.getCarryCap()-fish.getCarryingWeight() > 0 && // Ensure we have the necessary weight
-                   fish.getCurrentHealth() >= 1 && // Ensure we have enough health
-                   getTile(fish.getX(),fish.getY()+1).getTrashAmount() > 0){ // Ensure the tile has trash
-                    // Pick up that can!
-                    fish.pickUp(fish.getX(),fish.getY()+1,1);
+                // Try to pick up trash
+                if(fish.getY()+1 < mapHeight() &&                               // Ensure we do not pick up off the map
+                    fish.getCarryCap()-fish.getCarryingWeight() > 0 &&          // Ensure we have the necessary weight
+                    fish.getCurrentHealth() >= 1 &&                             // Ensure we have enough health
+                    getTile(fish.getX(),fish.getY()+1).getTrashAmount() > 0)    // Ensure the tile has trash
+                {
+                    fish.pickUp(fish.getX(),fish.getY()+1,1);                   // Pick up that can!
                 }
-                if(fish.getY()-1 >= 0 && // Ensure we don't drop off the map
-                   getFishIndex(fish.getX(),fish.getY()-1) == -1 && // Make sure there's no fish where we intend to drop
-                   fish.getCarryingWeight() > 0){ // Ensure we have something to drop
-                    // DROP IT
-                    fish.drop(fish.getX(),fish.getY()-1,1); // Smashing!
+                // Drop some trash
+                if(fish.getY()-1 >= 0 &&                                // Ensure we don't drop off the map
+                    getFishIndex(fish.getX(),fish.getY()-1) == -1 &&    // Make sure there's no fish where we intend to drop
+                    fish.getCarryingWeight() > 0)                       // Ensure we have something to drop
+                {
+                    fish.drop(fish.getX(),fish.getY()-1,1);             // DROP IT! (Smashing!)
+                    // http://www.youtube.com/embed/3JJe2vwNUX4?autoplay=1&start=154&end=157&showinfo=0&controls=0
                 }
-                if(fish.getX()+1 < mapWidth() && // Then we aren't attacking off the map
-                        getFishIndex(fish.getX()+1,fish.getY()) != -1 && // Then there is a fish at that spot
-                        fishes[getFishIndex(fish.getX()+1,fish.getY())].getOwner() != playerID() && // Then that fish belongs to the bad guy
-                        fish.getAttacksLeft() > 0){ // Then we have attacks left
-                    // We can move to the right one tile!
-                    fish.attack(fishes[getFishIndex(fish.getX()+1,fish.getY())]);
+                // Try to attack to the right
+                if(fish.getX()+1 < mapWidth() &&                                                // We aren't attacking off the map
+                    getFishIndex(fish.getX()+1,fish.getY()) != -1 &&                            // There is a fish at that spot
+                    fishes[getFishIndex(fish.getX()+1,fish.getY())].getOwner() != playerID() && // Then that fish belongs to the bad guy
+                    fish.getAttacksLeft() > 0)                                                  // We have attacks left
+                {
+                    fish.attack(fishes[getFishIndex(fish.getX()+1,fish.getY())]);               // We can attack the tile to the right!
                 }
             }
         }

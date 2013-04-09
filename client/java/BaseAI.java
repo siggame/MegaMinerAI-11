@@ -145,29 +145,17 @@ public abstract class BaseAI
   {
     return Client.INSTANCE.getHealPercent(connection);
   }
-    Tile getTile(int x, int y){
-        for(Tile tile : tiles){
-            if(tile.getX() == x && tile.getY() == y){
-                return tile;
-            }
-        }
-        return null;
+  ///Returns the Tile from the specified x and y coordinates, or null if none is found
+  Tile getTile(int x, int y){
+    return tiles[(mapHeight()*x)+y];
+  }
+  ///Returns the index (in fishes[]) of the fish at position (x,y)
+  int getFishIndex(int x, int y){
+    for(int i=0; i<fishes.length; i++){
+      if(fishes[i].getX() == x && fishes[i].getY() == y){
+        return i;
+      }
     }
-
-    int getFishIndex(int x, int y){
-        for(int i=0;i<fishes.length;i++){
-            if(fishes[i].getX() == x && fishes[i].getY() == y){
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    Species getSpecies(int speciesID){
-        for(Species spec : species){
-            if(spec.getIndex() == speciesID)
-                return spec;
-        }
-        return null;
-    }
+    return -1;
+  }
 }
