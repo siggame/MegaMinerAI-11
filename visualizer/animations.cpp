@@ -1,11 +1,14 @@
 #include "animations.h"
 #include "reef.h"
 
-#include <assert.h>
+#include <iomanip>
 
 namespace visualizer
 {
-    void RenderProgressBar(const IRenderer& renderer,float xPos, float yPos, float width, float height, float percent, const Color& col)
+    void RenderProgressBar(const IRenderer& renderer,
+                           float xPos, float yPos,
+                           float width, float height,
+                           float percent, const Color& col, bool bDrawText)
     {
         // Render the health bars
         renderer.setColor(Color(0.0f,0.0f,0.0f,1.0f));
@@ -13,6 +16,17 @@ namespace visualizer
 
         renderer.setColor(col);
         renderer.drawQuad(xPos,yPos, percent * width, height);
+
+        if(bDrawText)
+        {
+            ostringstream stream;
+            stream << fixed << setprecision(2) << percent * 100 << '%';
+
+            float middle = (xPos + (width / 2.0f));
+            renderer.setColor(Color(1.0f,1.0f,1.0f,1.0f));
+            renderer.drawText(middle,yPos - 0.1f,"Roboto",stream.str(),5.0f*height,IRenderer::Center);
+        }
+
     }
 
     Color GetTeamColor(int team)
