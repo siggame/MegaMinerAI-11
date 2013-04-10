@@ -44,7 +44,7 @@ class AI(BaseAI):
 
   def move_fish(self, fish):
     if self.playerID == 0:
-      target = range(24, 41)
+      target = range(23, 41)
     else:
       target = range(0, 18)
     self.grid.populate()
@@ -58,14 +58,10 @@ class AI(BaseAI):
       return
     dest = closest.source
     self.moveToward(fish, dest)
-    if fish.x == closest.dest,x and fish.y == dest.y:
+    if fish.x == dest.x and fish.y == dest.y:
       self.players[self.playerID].talk('Down you go!')
-      if self.playerID == 0:
-        direction = 1
-      else:
-        direction = -1
-      fish.drop(fish.x+direction, fish.y, -1)
-      fish.pickUp(fish.x+direction, fish.y, -10000)
+      fish.drop(closest.x, closest.y, -1)
+      fish.pickUp(closest.x, closest.y, -30000)
 
 
   def moveToward(self, fish, tile):
