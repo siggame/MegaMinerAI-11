@@ -211,9 +211,10 @@ class Match(DefaultGameWorld):
       obj.nextTurn()
    
     if self.turn == self.players[0]:
-      self.objects.players[0].currentReefHealth -= self.findDamage(0)
+      pass #self.objects.players[0].currentReefHealth -= self.findDamage(0)
     
     elif self.turn == self.players[1]:
+     self.objects.players[0].currentReefHealth -= self.findDamage(0)
      self.objects.players[1].currentReefHealth -= self.findDamage(1)
 
     self.checkWinner()

@@ -190,7 +190,7 @@ class Fish(Mappable):
         self.attacksLeft = self.maxAttacks
       if self.species == 8: #Cuttlefish
         #Set to invisible
-        if self.isVisible is 1:
+        if self.isVisible:
           self.game.addAnimation(StealthAnimation(self.id))
         self.isVisible = 0
       if self.species != 6: #Tomcod
@@ -253,7 +253,6 @@ class Fish(Mappable):
 
   def pickUp(self, x, y, weight):
     speciesName = self.specName(self.id)
-    T = self.game.getTile(x,y)
     if self.owner != self.game.playerID:
       return "You cannot control your opponent's %s %i." % (speciesName, self.id)
 
@@ -266,13 +265,16 @@ class Fish(Mappable):
     elif (self.carryingWeight + weight) > self.carryCap:
       return "Your %s %i cannot carry more weight than %i." % (speciesName, self.id, self.carryCap)
 
-    elif weight == 0:
+    elif weight < 1 :
       return "Your %s %i cannot pick up a weight of 0." % (speciesName, self.id)
 
-    elif T.trashAmount < weight:
+    T = self.game.getTile(x,y)
+
+    if T.trashAmount < weight:
+
       return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, T.trashAmount)
 
-    elif T.trashAmount == 0:
+    elif T.trashAmount < 1:
       return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
 
     elif self.currentHealth < weight*self.game.trashDamage:
@@ -291,13 +293,12 @@ class Fish(Mappable):
       self.currentHealth -= self.game.trashDamage * weight
 
     #reduce weight of tile
-    tile = self.game.getTile(x,y)
-    priorAmount = tile.trashAmount
-    tile.trashAmount-= weight
+    priorAmount = T.trashAmount
+    T.trashAmount-= weight
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
-    self.game.addAnimation(PickUpAnimation(self.id,tile.id, tile.x, tile.y,weight))
+    self.game.addAnimation(PickUpAnimation(self.id,T.id, T.x, T.y, weight))
     return True
 
   def drop(self, x, y, weight):
@@ -314,7 +315,7 @@ class Fish(Mappable):
     elif weight > self.carryingWeight:
       return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
 
-    elif weight == 0:
+    elif weight < 1:
      return "Your %s %i cannot drop a weight of 0." % (speciesName, self.id)
 
     Fishes = self.game.getFish(x,y)
@@ -325,7 +326,7 @@ class Fish(Mappable):
         else:
           pass #TODO: "Fringe case: dropping onto a stealthed fish."
 
-    if self.isVisible is 0:
+    if self.isVisible:
       self.game.addAnimation(DeStealthAnimation(self.id))
     self.isVisible = 1 #unstealth while dropping
 
@@ -349,16 +350,16 @@ class Fish(Mappable):
     elif target.id in self.attacked:
       return "%s %i has already attacked %s %i this turn." % (speciesName, self.id, targetName, target.id)
 
-    elif self.eucDist(self, x, y) > self.range:
+    elif self.taxiDist(self, x, y) > self.range:
       return "Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i" % (speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
 
-    elif self.attacksLeft == 0:
+    elif self.attacksLeft < 1:
       return "Your %s %i has no attacks left." % (speciesName, self.id)
 
     elif not isinstance(target, Fish):
       return "Your %s %i can only attack other Fish." % (speciesName, self.id)
 
-    elif target.isVisible is 0 and target.owner != self.game.playerID:
+    elif target.isVisible and target.owner != self.game.playerID:
       return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
 
     elif target.owner != self.owner and self.attackPower < 0:
@@ -387,7 +388,7 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
-      if self.isVisible is 0:
+      if self.isVisible:
         self.game.addAnimation(DeStealthAnimation(self.id))
       self.isVisible = 1
 
