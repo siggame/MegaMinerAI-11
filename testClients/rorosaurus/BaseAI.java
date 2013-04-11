@@ -8,20 +8,27 @@ import com.sun.jna.Pointer;
 public abstract class BaseAI
 {
   static Mappable[] mappables;
-  static Tile[] tiles;
-  static Species[] species;
-  static Fish[] fishes;
-  static Player[] players;
+  public static Tile[] tiles;
+  public static Species[] species;
+  public static Fish[] fishes;
+  public static Player[] players;
   Pointer connection;
   static int iteration;
   boolean initialized;
 
+  static BaseAI baseAI = null;
+
   public BaseAI(Pointer c)
   {
     connection = c;
+      baseAI = this;
   }
-    
-  ///
+
+    public static BaseAI getBaseAI() {
+        return baseAI;
+    }
+
+    ///
   ///Make this your username, which should be provided.
   public abstract String username();
   ///
