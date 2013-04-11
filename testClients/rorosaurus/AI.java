@@ -1,11 +1,13 @@
 import com.sun.jna.Pointer;
 
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Comparator;
+
 
 ///The class implementing gameplay logic.
 public class AI extends BaseAI
 {
-    public static final int SEA_STAR=0, SPONGE=1, ANGELFISH=2, CONESHELL_SNAIL=3, SEA_URCHIN=4, OCTOPUS=5, TOMCOD=6, REEF_SHARK=7, CUTTLEFISH=8, CLEANER_SHRIMP=9, ELECTRIC_EEL=10, JELLYFISH=11;
-
     public String username()
     {
         return "Rorosaurus";
@@ -22,32 +24,20 @@ public class AI extends BaseAI
         // Test player.talk()
         players[playerID()].talk("I appreciate it, BUT LOOK WHAT WE'RE DEALING WITH MAN!");
 
-        // Iterate across all tiles
-        for(Tile tile : tiles)
-        {
-            // Check relevant tile info
-            if(tile.getOwner() == playerID() &&                 // The tile is a cove that belongs to you
-               tile.getHasEgg() == 0  &&                        // The tile is not already spawning a fish
-               getFishIndex(tile.getX(), tile.getY()) == -1)    // The tile has no fish on it already
-            {
-                // Iterate across all species
-                for(int i=0; i<species.length; i++)
-                {
-                    if(species[i].getSeason() == currentSeason() &&                      // Ensure that species is in season
-                        players[playerID()].getSpawnFood() >= species[i].getCost())      // Ensure we can afford this species
-                    {
-                        species[i].spawn(tile.getX(),tile.getY());      // If so, spawn it!
-                        break;                                          // Don't spawn multiple fish on the same cove
-                    }
-                }
-            }
-        }
+//        PathFinder pathFinder = new PathFinder(new Point(0,3), new Point(0,0));
+//        try {
+//            pathFinder.getPath();
+//        } catch (PathFinder.InvalidDestinationException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
+
         // Iterate across all the fishes!
         for(Fish fish : fishes)
         {
             // Only attempt to move fish I own
             if(fish.getOwner() == playerID())
             {
+
                 // Try to move to the right
                 if(fish.getX()+1 < mapWidth() &&                                        // We aren't moving off the map
                     getTile(fish.getX()+1,fish.getY()).getOwner() != 1-playerID() &&    // We aren't moving onto an enemy cove
@@ -84,7 +74,36 @@ public class AI extends BaseAI
                 }
             }
         }
+
+        Spawner spawner = new Spawner();
+        spawner.sortedSpawn();
+
         return true;
+    }
+
+    /**
+     * Sorts the fish on the board according to the order we should move them to optimize movement to the opposite side
+     * @return a Fish[] of all fish on the board
+     */
+    public Fish[] sort(){
+        Fish[] sortedFishes = Arrays.copyOf(fishes, fishes.length);
+        if(playerID() == 0){ // Then I'm on the left
+            Arrays.sort(sortedFishes, new Comparator<Fish>() {
+                @Override
+                public int compare(Fish o1, Fish o2) {
+                    return o2.getX()-o1.getX();
+                }
+            });
+        }
+        else{ // I'm on the right
+            Arrays.sort(sortedFishes, new Comparator<Fish>() {
+                @Override
+                public int compare(Fish o1, Fish o2) {
+                    return o1.getX()-o2.getX();
+                }
+            });
+        }
+        return sortedFishes;
     }
 
 
