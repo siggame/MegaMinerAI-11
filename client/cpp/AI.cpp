@@ -32,13 +32,13 @@ bool AI::run()
        getFishIndex(tiles[i].x(), tiles[i].y()) == -1) //Is there not a fish on the cove
     {
       //Interate through all the species
-      for(int i = 0;i < species.size(); i++)
+      for(int i = 0;i < speciesList.size(); i++)
       {
-        if(species[i].season() == currentSeason() &&             //If the species is in season
-           players[playerID()].spawnFood() >= species[i].cost()) //If there is enough money
+        if(speciesList[i].season() == currentSeason() &&             //If the species is in season
+           players[playerID()].spawnFood() >= speciesList[i].cost()) //If there is enough money
         {
           //spawn the fish
-          species[i].spawn(tiles[i].x(), tiles[i].y());
+          speciesList[i].spawn(tiles[i]);
           //Don't spawn multiple fish on the same tile
           break;
         }
@@ -71,7 +71,7 @@ bool AI::run()
          getTile(fishes[i].x(),fishes[i].y()+1).trashAmount() > 0) // Ensure the tile has trash
       {
         //pick up 1 trash one tile below
-        fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,1);
+        fishes[i].pickUp(getTile(fishes[i].x(),fishes[i].y()+1),1);
       }
 
       // Attempt to drop trash one above the fish
@@ -80,7 +80,7 @@ bool AI::run()
          fishes[i].carryingWeight() > 0)                      // Ensure we have something to drop
       {
         //drop 1 trash one tile above the fish
-        fishes[i].drop(fishes[i].x(),fishes[i].y()-1,1);
+        fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()-1),1);
       }
 
       // Try to attack to the right

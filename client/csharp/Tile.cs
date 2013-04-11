@@ -104,5 +104,16 @@ public class Tile: Mappable
     }
   }
 
+  ///Determines which player the trash on this tile will hurt
+  public int Damages
+  {
+    get
+    {
+      validify();
+      int value = Client.tileGetDamages(ptr);
+      return value;
+    }
+  }
+
 }
 

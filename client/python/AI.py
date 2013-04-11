@@ -34,13 +34,13 @@ class AI(BaseAI):
       if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFishIndex(tile.x, tile.y) == -1:
 
         #Iterate through all the species.
-        for species in self.species:
+        for species in self.speciesList:
 
           #If the species is in season and if there is enough money.
           if species.season == self.currentSeason and self.players[self.playerID].spawnFood >= species.cost:
 
             #Spawn the fish
-            species.spawn(tile.x, tile.y)
+            species.spawn(tile)
             #Don't spawn multiple fish on the same tile.
             break
 
@@ -67,7 +67,7 @@ class AI(BaseAI):
           and self.getTile(fish.x, fish.y+1).trashAmount > 0): # Ensure the tile has trash
 
           # Pick up 1 trash one tile below the fish
-          fish.pickUp(fish.x, fish.y+1, 1)
+          fish.pickUp(self.getTile(fish.x, fish.y+1), 1)
 
         # Attempt to drop trash one above the fish
         if(fish.y-1 >= 0                                  # Ensure we don't drop off the map
@@ -75,7 +75,7 @@ class AI(BaseAI):
           and fish.carryingWeight > 0):                 # Ensure we have something to drop
 
           # Drop 1 trash one tile above the fish
-          fish.drop(fish.x, fish.y-1, 1)
+          fish.drop(self.getTile(fish.x, fish.y-1), 1)
 
         # Try to attack to the right
         if(fish.x+1 < self.mapWidth                                                         # We aren't attacking off the map

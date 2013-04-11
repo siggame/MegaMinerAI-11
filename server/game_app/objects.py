@@ -32,8 +32,8 @@ class Mappable(object):
       object.__setattr__(self, name, value)
 
 class Tile(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
-  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
+  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg', 'damages']
+  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg, damages):
     self.game = game
     self.id = id
     self.x = x
@@ -41,15 +41,16 @@ class Tile(Mappable):
     self.trashAmount = trashAmount
     self.owner = owner
     self.hasEgg = hasEgg
+    self.damages = damages
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
-
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, self.damages, ]
+  
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
-
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, damages = self.damages, )
+  
   def nextTurn(self):
     if self.game.playerID == self.owner:
       if self.hasEgg:
@@ -93,18 +94,16 @@ class Species(object):
   def nextTurn(self):
     pass
 
-  def spawn(self, x, y):
+  def spawn(self, tile):
     player = self.game.objects.players[self.game.playerID]
+    x, y = tile.x, tile.y
     if player.spawnFood < self.cost:
       return "You don't  have enough food to spawn this fish in"
-    if not (0 <= x < self.game.mapWidth or 0 <= y < self.game.mapHeight):
-      return "You can't spawn your fish out of the edges of the map"
     elif self.game.currentSeason != self.season:
       return "This fish can't spawn in this season"
     elif len(self.game.getFish(x, y)) != 0:
       return "There is already a fish here"
 
-    tile = self.game.getTile(x,y)
     if tile.owner != self.game.playerID:
       return "You can only spawn fish inside of your cove tiles"
     elif tile.hasEgg:
@@ -194,7 +193,7 @@ class Fish(Mappable):
           self.game.addAnimation(StealthAnimation(self.id))
         self.isVisible = 0
       if self.species != 6: #Tomcod
-        self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
+        self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth <= 0:
           self.game.grid[self.x][self.y].remove(self)
           self.game.addAnimation(DeathAnimation(self.id))
@@ -206,7 +205,7 @@ class Fish(Mappable):
     return True
 
   def specName(self, index):
-    for spec in self.game.objects.species:
+    for spec in self.game.objects.speciesList:
       if index == spec.index:
         return spec.name
     return "Invalid"
@@ -251,13 +250,11 @@ class Fish(Mappable):
     self.y = y
     return True
 
-  def pickUp(self, x, y, weight):
+  def pickUp(self, tile, weight):
+    x, y = tile.x, tile.y
     speciesName = self.specName(self.id)
     if self.owner != self.game.playerID:
       return "You cannot control your opponent's %s %i." % (speciesName, self.id)
-
-    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-      return "Your %s %i cannot pick up trash off the map. (%i, %i)" % (speciesName, self.id, x, y)
 
     elif self.taxiDist(self,x,y) != 1:
       return "Your %s %i can only pick up adjacent trash. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
@@ -268,17 +265,15 @@ class Fish(Mappable):
     elif weight < 1 :
       return "Your %s %i cannot pick up a weight of 0." % (speciesName, self.id)
 
-    T = self.game.getTile(x,y)
 
-    if T.trashAmount < weight:
+    if tile.trashAmount < weight:
+      return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, tile.trashAmount)
 
-      return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, T.trashAmount)
-
-    elif T.trashAmount < 1:
+    elif tile.trashAmount < 1:
       return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
 
-    elif self.currentHealth < weight*self.game.trashDamage:
-      return "Your %s %i cannot pick up trash that would kill it. Health: %i Damage: %i" % (speciesName, self.id, self.currentHealth, weight * self.game.trashDamage)
+    elif self.currentHealth < weight:
+      return "Your %s %i cannot pick up trash that would kill it. Health: %i Damage: %i" % (speciesName, self.id, self.currentHealth, weight)
 
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
@@ -290,18 +285,19 @@ class Fish(Mappable):
 
     #take damage if not immune to it
     if self.species != 6: #Tomcod
-      self.currentHealth -= self.game.trashDamage * weight
+      self.currentHealth -= weight
 
     #reduce weight of tile
-    priorAmount = T.trashAmount
-    T.trashAmount-= weight
+    priorAmount = tile.trashAmount
+    tile.trashAmount-= weight
     self.removeTrash(x,y,weight)
     #add weight to fish
     self.carryingWeight += weight
-    self.game.addAnimation(PickUpAnimation(self.id,T.id, T.x, T.y, weight))
+    self.game.addAnimation(PickUpAnimation(self.id, tile.id, x, y, weight))
     return True
 
-  def drop(self, x, y, weight):
+  def drop(self, tile, weight):
+    x, y = tile.x, tile.y
     speciesName = self.specName(self.species)
     if self.owner != self.game.playerID:
       return "You cannot control the opponent's %s %i." % (speciesName, self.id)
@@ -330,7 +326,6 @@ class Fish(Mappable):
       self.game.addAnimation(DeStealthAnimation(self.id))
     self.isVisible = 1 #unstealth while dropping
 
-    tile = self.game.getTile(x,y)
     tile.trashAmount += weight
     self.carryingWeight -= weight
     self.game.addAnimation(DropAnimation(self.id,tile.id, tile.x, tile.y, weight))

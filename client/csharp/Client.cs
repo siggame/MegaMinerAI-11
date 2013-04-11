@@ -25,13 +25,13 @@ public class Client {
 
     //commands
   [DllImport("client")]
-  public static extern int speciesSpawn(IntPtr self, int x, int y);
+  public static extern int speciesSpawn(IntPtr self, IntPtr tile);
   [DllImport("client")]
   public static extern int fishMove(IntPtr self, int x, int y);
   [DllImport("client")]
-  public static extern int fishPickUp(IntPtr self, int x, int y, int weight);
+  public static extern int fishPickUp(IntPtr self, IntPtr tile, int weight);
   [DllImport("client")]
-  public static extern int fishDrop(IntPtr self, int x, int y, int weight);
+  public static extern int fishDrop(IntPtr self, IntPtr tile, int weight);
   [DllImport("client")]
   public static extern int fishAttack(IntPtr self, IntPtr target);
   [DllImport("client")]
@@ -49,8 +49,6 @@ public class Client {
   [DllImport("client")]
   public static extern int getGameNumber(IntPtr connection);
   [DllImport("client")]
-  public static extern int getTrashDamage(IntPtr connection);
-  [DllImport("client")]
   public static extern int getMapWidth(IntPtr connection);
   [DllImport("client")]
   public static extern int getMapHeight(IntPtr connection);
@@ -62,6 +60,8 @@ public class Client {
   public static extern int getSeasonLength(IntPtr connection);
   [DllImport("client")]
   public static extern int getHealPercent(IntPtr connection);
+  [DllImport("client")]
+  public static extern int getMaxFood(IntPtr connection);
 
   [DllImport("client")]
   public static extern IntPtr getMappable(IntPtr connection, int num);
@@ -105,6 +105,8 @@ public class Client {
   public static extern int tileGetOwner(IntPtr ptr);
   [DllImport("client")]
   public static extern int tileGetHasEgg(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int tileGetDamages(IntPtr ptr);
 
   [DllImport("client")]
   public static extern int speciesGetId(IntPtr ptr);

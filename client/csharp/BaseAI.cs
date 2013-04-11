@@ -10,7 +10,7 @@ public abstract class BaseAI
 {
   public static Mappable[] mappables;
   public static Tile[] tiles;
-  public static Species[] species;
+  public static Species[] speciesList;
   public static Fish[] fishes;
   public static Player[] players;
   IntPtr connection;
@@ -59,10 +59,10 @@ public abstract class BaseAI
       tiles[i] = new Tile(Client.getTile(connection, i));
     }
     count = Client.getSpeciesCount(connection);
-    species = new Species[count];
+    speciesList = new Species[count];
     for(int i = 0; i < count; i++)
     {
-      species[i] = new Species(Client.getSpecies(connection, i));
+      speciesList[i] = new Species(Client.getSpecies(connection, i));
     }
     count = Client.getFishCount(connection);
     fishes = new Fish[count];
@@ -116,12 +116,6 @@ public abstract class BaseAI
     int value = Client.getGameNumber(connection);
     return value;
   }
-  ///How much damage trash does
-  public int trashDamage()
-  {
-    int value = Client.getTrashDamage(connection);
-    return value;
-  }
   ///How wide the map is
   public int mapWidth()
   {
@@ -156,6 +150,12 @@ public abstract class BaseAI
   public int healPercent()
   {
     int value = Client.getHealPercent(connection);
+    return value;
+  }
+  ///The maximum amount of food a player can have.
+  public int maxFood()
+  {
+    int value = Client.getMaxFood(connection);
     return value;
   }
 }

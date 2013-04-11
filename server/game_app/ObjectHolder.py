@@ -5,7 +5,7 @@ class ObjectHolder(dict):
     dict.__init__(self, *args, **kwargs)
     self.mappables = []
     self.tiles = []
-    self.species = []
+    self.speciesList = []
     self.fishes = []
     self.players = []
 
@@ -18,7 +18,7 @@ class ObjectHolder(dict):
     if isinstance(value, objects.Tile):
       self.tiles.append(value)
     if isinstance(value, objects.Species):
-      self.species.append(value)
+      self.speciesList.append(value)
     if isinstance(value, objects.Fish):
       self.fishes.append(value)
     if isinstance(value, objects.Player):
@@ -31,8 +31,8 @@ class ObjectHolder(dict):
       self.mappables.remove(value)
     if value in self.tiles:
       self.tiles.remove(value)
-    if value in self.species:
-      self.species.remove(value)
+    if value in self.speciesList:
+      self.speciesList.remove(value)
     if value in self.fishes:
       self.fishes.remove(value)
     if value in self.players:

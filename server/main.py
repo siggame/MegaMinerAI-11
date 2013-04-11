@@ -116,12 +116,12 @@ class GameApp(AccountsAppMixin, BaseApp):
   @protocolmethod
   @errorBuffer
   @requireTurn
-  @requireTypes(None, int, int, int)
-  def gameSpawn(self, species, x, y):
-    """Have a new fish spawn and join the fight!"""
+  @requireTypes(None, int, int)
+  def gameSpawn(self, species, tile):
+    """Have a new fish spawn and join the fight! Select which tile you want the fish to spawn on"""
     if self.game.turn is not self:
       return "Not your turn."
-    return self.game.spawn(species, x, y)
+    return self.game.spawn(species, tile)
 
   @protocolmethod
   @errorBuffer
@@ -136,22 +136,22 @@ class GameApp(AccountsAppMixin, BaseApp):
   @protocolmethod
   @errorBuffer
   @requireTurn
-  @requireTypes(None, int, int, int, int)
-  def gamePickUp(self, fish, x, y, weight):
+  @requireTypes(None, int, int, int)
+  def gamePickUp(self, fish, tile, weight):
     """Command a fish to pick up some trash at a specified position"""
     if self.game.turn is not self:
       return "Not your turn."
-    return self.game.pickUp(fish, x, y, weight)
+    return self.game.pickUp(fish, tile, weight)
 
   @protocolmethod
   @errorBuffer
   @requireTurn
-  @requireTypes(None, int, int, int, int)
-  def gameDrop(self, fish, x, y, weight):
+  @requireTypes(None, int, int, int)
+  def gameDrop(self, fish, tile, weight):
     """Command a fish to drop some trash at a specified position"""
     if self.game.turn is not self:
       return "Not your turn."
-    return self.game.drop(fish, x, y, weight)
+    return self.game.drop(fish, tile, weight)
 
   @protocolmethod
   @errorBuffer
