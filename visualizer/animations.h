@@ -11,7 +11,10 @@ namespace visualizer
     // height: height of bar
     // percent: rate of change between 0 and 1
     // col: color of the bar
-    void RenderProgressBar(const IRenderer&,float xPos, float yPos, float width, float height, float percent, const Color& col);
+    void RenderProgressBar(const IRenderer&,
+                           float xPos, float yPos,
+                           float width, float height,
+                           float percent, const Color& col, bool bDrawText = false);
 
     struct StartAnim : public Anim
     {

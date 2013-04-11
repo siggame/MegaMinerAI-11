@@ -195,7 +195,7 @@ class Fish(Mappable):
         self.isVisible = 0
       if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
-        if self.currentHealth < 0:
+        if self.currentHealth <= 0:
           self.game.grid[self.x][self.y].remove(self)
           self.game.addAnimation(DeathAnimation(self.id))
           tile = self.game.getTile(self.x, self.y)
@@ -284,7 +284,7 @@ class Fish(Mappable):
     #fish shouldn't have any trash, right?
 
     #unstealth fish... because that's what drop did IF ITS A CUTTLE FISH
-    if self.isVisible is 0 and self.species == 8:
+    if self.isVisible and self.species == 8:
       self.game.addAnimation(DeStealthAnimation(self.id))
     self.isVisible = 1
 
@@ -324,7 +324,7 @@ class Fish(Mappable):
         if fish.isVisible is 1:
           return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
-          pass #TODO: "Fringe case: dropping onto a stealthed fish."
+          pass # "Fringe case: dropping onto a stealthed fish."
 
     if self.isVisible:
       self.game.addAnimation(DeStealthAnimation(self.id))
@@ -359,7 +359,7 @@ class Fish(Mappable):
     elif not isinstance(target, Fish):
       return "Your %s %i can only attack other Fish." % (speciesName, self.id)
 
-    elif target.isVisible and target.owner != self.game.playerID:
+    elif not target.isVisible and target.owner != self.game.playerID:
       return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
 
     elif target.owner != self.owner and self.attackPower < 0:

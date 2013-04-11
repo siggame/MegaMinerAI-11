@@ -112,16 +112,11 @@ class BaseAI:
   def __init__(self, connection):
     self.connection = connection
 
-  #Returns index of fish at X, Y in self.fishes list
-  #Returns -1 if a fish is not found
-  def getFishIndex(self, x, y):
-    index = -1
-    for fish in self.fishes:
-      index += 1
-      if fish.x is x and fish.y is y:
-        return index
-    return -1
-
-  #Returns the tile based of off x and y
   def getTile(self, x, y):
-    return self.tiles[x * self.mapHeight + y]
+    return self.tiles[x *  self.mapHeight + y]
+
+  def getFishIndex(self, x, y):
+    for fish in self.fishes:
+      if fish.x == x and fish.y == y:
+        return fish
+    return None

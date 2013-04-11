@@ -212,21 +212,11 @@ namespace visualizer
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
       renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
       renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+
+      float xHealthPos = m_game->states[0].mapWidth/3.0f;
       
-      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,m_game->states[0].mapWidth/3.0f,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f));
-
-      // Render the health bars
-      /*renderer->setColor(Color(.2f,0.2f,0.2f,1.0f));
-      renderer->drawQuad(xPos + m_game->states[0].mapWidth/3.0f, // x
-                         , // y
-                         -(1.0f - currentPercent) *m_game->states[0].mapWidth/3.0f, // width
-                         0.5f); // height
-
-      renderer->setColor(Color(1.0f,0.0f,0.0f,1.0f));
-      renderer->drawQuad(xPos, // x
-                         -SEA_OFFSET + 0.7f, // y
-                         currentPercent * m_game->states[0].mapWidth/3.0f, // width
-                         0.5f); // height*/
+      // Health bar
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -241,14 +231,13 @@ namespace visualizer
   {
       // todo: need to make this look nice
       // todo: change these colors
-      static const string seasons[] = {"winter" , "spring", "summer", "fall"};
+      //static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
           glm::vec4(0.5f,0.5f,0.5f,0.0f), // white
           glm::vec4(.2f,0.7f,0.2f,0.0f), // greenish
           glm::vec4(.4f,0.4f,0.5f,0.0f), // silverish blue
-          glm::vec4(1.0f,0.3f,0.1f,0.0f) // red-orange
-         
+          glm::vec4(0.7f,0.3f,0.1f,0.0f) // red-orange
       };
 
       int turn = timeManager->getTurn();
