@@ -195,7 +195,7 @@ class Fish(Mappable):
         self.isVisible = 0
       if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight * self.game.trashDamage #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
-        if self.currentHealth < 0:
+        if self.currentHealth <= 0:
           self.game.grid[self.x][self.y].remove(self)
           self.game.addAnimation(DeathAnimation(self.id))
           tile = self.game.getTile(self.x, self.y)
@@ -266,13 +266,13 @@ class Fish(Mappable):
     elif (self.carryingWeight + weight) > self.carryCap:
       return "Your %s %i cannot carry more weight than %i." % (speciesName, self.id, self.carryCap)
 
-    elif weight == 0:
-      return "Your %s %i cannot pick up a weight of 0." % (speciesName, self.id)
+    elif weight <= 0:
+      return "Your %s %i cannot pick up a weight of %i." % (speciesName, self.id, weight)
 
     elif T.trashAmount < weight:
       return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, T.trashAmount)
 
-    elif T.trashAmount == 0:
+    elif T.trashAmount <= 0:
       return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
 
     elif self.currentHealth < weight*self.game.trashDamage:
@@ -314,8 +314,8 @@ class Fish(Mappable):
     elif weight > self.carryingWeight:
       return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
 
-    elif weight == 0:
-     return "Your %s %i cannot drop a weight of 0." % (speciesName, self.id)
+    elif weight <= 0:
+     return "Your %s %i cannot drop a weight of %i." % (speciesName, self.id, weight)
 
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
@@ -352,7 +352,7 @@ class Fish(Mappable):
     elif self.eucDist(self, x, y) > self.range:
       return "Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i" % (speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
 
-    elif self.attacksLeft == 0:
+    elif self.attacksLeft <= 0:
       return "Your %s %i has no attacks left." % (speciesName, self.id)
 
     elif not isinstance(target, Fish):
