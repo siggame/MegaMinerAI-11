@@ -25,6 +25,7 @@ std::ostream& operator<<(std::ostream& stream, Tile ob)
   stream << "trashAmount: " << ob.trashAmount  <<'\n';
   stream << "owner: " << ob.owner  <<'\n';
   stream << "hasEgg: " << ob.hasEgg  <<'\n';
+  stream << "damages: " << ob.damages  <<'\n';
   return stream;
 }
 
@@ -171,17 +172,18 @@ std::ostream& operator<<(std::ostream& stream, deStealth ob)
 
 std::ostream& operator<<(std::ostream& stream, GameState ob)
 {
+  stream << "maxReefHealth: " << ob.maxReefHealth  <<'\n';
   stream << "boundLength: " << ob.boundLength  <<'\n';
   stream << "turnNumber: " << ob.turnNumber  <<'\n';
   stream << "playerID: " << ob.playerID  <<'\n';
   stream << "gameNumber: " << ob.gameNumber  <<'\n';
-  stream << "trashDamage: " << ob.trashDamage  <<'\n';
   stream << "mapWidth: " << ob.mapWidth  <<'\n';
   stream << "mapHeight: " << ob.mapHeight  <<'\n';
   stream << "trashAmount: " << ob.trashAmount  <<'\n';
   stream << "currentSeason: " << ob.currentSeason  <<'\n';
   stream << "seasonLength: " << ob.seasonLength  <<'\n';
   stream << "healPercent: " << ob.healPercent  <<'\n';
+  stream << "maxFood: " << ob.maxFood  <<'\n';
 
   stream << "\n\nMappables:\n";
   for(std::map<int,Mappable>::iterator i = ob.mappables.begin(); i != ob.mappables.end(); i++)
@@ -190,7 +192,7 @@ std::ostream& operator<<(std::ostream& stream, GameState ob)
   for(std::map<int,Tile>::iterator i = ob.tiles.begin(); i != ob.tiles.end(); i++)
     stream << i->second << '\n';
   stream << "\n\nSpeciess:\n";
-  for(std::map<int,Species>::iterator i = ob.species.begin(); i != ob.species.end(); i++)
+  for(std::map<int,Species>::iterator i = ob.speciesList.begin(); i != ob.speciesList.end(); i++)
     stream << i->second << '\n';
   stream << "\n\nFishs:\n";
   for(std::map<int,Fish>::iterator i = ob.fishes.begin(); i != ob.fishes.end(); i++)

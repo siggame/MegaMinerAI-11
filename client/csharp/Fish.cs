@@ -41,16 +41,18 @@ public class Fish: Mappable
     return (Client.fishMove(ptr, x, y) == 0) ? false : true;
   }
   ///Command a fish to pick up some trash at a specified position
-  public bool pickUp(int x, int y, int weight)
+  public bool pickUp(Tile tile, int weight)
   {
     validify();
-    return (Client.fishPickUp(ptr, x, y, weight) == 0) ? false : true;
+    tile.validify();
+    return (Client.fishPickUp(ptr, tile.ptr, weight) == 0) ? false : true;
   }
   ///Command a fish to drop some trash at a specified position
-  public bool drop(int x, int y, int weight)
+  public bool drop(Tile tile, int weight)
   {
     validify();
-    return (Client.fishDrop(ptr, x, y, weight) == 0) ? false : true;
+    tile.validify();
+    return (Client.fishDrop(ptr, tile.ptr, weight) == 0) ? false : true;
   }
   ///Command a fish to attack a target
   public bool attack(Fish target)

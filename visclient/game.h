@@ -34,23 +34,24 @@ struct Connection
   pthread_mutex_t mutex;
   #endif
   
+  int maxReefHealth;
   int boundLength;
   int turnNumber;
   int playerID;
   int gameNumber;
-  int trashDamage;
   int mapWidth;
   int mapHeight;
   int trashAmount;
   int currentSeason;
   int seasonLength;
   int healPercent;
+  int maxFood;
 
   _Mappable* Mappables;
   int MappableCount;
   _Tile* Tiles;
   int TileCount;
-  _Species* Species;
+  _Species* SpeciesList;
   int SpeciesCount;
   _Fish* Fishes;
   int FishCount;
@@ -76,14 +77,14 @@ extern "C"
 
 //commands
 
-  ///Have a new fish spawn and join the fight!
-  DLLEXPORT int speciesSpawn(_Species* object, int x, int y);
+  ///Have a new fish spawn and join the fight! Select which tile you want the fish to spawn on
+  DLLEXPORT int speciesSpawn(_Species* object, _Tile* tile);
   ///Command a fish to move to a specified position
   DLLEXPORT int fishMove(_Fish* object, int x, int y);
   ///Command a fish to pick up some trash at a specified position
-  DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight);
+  DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight);
   ///Command a fish to drop some trash at a specified position
-  DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight);
+  DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight);
   ///Command a fish to attack a target
   DLLEXPORT int fishAttack(_Fish* object, _Fish* target);
   ///Allows a player to display messages on the screen
@@ -95,17 +96,18 @@ extern "C"
 
 //accessors
 
+DLLEXPORT int getMaxReefHealth(Connection* c);
 DLLEXPORT int getBoundLength(Connection* c);
 DLLEXPORT int getTurnNumber(Connection* c);
 DLLEXPORT int getPlayerID(Connection* c);
 DLLEXPORT int getGameNumber(Connection* c);
-DLLEXPORT int getTrashDamage(Connection* c);
 DLLEXPORT int getMapWidth(Connection* c);
 DLLEXPORT int getMapHeight(Connection* c);
 DLLEXPORT int getTrashAmount(Connection* c);
 DLLEXPORT int getCurrentSeason(Connection* c);
 DLLEXPORT int getSeasonLength(Connection* c);
 DLLEXPORT int getHealPercent(Connection* c);
+DLLEXPORT int getMaxFood(Connection* c);
 
 DLLEXPORT _Mappable* getMappable(Connection* c, int num);
 DLLEXPORT int getMappableCount(Connection* c);

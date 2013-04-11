@@ -3,6 +3,7 @@
 #include "Fish.h"
 #include "game.h"
 
+#include "Tile.h"
 #include "Fish.h"
 
 namespace client
@@ -99,14 +100,14 @@ int Fish::move(int x, int y)
   return fishMove( (_Fish*)ptr, x, y);
 }
 
-int Fish::pickUp(int x, int y, int weight)
+int Fish::pickUp(Tile& tile, int weight)
 {
-  return fishPickUp( (_Fish*)ptr, x, y, weight);
+  return fishPickUp( (_Fish*)ptr, (_Tile*) tile.ptr, weight);
 }
 
-int Fish::drop(int x, int y, int weight)
+int Fish::drop(Tile& tile, int weight)
 {
-  return fishDrop( (_Fish*)ptr, x, y, weight);
+  return fishDrop( (_Fish*)ptr, (_Tile*) tile.ptr, weight);
 }
 
 int Fish::attack(Fish& target)

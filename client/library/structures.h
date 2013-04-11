@@ -28,6 +28,7 @@ struct _Tile
   int trashAmount;
   int owner;
   int hasEgg;
+  int damages;
 };
 struct _Species
 {

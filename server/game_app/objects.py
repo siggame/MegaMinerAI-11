@@ -23,8 +23,8 @@ class Mappable(object):
       object.__setattr__(self, name, value)
 
 class Tile(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg']
-  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg):
+  game_state_attributes = ['id', 'x', 'y', 'trashAmount', 'owner', 'hasEgg', 'damages']
+  def __init__(self, game, id, x, y, trashAmount, owner, hasEgg, damages):
     self.game = game
     self.id = id
     self.x = x
@@ -32,14 +32,15 @@ class Tile(Mappable):
     self.trashAmount = trashAmount
     self.owner = owner
     self.hasEgg = hasEgg
+    self.damages = damages
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, ]
+    return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, self.damages, ]
   
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, )
+    return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, damages = self.damages, )
   
   def nextTurn(self):
     pass
@@ -76,7 +77,7 @@ class Species(object):
   def nextTurn(self):
     pass
 
-  def spawn(self, x, y):
+  def spawn(self, tile):
     pass
 
   def __setattr__(self, name, value):
@@ -119,10 +120,10 @@ class Fish(Mappable):
   def move(self, x, y):
     pass
 
-  def pickUp(self, x, y, weight):
+  def pickUp(self, tile, weight):
     pass
 
-  def drop(self, x, y, weight):
+  def drop(self, tile, weight):
     pass
 
   def attack(self, target):

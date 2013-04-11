@@ -8,6 +8,10 @@
 namespace client
 {
 
+int BaseAI::maxReefHealth()
+{
+  return getMaxReefHealth(c);
+}
 int BaseAI::boundLength()
 {
   return getBoundLength(c);
@@ -23,10 +27,6 @@ int BaseAI::playerID()
 int BaseAI::gameNumber()
 {
   return getGameNumber(c);
-}
-int BaseAI::trashDamage()
-{
-  return getTrashDamage(c);
 }
 int BaseAI::mapWidth()
 {
@@ -52,6 +52,10 @@ int BaseAI::healPercent()
 {
   return getHealPercent(c);
 }
+int BaseAI::maxFood()
+{
+  return getMaxFood(c);
+}
 
 bool BaseAI::startTurn()
 {
@@ -74,11 +78,11 @@ bool BaseAI::startTurn()
   }
 
   count = getSpeciesCount(c);
-  species.clear();
-  species.resize(count);
+  speciesList.clear();
+  speciesList.resize(count);
   for(int i = 0; i < count; i++)
   {
-    species[i] = Species(getSpecies(c, i));
+    speciesList[i] = Species(getSpecies(c, i));
   }
 
   count = getFishCount(c);

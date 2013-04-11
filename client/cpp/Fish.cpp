@@ -3,6 +3,7 @@
 #include "Fish.h"
 #include "game.h"
 
+#include "Tile.h"
 #include "Fish.h"
 
 Fish::Fish(_Fish* pointer)
@@ -96,14 +97,14 @@ bool Fish::move(int x, int y)
   return fishMove( (_Fish*)ptr, x, y);
 }
 
-bool Fish::pickUp(int x, int y, int weight)
+bool Fish::pickUp(Tile& tile, int weight)
 {
-  return fishPickUp( (_Fish*)ptr, x, y, weight);
+  return fishPickUp( (_Fish*)ptr, (_Tile*) tile.ptr, weight);
 }
 
-bool Fish::drop(int x, int y, int weight)
+bool Fish::drop(Tile& tile, int weight)
 {
-  return fishDrop( (_Fish*)ptr, x, y, weight);
+  return fishDrop( (_Fish*)ptr, (_Tile*) tile.ptr, weight);
 }
 
 bool Fish::attack(Fish& target)

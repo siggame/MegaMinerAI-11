@@ -136,6 +136,14 @@ class Tile(Mappable):
   ##Determines of a fish is set to spawn on this cove
   hasEgg = property(getHasEgg)
 
+  #\cond
+  def getDamages(self):
+    self.validify()
+    return library.tileGetDamages(self._ptr)
+  #\endcond
+  ##Determines which player the trash on this tile will hurt
+  damages = property(getDamages)
+
 
   def __str__(self):
     self.validify()
@@ -146,9 +154,10 @@ class Tile(Mappable):
     ret += "trashAmount: %s\n" % self.getTrashAmount()
     ret += "owner: %s\n" % self.getOwner()
     ret += "hasEgg: %s\n" % self.getHasEgg()
+    ret += "damages: %s\n" % self.getDamages()
     return ret
 
-##This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+##This class describes the characteristics for each type of fish. A species will only be available for so long, and new species will become available as a match progreses. 
 class Species(GameObject):
   def __init__(self, ptr):
     from BaseAI import BaseAI
@@ -163,17 +172,20 @@ class Species(GameObject):
     #somewhere else in memory now
     if self._iteration == BaseAI.iteration:
       return True
-    for i in BaseAI.species:
+    for i in BaseAI.speciesList:
       if i._id == self._id:
         self._ptr = i._ptr
         self._iteration = BaseAI.iteration
         return True
     raise ExistentialError()
   #\endcond
-  ##Have a new fish spawn and join the fight!
-  def spawn(self, x, y):
+  ##Have a new fish spawn and join the fight! Select which tile you want the fish to spawn on
+  def spawn(self, tile):
     self.validify()
-    return library.speciesSpawn(self._ptr, x, y)
+    if not isinstance(tile, Tile):
+      raise TypeError('tile should be of [Tile]')
+    tile.validify()
+    return library.speciesSpawn(self._ptr, tile._ptr)
 
   #\cond
   def getId(self):
@@ -244,7 +256,7 @@ class Species(GameObject):
     self.validify()
     return library.speciesGetRange(self._ptr)
   #\endcond
-  ##The attack arrange of the fish
+  ##The attack range of the fish
   range = property(getRange)
 
   #\cond
@@ -308,14 +320,20 @@ class Fish(Mappable):
     return library.fishMove(self._ptr, x, y)
 
   ##Command a fish to pick up some trash at a specified position
-  def pickUp(self, x, y, weight):
+  def pickUp(self, tile, weight):
     self.validify()
-    return library.fishPickUp(self._ptr, x, y, weight)
+    if not isinstance(tile, Tile):
+      raise TypeError('tile should be of [Tile]')
+    tile.validify()
+    return library.fishPickUp(self._ptr, tile._ptr, weight)
 
   ##Command a fish to drop some trash at a specified position
-  def drop(self, x, y, weight):
+  def drop(self, tile, weight):
     self.validify()
-    return library.fishDrop(self._ptr, x, y, weight)
+    if not isinstance(tile, Tile):
+      raise TypeError('tile should be of [Tile]')
+    tile.validify()
+    return library.fishDrop(self._ptr, tile._ptr, weight)
 
   ##Command a fish to attack a target
   def attack(self, target):

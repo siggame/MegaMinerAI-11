@@ -30,17 +30,18 @@ class Match(DefaultGameWorld):
     self.addPlayer(self.scribe, "spectator")
 
     #TODO: INITIALIZE THESE!
+    self.maxReefHealth = None
     self.boundLength = None
     self.turnNumber = None
     self.playerID = None
     self.gameNumber = id
-    self.trashDamage = None
     self.mapWidth = None
     self.mapHeight = None
     self.trashAmount = None
     self.currentSeason = None
     self.seasonLength = None
     self.healPercent = None
+    self.maxFood = None
 
   #this is here to be wrapped
   def __del__(self):
@@ -110,17 +111,18 @@ class Match(DefaultGameWorld):
     if( self.logJson ):
       self.dictLog['turns'].append(
         dict(
+          maxReefHealth = self.maxReefHealth,
           boundLength = self.boundLength,
           turnNumber = self.turnNumber,
           playerID = self.playerID,
           gameNumber = self.gameNumber,
-          trashDamage = self.trashDamage,
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
           trashAmount = self.trashAmount,
           currentSeason = self.currentSeason,
           seasonLength = self.seasonLength,
           healPercent = self.healPercent,
+          maxFood = self.maxFood,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
           Speciess = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
@@ -168,21 +170,21 @@ class Match(DefaultGameWorld):
   def logPath(self):
     return "logs/" + str(self.id)
 
-  @derefArgs(Species, None, None)
-  def spawn(self, object, x, y):
-    return object.spawn(x, y, )
+  @derefArgs(Species, Tile)
+  def spawn(self, object, tile):
+    return object.spawn(tile, )
 
   @derefArgs(Fish, None, None)
   def move(self, object, x, y):
     return object.move(x, y, )
 
-  @derefArgs(Fish, None, None, None)
-  def pickUp(self, object, x, y, weight):
-    return object.pickUp(x, y, weight, )
+  @derefArgs(Fish, Tile, None)
+  def pickUp(self, object, tile, weight):
+    return object.pickUp(tile, weight, )
 
-  @derefArgs(Fish, None, None, None)
-  def drop(self, object, x, y, weight):
-    return object.drop(x, y, weight, )
+  @derefArgs(Fish, Tile, None)
+  def drop(self, object, tile, weight):
+    return object.drop(tile, weight, )
 
   @derefArgs(Fish, Fish)
   def attack(self, object, target):
@@ -219,7 +221,7 @@ class Match(DefaultGameWorld):
   def status(self):
     msg = ["status"]
 
-    msg.append(["game", self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
+    msg.append(["game", self.maxReefHealth, self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent, self.maxFood])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])

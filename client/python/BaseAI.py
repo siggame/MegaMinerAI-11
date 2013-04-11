@@ -17,7 +17,7 @@ class BaseAI:
   #\endcond
   mappables = []
   tiles = []
-  species = []
+  speciesList = []
   fishes = []
   players = []
   #\cond
@@ -30,7 +30,7 @@ class BaseAI:
 
     BaseAI.mappables = [Mappable(library.getMappable(self.connection, i)) for i in xrange(library.getMappableCount(self.connection))]
     BaseAI.tiles = [Tile(library.getTile(self.connection, i)) for i in xrange(library.getTileCount(self.connection))]
-    BaseAI.species = [Species(library.getSpecies(self.connection, i)) for i in xrange(library.getSpeciesCount(self.connection))]
+    BaseAI.speciesList = [Species(library.getSpecies(self.connection, i)) for i in xrange(library.getSpeciesCount(self.connection))]
     BaseAI.fishes = [Fish(library.getFish(self.connection, i)) for i in xrange(library.getFishCount(self.connection))]
     BaseAI.players = [Player(library.getPlayer(self.connection, i)) for i in xrange(library.getPlayerCount(self.connection))]
 
@@ -49,6 +49,11 @@ class BaseAI:
       return r.next()
     return r
   #\endcond
+  #\cond
+  def getMaxReefHealth(self):
+    return library.getMaxReefHealth(self.connection)
+  #\endcond
+  maxReefHealth = property(getMaxReefHealth)
   #\cond
   def getBoundLength(self):
     return library.getBoundLength(self.connection)
@@ -69,11 +74,6 @@ class BaseAI:
     return library.getGameNumber(self.connection)
   #\endcond
   gameNumber = property(getGameNumber)
-  #\cond
-  def getTrashDamage(self):
-    return library.getTrashDamage(self.connection)
-  #\endcond
-  trashDamage = property(getTrashDamage)
   #\cond
   def getMapWidth(self):
     return library.getMapWidth(self.connection)
@@ -104,5 +104,10 @@ class BaseAI:
     return library.getHealPercent(self.connection)
   #\endcond
   healPercent = property(getHealPercent)
+  #\cond
+  def getMaxFood(self):
+    return library.getMaxFood(self.connection)
+  #\endcond
+  maxFood = property(getMaxFood)
   def __init__(self, connection):
     self.connection = connection

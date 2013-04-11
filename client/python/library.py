@@ -42,16 +42,16 @@ library.networkLoop.argtypes = [c_void_p]
 
 #Functions
 library.speciesSpawn.restype = c_int
-library.speciesSpawn.argtypes = [c_void_p, c_int, c_int]
+library.speciesSpawn.argtypes = [c_void_p, c_void_p]
 
 library.fishMove.restype = c_int
 library.fishMove.argtypes = [c_void_p, c_int, c_int]
 
 library.fishPickUp.restype = c_int
-library.fishPickUp.argtypes = [c_void_p, c_int, c_int, c_int]
+library.fishPickUp.argtypes = [c_void_p, c_void_p, c_int]
 
 library.fishDrop.restype = c_int
-library.fishDrop.argtypes = [c_void_p, c_int, c_int, c_int]
+library.fishDrop.argtypes = [c_void_p, c_void_p, c_int]
 
 library.fishAttack.restype = c_int
 library.fishAttack.argtypes = [c_void_p, c_void_p]
@@ -62,6 +62,9 @@ library.playerTalk.argtypes = [c_void_p, c_char_p]
 # accessors
 
 #Globals
+library.getMaxReefHealth.restype = c_int
+library.getMaxReefHealth.argtypes = [c_void_p]
+
 library.getBoundLength.restype = c_int
 library.getBoundLength.argtypes = [c_void_p]
 
@@ -73,9 +76,6 @@ library.getPlayerID.argtypes = [c_void_p]
 
 library.getGameNumber.restype = c_int
 library.getGameNumber.argtypes = [c_void_p]
-
-library.getTrashDamage.restype = c_int
-library.getTrashDamage.argtypes = [c_void_p]
 
 library.getMapWidth.restype = c_int
 library.getMapWidth.argtypes = [c_void_p]
@@ -94,6 +94,9 @@ library.getSeasonLength.argtypes = [c_void_p]
 
 library.getHealPercent.restype = c_int
 library.getHealPercent.argtypes = [c_void_p]
+
+library.getMaxFood.restype = c_int
+library.getMaxFood.argtypes = [c_void_p]
 
 library.getMappable.restype = c_void_p
 library.getMappable.argtypes = [c_void_p, c_int]
@@ -154,6 +157,9 @@ library.tileGetOwner.argtypes = [c_void_p]
 
 library.tileGetHasEgg.restype = c_int
 library.tileGetHasEgg.argtypes = [c_void_p]
+
+library.tileGetDamages.restype = c_int
+library.tileGetDamages.argtypes = [c_void_p]
 
 library.speciesGetId.restype = c_int
 library.speciesGetId.argtypes = [c_void_p]

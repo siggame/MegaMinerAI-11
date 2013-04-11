@@ -3,6 +3,7 @@
 #include "Species.h"
 #include "game.h"
 
+#include "Tile.h"
 
 namespace client
 {
@@ -68,9 +69,9 @@ int Species::season()
 }
 
 
-int Species::spawn(int x, int y)
+int Species::spawn(Tile& tile)
 {
-  return speciesSpawn( (_Species*)ptr, x, y);
+  return speciesSpawn( (_Species*)ptr, (_Tile*) tile.ptr);
 }
 
 

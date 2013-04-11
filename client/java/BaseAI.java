@@ -9,7 +9,7 @@ public abstract class BaseAI
 {
   static Mappable[] mappables;
   static Tile[] tiles;
-  static Species[] species;
+  static Species[] speciesList;
   static Fish[] fishes;
   static Player[] players;
   Pointer connection;
@@ -58,10 +58,10 @@ public abstract class BaseAI
       tiles[i] = new Tile(Client.INSTANCE.getTile(connection, i));
     }
     count = Client.INSTANCE.getSpeciesCount(connection);
-    species = new Species[count];
+    speciesList = new Species[count];
     for(int i = 0; i < count; i++)
     {
-      species[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
+      speciesList[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
     }
     count = Client.INSTANCE.getFishCount(connection);
     fishes = new Fish[count];
@@ -85,6 +85,11 @@ public abstract class BaseAI
   }
 
 
+  ///The maximum and initial health of each player's reef.
+  int maxReefHealth()
+  {
+    return Client.INSTANCE.getMaxReefHealth(connection);
+  }
   ///How far the shared zone extends from the center
   int boundLength()
   {
@@ -104,11 +109,6 @@ public abstract class BaseAI
   int gameNumber()
   {
     return Client.INSTANCE.getGameNumber(connection);
-  }
-  ///How much damage trash does
-  int trashDamage()
-  {
-    return Client.INSTANCE.getTrashDamage(connection);
   }
   ///How wide the map is
   int mapWidth()
@@ -139,5 +139,10 @@ public abstract class BaseAI
   int healPercent()
   {
     return Client.INSTANCE.getHealPercent(connection);
+  }
+  ///The maximum amount of food a player can have.
+  int maxFood()
+  {
+    return Client.INSTANCE.getMaxFood(connection);
   }
 }

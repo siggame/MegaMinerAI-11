@@ -23,6 +23,7 @@ DLLEXPORT int tileGetY(_Tile* ptr);
 DLLEXPORT int tileGetTrashAmount(_Tile* ptr);
 DLLEXPORT int tileGetOwner(_Tile* ptr);
 DLLEXPORT int tileGetHasEgg(_Tile* ptr);
+DLLEXPORT int tileGetDamages(_Tile* ptr);
 
 
 DLLEXPORT int speciesGetId(_Species* ptr);
