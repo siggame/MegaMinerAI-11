@@ -190,7 +190,7 @@ class Fish(Mappable):
         self.attacksLeft = self.maxAttacks
       if self.species == 8: #Cuttlefish
         #Set to invisible
-        if self.isVisible:
+        if not self.isVisible:
           self.game.addAnimation(StealthAnimation(self.id))
         self.isVisible = 0
       if self.species != 6: #Tomcod

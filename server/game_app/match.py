@@ -40,7 +40,7 @@ class Match(DefaultGameWorld):
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
-    self.boundLength = self.boundLength
+    self.boundLength = random.choice(range(1, self.boundLength))
     self.currentSeason = random.choice(range(4))
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent

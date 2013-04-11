@@ -22,7 +22,7 @@ class AI(BaseAI):
     self.seasonDict = {0:[],2:[],3:[],1:[]}
     for species in self.species:
       self.seasonDict[species.season].append(species)
-    self.dump = (self.mapWidth/2,self.mapHeight/2)
+    self.allSpecies = [species.name for species in self.species]
     self.myPlayer = self.players[self.playerID]
 
   ##This function is called once, after your last turn
@@ -31,7 +31,7 @@ class AI(BaseAI):
 
 #can return a tile or a fish
   def getObject(self,x,y):
-    return [self.grid[x][y][-1]]
+    return self.grid[x][y][-1]
 
   def getFish(self,x,y):
     if len(self.grid[x][y])>1:
@@ -55,19 +55,18 @@ class AI(BaseAI):
     for adj in self.adjacentList:
       dx = x+adj[0]; dy = y+adj[1]
       thing = self.getObject(dx,dy)
-      print thing
-      if isinstance(thing, Tile) and thing.trashAmount==0 and thing.owner!=self.playerID^1 and not thing.hasEgg:
+      if isinstance(thing, Tile) and thing.trashAmount == 0 and thing.owner != self.playerID^1 and not thing.hasEgg:
         if 0<=thing.x<self.mapWidth and 0<=thing.y<self.mapHeight:
           return (dx,dy)
     return None
 
-  def removeGrid(self,target):
+  def removeGrid(self, target):
     self.grid[target.x][target.y].remove(target)
     
-  def addGrid(self,x,y,target):
+  def addGrid(self, x, y, target):
     self.grid[x][y].append(target)
       
-  def adjacent(self,x,y):
+  def adjacent(self, x, y):
     adj = []
     if x+1<self.mapWidth:
         adj.append((x+1,y))
@@ -79,7 +78,7 @@ class AI(BaseAI):
         adj.append((x,y+1))
     return adj  
   
-  def pathFind(self,startX,startY,goalX,goalY):
+  def pathFind(self, startX, startY, goalX, goalY):
     closedSet = set();closedTup=set()
     # 0 = distance from goal, 1 = current (x,y), 2 = parent (x,y) 3 = distance from start
     open = [(self.distance(startX,startY,goalX,goalY),(startX,startY),(startX,startY),0)];openTup=[(startX,startY)]
@@ -125,11 +124,10 @@ class AI(BaseAI):
 
   def pickUpTrash(self,fish):
     #find nearest trash
-    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.coorDict if not self.isSafe(key[0])}
+    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.trashDict if not self.isSafe(key[0])}
     if len(trashDir)<1:
       return False
     trash = self.getTile(trashDir[min(trashDir)][0],trashDir[min(trashDir)][1])
-    loc = self.findAdjacent(self.dump[0],self.dump[1])
     self.moveTo(fish,trash)
     if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
       x = trash.trashAmount
@@ -142,62 +140,80 @@ class AI(BaseAI):
     return False
 
   def addTrash(self,x,y,weight):
-    if (x,y) not in self.coorDict:      
-      self.coorDict[(x,y)] = weight
+    if (x,y) not in self.trashDict:
+      self.trashDict[(x, y)] = weight
     else:
-      self.coorDict[(x,y)] += weight 
+      self.trashDict[(x, y)] += weight
   
-  def removeTrash(self,x,y,weight):
-    self.coorDict[(x,y)]-=weight
-    if self.coorDict[(x,y)] == 0:
-      del self.coorDict[(x,y)]
+  def removeTrash(self, x,y, weight):
+    self.trashDict[(x,y)]-=weight
+    if self.trashDict[(x,y)] == 0:
+      del self.trashDict[(x,y)]
 
   def isSafe(self,x):
-    if self.playerID==0 and x>self.mapWidth/2+self.boundLength:
+    if self.playerID == 0 and x > self.mapWidth / 2 + self.boundLength:
       return True
-    elif self.playerID==1 and x<self.mapWidth/2-self.boundLength:
+    elif self.playerID == 1 and x < self.mapWidth / 2 - self.boundLength:
       return True
     return False
 
-  def pushTrash(self,fish):
+  def pushTrash(self, fish):
     #theirTiles = [tile for tile in self.tiles if self.isSafe(tile.x) and tile.owner==2]
     #tile = random.choice(theirTiles)
     if self.playerID == 0:
-      while fish.movementLeft>0:
-        y = fish.move(fish.x+1,fish.y)
+      while fish.movementLeft > 0:
+        y = fish.move(fish.x + 1, fish.y)
         if not y:
-          return
+          return False
     else:
-     while fish.movementLeft>0:
-       y = fish.move(fish.x-1,fish.y)
+     while fish.movementLeft > 0:
+       y = fish.move(fish.x - 1, fish.y)
        if not y:
-         return
+         return False
 
   def smartSpawn(self):
     seasonal = self.seasonDict[self.currentSeason]
     speciesList = [species.name for species in seasonal]
     #print speciesList
 
+  def speciesList(self, player, fish, index):
+      return [fish for fish in self.fishes if fish.owner == player and fish.species == index]
+
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
     self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
     for life in self.tiles+self.fishes:
-      self.addGrid(life.x,life.y,life)
+      self.addGrid(life.x, life.y, life)
     
-    self.coorDict = {(tile.x,tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount>0}
+    self.trashDict = {(tile.x, tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount > 0}
+    self.myFish = [fish for fish in self.fishes if fish.owner == self.myPlayer.id]
+    self.enemyFish = [fish for fish in self.fishes if fish.owner != self.myPlayer.id]
+
+    self.pushers = ['Tomcod', 'Sponge', 'Angelfish', 'Sea Star']
+    self.fighers = ['Cone Shell Snail', 'Reef Shark', 'Octopus', 'Jellyfish','Electric Eel']
+    self.Shrimps = ['CleanerShrimp']
+    self.Cuttles = ['Cuttlefish']
 
     self.myPlayer.talk("I'm so happy to be olive")
     self.smartSpawn()
+
     #spawn some dudes
     seasonal = self.seasonDict[self.currentSeason]
+
+
+
+
+
+
+
     for cove in self.coves:
       for species in seasonal:
-        if species.carryCap>0 and cove.owner==self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y])==1 and self.myPlayer.spawnFood>=species.cost and species.index !=8:
+        if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.index != 8:
           species.spawn(cove.x,cove.y)
-        
+
     for fish in self.fishes: 
-      if fish.owner==self.playerID and fish.carryCap>0:
+      if fish.owner == self.playerID and fish.carryCap > 0:
         if fish.carryCap > fish.carryingWeight:    
           self.pickUpTrash(fish)
         else:
