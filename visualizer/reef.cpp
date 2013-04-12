@@ -295,6 +295,7 @@ namespace visualizer
               // Render cove
               break;
             case 3:
+              renderer->drawTexturedQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"wall");
               // Render wall
               break;
 
