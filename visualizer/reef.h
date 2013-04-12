@@ -9,6 +9,7 @@
 #include <map>
 #include <string>
 #include <list>
+
 #include "reefAnimatable.h"
 
 // The Codegen's Parser
@@ -108,9 +109,11 @@ namespace visualizer
             std::vector<std::map<int,BasicTrash> > m_Trash;
             std::vector<std::vector<parser::Species> > m_Species;
 
+            std::vector<parser::Tile> m_Tiles;
+
             std::list<Bubble> m_Bubbles;
 
-            void BuildWorld(class Map* pMap);
+            void BuildWorld(std::vector<int>&);
 
             void ProccessInput();
 
@@ -118,7 +121,8 @@ namespace visualizer
 
             void UpdateBubbles();
 
-            void RenderWorld() const;
+            void RenderPreWorld() const;
+            void RenderPostWorld() const;
 
             void RenderObjectSelection() const;
 

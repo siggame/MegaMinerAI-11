@@ -43,20 +43,6 @@ namespace visualizer
         SpriteAnimation* m_animation;
     };
 
-    class DrawMap : public Anim
-    {
-        public:
-
-        DrawMap( Map* map ) : m_Map(map) {}
-
-        void animate( const float& t, AnimData* d, IGame* game );
-
-        private:
-            Map *m_Map;
-
-
-    }; // DrawBackground
-
     class DrawFish : public Anim
     {
     public:

@@ -93,6 +93,8 @@ namespace visualizer
 
       ProccessInput();
       UpdateBubbles();
+
+      RenderPreWorld();
   }
 
   void Reef::UpdateBubbles()
@@ -186,10 +188,10 @@ namespace visualizer
 
   void Reef::postDraw()
   {
+      RenderPostWorld();
       RenderBubbles();
       RenderPlayerInfo();
       RenderSpecies();
-      RenderWorld();
       RenderObjectSelection();
 
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
@@ -268,7 +270,41 @@ namespace visualizer
       }
   }
 
-  void Reef::RenderWorld() const
+
+  void Reef::RenderPreWorld() const
+  {
+      int width = m_game->states[0].mapWidth;
+      int height = m_game->states[0].mapHeight;
+
+      // draw a blue background
+      renderer->setColor(Color(0.1f,0.1f,.8f,0.5f));
+      renderer->drawQuad(0.0f,0.0f,width,height);
+
+      // render the waves
+      renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+
+      // render the coves
+      for(unsigned int i = 0; i < m_Tiles.size(); ++i)
+      {
+          // switch the type of the tile
+          switch(m_Tiles[i].owner)
+          {
+            case 0:
+            case 1:
+              renderer->drawAnimQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"coral",2);
+              // Render cove
+              break;
+            case 3:
+              // Render wall
+              break;
+
+          }
+      }
+
+  }
+
+
+  void Reef::RenderPostWorld() const
   {
       static float counter = 0.0f;
       counter += m_fDt;
@@ -282,14 +318,25 @@ namespace visualizer
       float fSeconds = (3.0f*counter) * options->getNumber("Enable Water Animation");
       float fTransparency = (float)options->getNumber("Water Transparency Level") / 100.0f;
 
+      // render the waves
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+
       for(int i = 0; i < m_game->states[0].mapWidth; ++i)
       {
         renderer->drawSubTexturedQuad(i,-0.5f,0.5f,0.5f,(fSeconds),0.0f,1,1,"waves");
         renderer->drawSubTexturedQuad(i+ 0.5f,-0.5f,0.5f,0.5f,(fSeconds),0.0f,1,1,"waves");
       }
 
-      //renderer->drawTexturedQuad(0,-2,m_game->states[0].mapWidth,2,"waves");
+      // render the ocean floor
+
+      for(int y = 0; y < 2*SEA_OFFSET + 1; ++y)
+      {
+          for (int x = 0; x < m_game->states[0].mapWidth; x++)
+          {
+              renderer->drawTexturedQuad(x,y + m_game->states[0].mapHeight,1,1,"ocean_floor");
+          }
+      }
+
 
       // blend water map ontop of all the tiles
       renderer->setColor(Color(1.0,1.0f,1.0f,fTransparency));
@@ -393,9 +440,10 @@ namespace visualizer
     start();
   } // Reef::loadGamelog()
 
-  void Reef::BuildWorld(Map* pMap)
+  void Reef::BuildWorld(std::vector<int>& idMap)
   {
       m_Trash.resize(m_game->states.size());
+      idMap.resize(m_game->states[0].tiles.size());
 
       // Loop over all of the tiles in the first turn
       for(auto iter = m_game->states[0].tiles.begin(); iter != m_game->states[0].tiles.end(); ++iter)
@@ -411,26 +459,14 @@ namespace visualizer
 
             m_Trash[0][iter->second.id] = trash;
           }
-          else if(iter->second.owner < 2) // If the tile is not a water tile
+          else if(iter->second.owner < 4) // If the tile is not a water tile
           {
-              // it is a cove, so draw it
-              Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
-              tile.bCove = true;
-              tile.spriteId = 2;
+              m_Tiles.push_back(iter->second);
           }
 
-          (*pMap)(iter->second.y,iter->second.x).id = iter->second.id;
-
+          // creating a map of ids
+          idMap[iter->second.y * m_game->states[0].mapWidth + iter->second.x] = iter->second.id;
       }
-
-      // Draw other coral on the bottom of the map.
-      for (int x = 0; x < pMap->GetWidth(); x++)
-      {
-         Map::Tile& tile = (*pMap)(pMap->GetHeight() - 1,x);
-         tile.bCove = true;
-         tile.spriteId = rand() % 2;
-      }
-
   }
   
   // The "main" function
@@ -444,15 +480,13 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
+    std::vector<int> idMap; // this will be a 2d array mapping the pos of the fish to the id
+
     std::map<int,bool> dirMap;
 
     SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].speciesList.size());
 
-    // todo: this map should be removed
-    SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
-    pMap->addKeyFrame( new DrawMap( pMap ) );
-
-    BuildWorld(pMap);
+    BuildWorld(idMap);
 
     for(auto iter = m_game->states[0].speciesList.begin(); iter != m_game->states[0].speciesList.end(); ++iter)
     {
@@ -473,9 +507,6 @@ namespace visualizer
     for(int state = 0; state < (int)m_game->states.size() && !m_suicide; state++)
     {
       Frame turn;  // The frame that will be drawn
-
-      // todo: remove this from each frame
-      turn.addAnimatable(pMap);
 
       if(state > 0)
       {
@@ -503,7 +534,6 @@ namespace visualizer
             	 //newFish->isVisible = tr
                  newFish->isVisible = false;
             	 cout<<"Stealth!"<<endl;
-                 cout<<"Stealth!"<<endl;
             }
             else if(j->type == parser::DESTEALTH)
             {
@@ -530,15 +560,10 @@ namespace visualizer
                     }
                     else
                     {
-                        BasicTrash& trash = m_Trash[state][(*pMap)(dropAnim.y,dropAnim.x).id];
+                        BasicTrash& trash = m_Trash[state][idMap[dropAnim.y * m_game->states[0].mapWidth + dropAnim.x]];
                         trash.amount += dropAnim.amount;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
-
-                        /*if(trash.amount == 0)
-                        {
-                            trash.moveTurn = state;
-                        }*/
                     }
                 }
                 else
@@ -546,7 +571,7 @@ namespace visualizer
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
-                        BasicTrash& trash = m_Trash[state][(*pMap)(pickupAnim.y,pickupAnim.x).id];
+                        BasicTrash& trash = m_Trash[state][idMap[pickupAnim.y * m_game->states[0].mapWidth + pickupAnim.x]];
                         //trash.moveTurn = state;
 
                         if(trash.amount == 0)
@@ -559,7 +584,7 @@ namespace visualizer
 
                         if(trash.amount < 1)
                         {
-                           m_Trash[state].erase( (*pMap)(pickupAnim.y,pickupAnim.x).id);
+                           m_Trash[state].erase(idMap[pickupAnim.y * m_game->states[0].mapWidth + pickupAnim.x]);
                         }
                     }
                 }
@@ -593,8 +618,7 @@ namespace visualizer
           {
              if(p.second.carryingWeight > 0)
              {
-          
-              	BasicTrash& trash = m_Trash[state][(*pMap)(p.second.y,p.second.x).id];
+                BasicTrash& trash = m_Trash[state][idMap[p.second.y * m_game->states[0].mapWidth + p.second.x]];
               	trash.amount += p.second.carryingWeight;
               	trash.x = p.second.x;
               	trash.y = p.second.y;
