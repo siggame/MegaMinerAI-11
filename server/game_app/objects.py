@@ -231,6 +231,9 @@ class Fish(Mappable):
     elif T.owner == self.owner^1:
       return "Your %s %i can't move into an opponent's cove. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
 
+    elif T.owner == 3:
+      return "Your %s %i can't move into an a wall. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     elif T.hasEgg:
       return "Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
 
@@ -271,9 +274,6 @@ class Fish(Mappable):
 
     elif tile.trashAmount < 1:
       return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
-
-    elif self.currentHealth < weight:
-      return "Your %s %i cannot pick up trash that would kill it. Health: %i Damage: %i" % (speciesName, self.id, self.currentHealth, weight)
 
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?

@@ -20,9 +20,9 @@ class AI(BaseAI):
     self.coves = [tile for tile in self.tiles if tile.owner==self.playerID]
     self.adjacentList = [(-1,0),(1,0),(0,1),(0,-1)]
     self.seasonDict = {0:[],2:[],3:[],1:[]}
-    for species in self.species:
+    for species in self.speciesList:
       self.seasonDict[species.season].append(species)
-    self.allSpecies = [species.name for species in self.species]
+    self.allSpecies = [species.name for species in self.speciesList]
     self.myPlayer = self.players[self.playerID]
 
   ##This function is called once, after your last turn
@@ -102,7 +102,7 @@ class AI(BaseAI):
        tile = self.getTile(neighbor[0],neighbor[1])
        fish = self.getFish(neighbor[0],neighbor[1])
        ###
-       if (tile.owner!=self.playerID^1 and tile.trashAmount==0 and fish==None) or (neighbor[0],neighbor[1])==(goalX,goalY):
+       if (tile.owner!=self.playerID^1 and tile.owner!=3 and tile.trashAmount==0 and fish==None) or (neighbor[0],neighbor[1])==(goalX,goalY):
         if neighbor in closedTup:
          continue
         g = current[3]+self.distance(neighbor[0],neighbor[1],current[1][0],current[1][1])
@@ -133,7 +133,7 @@ class AI(BaseAI):
       x = trash.trashAmount
       amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount, fish.currentHealth-1)   
       if amount>0:
-        y = fish.pickUp(trash.x,trash.y,amount) 
+        y = fish.pickUp(trash,amount) 
         if y:
           self.removeTrash(trash.x,trash.y,amount)
       return True
@@ -176,13 +176,13 @@ class AI(BaseAI):
     speciesList = [species.name for species in seasonal]
     #print speciesList
 
-  def speciesList(self, player, fish, index):
+  def speciesTypes(self, player, fish, index):
       return [fish for fish in self.fishes if fish.owner == player and fish.species == index]
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
-    self.grid = [[[] for _ in range(self.mapHeight)] for _ in range(self.mapWidth)]
+    self.grid = [[[] for x in range(self.mapHeight)] for i in range(self.mapWidth)]
     for life in self.tiles+self.fishes:
       self.addGrid(life.x, life.y, life)
     
@@ -210,7 +210,7 @@ class AI(BaseAI):
     for cove in self.coves:
       for species in seasonal:
         if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.index != 8:
-          species.spawn(cove.x,cove.y)
+          species.spawn(cove)
 
     for fish in self.fishes: 
       if fish.owner == self.playerID and fish.carryCap > 0:
