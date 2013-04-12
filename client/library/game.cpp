@@ -305,7 +305,10 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   //Do not move on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
     if (c->Fishes[ii].x == x && c->Fishes[ii].y == y) {
-     return 0;
+      //Do not move onto a stealthed fish or dead fish
+      if(c->Fishes[ii].isVisible && c->Fishes[ii].currentHealth > 0) {
+        return 0;
+      }
     }
   }
   //Do not move on top of trash (tile with trash amount > 0) with size.
@@ -408,6 +411,15 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
   else if(weight > object->carryingWeight)
   {
     return 0;
+  }
+  //Do not drop on top of another fish.
+  for(int ii = 0; ii < c->FishCount; ii++) {
+    if (c->Fishes[ii].x == tile->x && c->Fishes[ii].y == tile->y) {
+      //Do not drop onto a stealthed fish or dead fish
+      if(c->Fishes[ii].isVisible && c->Fishes[ii].currentHealth > 0) {
+        return 0;
+      }
+    }
   }
 
   //Cannot drop on a fish
