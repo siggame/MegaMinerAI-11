@@ -205,13 +205,13 @@ namespace visualizer
       int h = m_game->states[0].mapHeight;
       int w = m_game->states[0].mapWidth;
       //draw horizontal lines
-      for(unsigned int i = 0; i < h, i++)
+      for(unsigned int i = 0; i < h; i++)
       {
           renderer->drawLine(0,i,w,i,1.0f);
       }
 
       //draw vertical lines
-      for(unsigned int i = 0; i < w, i++)
+      for(unsigned int i = 0; i < w; i++)
       {
           renderer->drawLine(i,0,i,h,1.0f);
       }
