@@ -494,6 +494,11 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   {
      return 0;
   }
+  //Cannot attack if fish has trash on top of it
+  if(c->Tiles[object->x*c->mapHeight + object->y].trashAmount > 0)
+  {
+    return 0;
+  }
 
   //Heal if cleanershrimp[]
   if(object->species == 9) //Cleaner Shrimp
