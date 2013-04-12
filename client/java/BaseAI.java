@@ -150,13 +150,13 @@ public abstract class BaseAI
   Tile getTile(int x, int y){
     return tiles[(mapHeight()*x)+y];
   }
-  ///Returns the index (in fishes[]) of the fish at position (x,y)
-  int getFishIndex(int x, int y){
-    for(int i=0; i<fishes.length; i++){
-      if(fishes[i].getX() == x && fishes[i].getY() == y){
-        return i;
+  ///Returns the index (in fishes[]) of the fish at position (x,y), or null if none is found
+  Fish getFish(int x, int y){
+    for(Fish fish : fishes){
+      if(fish.getX() == x && fish.getY() == y){
+        return fish;
       }
     }
-    return -1;
+    return null;
   }
 }
