@@ -237,7 +237,8 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        if fish.isVisible is 1:
+        #You can't move on a fish that is visible and alive
+        if fish.isVisible == 1 and fish.currentHealth > 0:
           return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
           #return "Fringe case: moving onto a stealthed fish."
@@ -317,7 +318,8 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        if fish.isVisible is 1:
+        #If fish is visible and is alive, you cant drop on it.
+        if fish.isVisible == 1 and fish.currentHealth > 0:
           return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
           pass # "Fringe case: dropping onto a stealthed fish."
@@ -356,6 +358,9 @@ class Fish(Mappable):
 
     elif not target.isVisible and target.owner != self.game.playerID:
       return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
+
+    elif target.currentHealth < 0:
+      return "Your %s %i cannot attack a dead fish %s %i." % (speciesName, self.id, targetName, target.id)
 
     elif target.owner != self.owner and self.attackPower < 0:
       return "Your %s %i cannot heal the opponent's %s %i." % (speciesName, self.id, targetName, target.id)
