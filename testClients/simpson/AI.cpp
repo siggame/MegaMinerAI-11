@@ -24,7 +24,7 @@ Tile AI::myGetTile(const int x, const int y)
   return tiles[x*mapHeight() + y];
 }
 
-Fish AI::myGetFish(const int targetX, const int targetY)
+Fish& AI::myGetFish(const int targetX, const int targetY)
 {
   for(int i = 0; i < fishes.size(); i++)
   {
@@ -35,11 +35,38 @@ Fish AI::myGetFish(const int targetX, const int targetY)
   }
 }
 
+bool AI::isValidLoc(const int x,const int y,bool & isFish)
+{
+  isFish = false;
+  if(myGetTile(x,y).hasEgg()) //invalid if egg
+  {
+    return false;
+  }
+  for(int j = 0; j < fishes.size(); j++)
+  {
+    if(fishes[j].x() == x && fishes[j].y() == y) //invalid if fish
+    {
+      isFish = true;
+      return false;
+    }
+  }
+  if(myGetTile(x,y).trashAmount() > 0) //invalid if trash
+  {
+    return false;
+  }
+  if(myGetTile(x,y).owner() != 2) //invalid if cove
+  {
+    return false;
+  }
+  return true;
+}
+
 bool AI::findPath(const int beginX,const int beginY,const int endX,const int endY,
               Fish & f)
 {
   int currentX = beginX;
   int currentY = beginY;
+  bool hasFish;
   for(int i = 0; i < 4; i++) //4 choices
   {
     switch(i)
@@ -60,34 +87,18 @@ bool AI::findPath(const int beginX,const int beginY,const int endX,const int end
         currentX--;
         break;
     }
-    if(myGetTile(currentX,currentY).hasEgg()) //invalid if egg
+    if(isValidLoc(currentX,currentY,hasFish))
     {
-      return false;
-    }
-    for(int j = 0; j < fishes.size(); j++)
-    {
-      if(fishes[j].x() == currentX && fishes[j].y() == currentY) //invalid if fish
+      if(currentX == endX && currentY == endY) //success!
       {
-        return false;
+        f.move(currentX,currentY);
+        return true;
       }
-    }
-    if(myGetTile(currentX,currentY).trashAmount() > 0) //invalid if trash
-    {
-      return false;
-    }
-    if(myGetTile(currentX,currentY).owner() != 2) //invalid if cove
-    {
-      return false;
-    }
-    if(currentX == endX && currentY == endY) //success!
-    {
-      f.move(currentX,currentY);
-      return true;
-    }
-    else
-    {
-      f.move(currentX,currentY);
-      findPath(currentX,currentY,endX,endY,f);
+      else
+      {
+        f.move(currentX,currentY);
+        findPath(currentX,currentY,endX,endY,f);
+      }
     }
   }
   return false;
@@ -98,7 +109,7 @@ bool AI::findPath(const int beginX,const int beginY,const int endX,const int end
 bool AI::run()
 {
 	int myX = -1,myY = -1,enemyX = -1, enemyY = -1, count = 0;
-  bool bob;
+  bool bob,hasFish;
   
 	for(int i = 0; i < tiles.size(); i++) //spawn fish
 	{
@@ -126,26 +137,21 @@ bool AI::run()
           bob = true;
         else
           bob = false;
+          
         //move right if player 1 else move left
         if(bob)
         {
-          fishes[i].move(fishes[i].x()+1,fishes[i].y());
-          //attack if fish
-          for(int j = 0; j < fishes.size(); j++)
-          {
-            if(fishes[j].x() == fishes[i].x()+1 && fishes[j].y() == fishes[i].y())
-              fishes[i].attack(fishes[j]);
-          }
+          if( isValidLoc(fishes[i].x()+1,fishes[i].y(),hasFish) )
+            fishes[i].move(fishes[i].x()+1,fishes[i].y());
+          else if(hasFish) //attack if fish
+            fishes[i].attack(myGetFish(fishes[i].x()+1,fishes[i].y()));
         }
         else
         {
-          fishes[i].move(fishes[i].x()-1,fishes[i].y());
-          //attack if fish
-          for(int j = 0; j < fishes.size(); j++)
-          {
-            if(fishes[j].x() == fishes[i].x()-1 && fishes[j].y() == fishes[i].y())
-              fishes[i].attack(fishes[j]);
-          }
+          if( isValidLoc(fishes[i].x()-1,fishes[i].y(),hasFish) )
+            fishes[i].move(fishes[i].x()-1,fishes[i].y());
+          else if(hasFish) //attack if fish
+            fishes[i].attack(myGetFish(fishes[i].x()-1,fishes[i].y()));
         }
       }
     }
