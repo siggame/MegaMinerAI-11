@@ -83,14 +83,29 @@ bool AI::run()
         fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()-1),1);
       }
 
-      // Try to attack to the right
-      if(fishes[i].x()+1 < mapWidth() &&                                                // We aren't attacking off the map
-         getFishIndex(fishes[i].x()+1,fishes[i].y()) != -1 &&                           // There is a fish at that spot
-         fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())].owner() != playerID() &&   // Then that fish is the opponent's
-         fishes[i].attacksLeft() > 0)                                                   // We have attacks left
+      // Try to attack to the right if not a cleaner shrimp
+      if(fishes[i].species() != CLEANER_SHRIMP)
       {
-        //attack the fish one to the right
-        fishes[i].attack(fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())]);
+         if(fishes[i].x()+1 < mapWidth() &&                                                // We aren't attacking off the map
+            getFishIndex(fishes[i].x()+1,fishes[i].y()) != -1 &&                           // There is a fish at that spot
+            fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())].owner() != playerID() &&   // Then that fish is the opponent's
+            fishes[i].attacksLeft() > 0)                                                   // We have attacks left
+         {
+           //attack the fish one to the right
+           fishes[i].attack(fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())]);
+         }
+      }
+      else
+      {
+         //try to heal allied fish to the right
+         if(fishes[i].x()+1 < mapWidth() &&                                                // We aren't attacking off the map
+            getFishIndex(fishes[i].x()+1,fishes[i].y()) != -1 &&                           // There is a fish at that spot
+            fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())].owner() == playerID() &&   // Then that fish is one of mine
+            fishes[i].attacksLeft() > 0)                                                   // We have attacks left
+         {
+           //heal the fish one to the right
+           fishes[i].attack(fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())]);
+         }
       }
     }
   }
