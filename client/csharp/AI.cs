@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 
-///The class implementing gameplay logic.
+/// The class implementing gameplay logic.
 class AI : BaseAI
 {
-    enum speciesIndex 
+    enum speciesIndex
     { 
         SEA_STAR,
         SPONGE,
@@ -29,8 +29,8 @@ class AI : BaseAI
         return "password";
     }
 
-    //This function is called each time it is your turn
-    //Return true to end your turn, return false to ask the server for updated information
+    // This function is called each time it's your turn.
+    // Return true to end your turn, return false to ask the server for updated information
     public override bool run()
     {
         // Test player.talk().
@@ -40,19 +40,16 @@ class AI : BaseAI
         foreach (Tile tile in tiles)
         {
             // If the tile is yours, is not spawning a fish, and has no fish on it...
-            if (tile.Owner == playerID()
-                && tile.HasEgg == 0
-                && fishes.Count(f => f.X == tile.X && f.Y == tile.Y) == 0)
+            if (tile.Owner == playerID() && tile.HasEgg == 0 && fishes.Count(f => f.X == tile.X && f.Y == tile.Y) == 0)
             {
                 // ...iterate across all species.
-                for (int i = 0; i < species.Length; i++)
+                for (int i = 0; i < speciesList.Length; i++)
                 {
                     // If the species is in season and we can afford it...
-                    if (species[i].Season == currentSeason()
-                        && players[playerID()].SpawnFood >= species[i].Cost)
+                    if (speciesList[i].Season == currentSeason() && players[playerID()].SpawnFood >= speciesList[i].Cost)
                     {
                         // Spawn it and break (can't spawn multiple fish on the same cove).
-                        species[i].spawn(tile.X, tile.Y);
+                        speciesList[i].spawn(getTile(tile.X, tile.Y));
                         break;
                     }
                 }
@@ -82,7 +79,7 @@ class AI : BaseAI
                     && fish.CurrentHealth >= 1                          // Ensure we have enough health
                     && getTile(fish.X, fish.Y + 1).TrashAmount > 0)     // Ensure the tile has trash
                 {
-                    fish.pickUp(fish.X, fish.Y + 1, 1);
+                    fish.pickUp(getTile(fish.X, fish.Y + 1), 1);
                 }
 
                 // Drop some trash
@@ -90,7 +87,7 @@ class AI : BaseAI
                     && fishes.Count(f => f.X == fish.X && f.Y == fish.Y - 1) == 0   // Make sure there's no fish where we intend to drop
                     && fish.CarryingWeight > 0)                                     // Ensure we have something to drop
                 {
-                    fish.drop(fish.X, fish.Y - 1, 1);
+                    fish.drop(getTile(fish.X, fish.Y - 1), 1);
                 }
 
                 // Try to attack to the right
@@ -107,17 +104,22 @@ class AI : BaseAI
         return true;
     }
 
-    //This function is called once, before your first turn
+    // This function is called once, before your first turn
     public override void init() { }
 
-    //This function is called once, after your last turn
+    // This function is called once, after your last turn
     public override void end() { }
 
     public AI(IntPtr c) : base(c) { }
 
-    // Returns the Tile from the specified x and y coordinates, or null if none is found
+    #region Helper Methods
+    // Returns the Tile from the specified x and y coordinates.
     Tile getTile(int x, int y)
     {
+        if (x < 0 || y < 0 || x > mapWidth() || y > mapHeight())
+            throw new ArgumentException(String.Format("There is no tile at ({0}, {1}).", x, y));
+
         return tiles[(mapHeight() * x) + y];
     }
+    #endregion
 }

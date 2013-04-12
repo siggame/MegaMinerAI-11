@@ -8,6 +8,7 @@ import scribe
 import jsonLogger
 import random
 from operator import itemgetter
+from mapGenerator import set_tiles
 
 Scribe = scribe.Scribe
 
@@ -34,7 +35,6 @@ class Match(DefaultGameWorld):
     self.maxReefHealth = self.maxReefHealth
     self.gameNumber = id
     self.initialFood = self.initialFood
-    self.spawnFoodPerTurn = self.spawnFoodPerTurn
     self.maxReefHealth = self.maxReefHealth
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
@@ -176,12 +176,12 @@ class Match(DefaultGameWorld):
       if tile.x < self.mapWidth/2 - self.boundLength:
         tile.damages = 0
       elif tile.x >= self.mapWidth/2 + self.boundLength:
-          tile.damages = 1
+        tile.damages = 1
     self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)
-    self.covePath(self.seed)
+    set_tiles(self)
     self.spawnTrash()
     
     species = cfgSpecies.values()
