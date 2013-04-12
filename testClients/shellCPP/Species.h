@@ -6,8 +6,9 @@
 #include <iostream>
 #include "structures.h"
 
+class Tile;
 
-///This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+///This class describes the characteristics for each type of fish. A species will only be available for so long, and new species will become available as a match progreses. 
 class Species {
   public:
   void* ptr;
@@ -30,7 +31,7 @@ class Species {
   int carryCap();
   ///The power of the fish's attack
   int attackPower();
-  ///The attack arrange of the fish
+  ///The attack range of the fish
   int range();
   ///Maximum number of times this unit can attack per turn
   int maxAttacks();
@@ -38,8 +39,8 @@ class Species {
   int season();
 
   // Actions
-  ///Have a new fish spawn and join the fight!
-  bool spawn(int x, int y);
+  ///Have a new fish spawn and join the fight! Select which tile you want the fish to spawn on
+  bool spawn(Tile& tile);
 
   // Properties
 

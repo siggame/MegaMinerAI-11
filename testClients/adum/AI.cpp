@@ -94,6 +94,8 @@ bool AI::run()
       }
    }
 
+   toSpawn = &speciesList[CUTTLEFISH];
+
    if(toSpawn != NULL)
    {
       for(int p=0;p<tiles.size();p++)
