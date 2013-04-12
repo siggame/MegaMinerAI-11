@@ -19,7 +19,7 @@ const char* AI::password()
 //This function is run once, before your first turn.
 void AI::init(){}
 
-Tile AI::myGetTile(const int x, const int y)
+Tile& AI::myGetTile(const int x, const int y)
 {
   return tiles[x*mapHeight() + y];
 }
@@ -54,7 +54,7 @@ bool AI::isValidLoc(const int x,const int y,bool & isFish)
   {
     return false;
   }
-  if(myGetTile(x,y).owner() != 2) //invalid if cove
+  if(myGetTile(x,y).owner() != 2) //invalid if cove or wall
   {
     return false;
   }
@@ -115,12 +115,14 @@ bool AI::run()
 	{
 		if(tiles[i].owner() == playerID()) //find my cove
 		{
-			for(int k = 0; k < species.size(); k++)
+			for(int k = 0; k < speciesList.size(); k++)
 			{
-				if(species[k].cost() <= players[playerID()].spawnFood() && 
-				   species[k].season() == currentSeason())
+				if(speciesList[k].cost() <= players[playerID()].spawnFood() && 
+				   speciesList[k].season() == currentSeason())
 				{
-					species[k].spawn(tiles[i].x(),tiles[i].y());
+          int x = tiles[i].x();
+          int y = tiles[i].y();
+					speciesList[k].spawn(myGetTile(x,y));
 				}
 			}
 		}

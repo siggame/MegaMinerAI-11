@@ -25,10 +25,6 @@ int BaseAI::gameNumber()
 {
   return getGameNumber(c);
 }
-int BaseAI::trashDamage()
-{
-  return getTrashDamage(c);
-}
 int BaseAI::mapWidth()
 {
   return getMapWidth(c);
@@ -53,6 +49,10 @@ int BaseAI::healPercent()
 {
   return getHealPercent(c);
 }
+int BaseAI::maxFood()
+{
+  return getMaxFood(c);
+}
 
 bool BaseAI::startTurn()
 {
@@ -71,15 +71,15 @@ bool BaseAI::startTurn()
   tiles.resize(count);
   for(int i = 0; i < count; i++)
   {
-    tiles[i] = Tile(getTile(c, i));
+    tiles[i] = Tile(::getTile(c, i));
   }
 
   count = getSpeciesCount(c);
-  species.clear();
-  species.resize(count);
+  speciesList.clear();
+  speciesList.resize(count);
   for(int i = 0; i < count; i++)
   {
-    species[i] = Species(getSpecies(c, i));
+    speciesList[i] = Species(getSpecies(c, i));
   }
 
   count = getFishCount(c);
@@ -87,7 +87,7 @@ bool BaseAI::startTurn()
   fishes.resize(count);
   for(int i = 0; i < count; i++)
   {
-    fishes[i] = Fish(getFish(c, i));
+    fishes[i] = Fish(::getFish(c, i));
   }
 
   count = getPlayerCount(c);
@@ -104,6 +104,24 @@ bool BaseAI::startTurn()
     init();
   }
   return run();
+}
+
+Fish* BaseAI::getFish(int x,int y)
+{
+   for(int i = 0;i<fishes.size();i++)
+   {
+      if(x == fishes[i].x() &&
+         y == fishes[i].y())
+      {
+         return &fishes[i];
+      }
+   }
+   return NULL;
+}
+
+Tile& BaseAI::getTile(int x,int y)
+{
+   return tiles[x * mapHeight() + y];
 }
 
 BaseAI::BaseAI(Connection* conn) : c(conn) {}
