@@ -29,6 +29,8 @@ class MapGenerator(object):
       for j in range(4):
         t = random.choice(self.tiles)
         if random.randint(0, 1):
+          t = map(list, zip(*t))
+        if random.randint(0, 1):
           t = reversed(t)
         for k, row in enumerate(t):
           if random.randint(0, 1):
