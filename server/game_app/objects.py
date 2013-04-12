@@ -375,7 +375,7 @@ class Fish(Mappable):
     self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)
-      if target.isVisible is 0:
+      if target.isVisible == 0:
         self.game.addAnimation(DeStealthAnimation(target.id))
       target.isVisible = 1
 
@@ -388,7 +388,7 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
-      if self.isVisible is 0:
+      if self.isVisible == 0:
         self.game.addAnimation(DeStealthAnimation(self.id))
       self.isVisible = 1
 
