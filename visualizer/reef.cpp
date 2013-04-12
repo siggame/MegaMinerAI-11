@@ -438,6 +438,8 @@ namespace visualizer
     m_ReefPlayerInfo.clear();
     m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
 
+    m_Tiles.clear();
+
     start();
   } // Reef::loadGamelog()
 
