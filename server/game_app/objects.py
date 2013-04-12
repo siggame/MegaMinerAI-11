@@ -238,7 +238,7 @@ class Fish(Mappable):
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         #You can't move on a fish that is visible and alive
-        if fish.isVisible == 1 and fish.currentHealth > 0:
+        if fish.isVisible == 1:
           return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
           #return "Fringe case: moving onto a stealthed fish."
@@ -319,7 +319,7 @@ class Fish(Mappable):
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
         #If fish is visible and is alive, you cant drop on it.
-        if fish.isVisible == 1 and fish.currentHealth > 0:
+        if fish.isVisible == 1:
           return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
         else:
           pass # "Fringe case: dropping onto a stealthed fish."
