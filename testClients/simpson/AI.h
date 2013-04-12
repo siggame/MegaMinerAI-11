@@ -16,7 +16,7 @@ public:
   Tile& myGetTile(const int x, const int y);
   Fish& myGetFish(const int targetX, const int targetY);
   bool isValidLoc(const int x,const int y);
-  bool isValidLoc(const int x,const int y,bool & isFish,bool & isTrash,int & trash);
+  bool isValidLoc(const int x,const int y,bool&isFish,bool&isTrash,int&trash,bool&isWall);
   bool findPath(const int beginX, const int beginY,const int endX,const int endY,
               Fish & f);
 };
