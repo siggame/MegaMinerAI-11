@@ -29,7 +29,7 @@ bool AI::run()
     //check tile information
     if(tiles[i].owner() == playerID() &&               //Is the tile a cove belonging to you
        tiles[i].hasEgg() == 0 &&                       //Does the tile not have an egg
-       getFishIndex(tiles[i].x(), tiles[i].y()) == -1) //Is there not a fish on the cove
+       getFish(tiles[i].x(), tiles[i].y()) == NULL)    //Is there not a fish on the cove
     {
       //Interate through all the species
       for(int i = 0;i < speciesList.size(); i++)
@@ -49,6 +49,7 @@ bool AI::run()
   //Iterate through all the fish
   for(int i = 0;i < fishes.size();i++)
   {
+     std::cout<<i<<std::endl;
     //only attempt to move owned fish
     if(fishes[i].owner() == playerID())
     {
@@ -56,7 +57,7 @@ bool AI::run()
       if(fishes[i].x()+1 < mapWidth() &&                                     // We aren't moving off the map
          getTile(fishes[i].x()+1,fishes[i].y()).owner() != 1-playerID() &&   // We aren't moving onto an enemy cove
          getTile(fishes[i].x()+1,fishes[i].y()).hasEgg() == 0 &&             // We aren't moving onto an egg
-         getFishIndex(fishes[i].x()+1,fishes[i].y()) == -1 &&                // There is no fish at that spot
+         getFish(fishes[i].x()+1,fishes[i].y()) == NULL &&                   // There is no fish at that spot
          getTile(fishes[i].x()+1, fishes[i].y()).trashAmount() == 0 &&       // There is no trash on the tile
          fishes[i].movementLeft() > 0)                                       // We have moves left
       {
@@ -76,7 +77,7 @@ bool AI::run()
 
       // Attempt to drop trash one above the fish
       if(fishes[i].y()-1 >= 0 &&                              // Ensure we don't drop off the map
-         getFishIndex(fishes[i].x(),fishes[i].y()-1) == -1 && // Make sure there's no fish where we intend to drop
+         getFish(fishes[i].x(),fishes[i].y()-1) == NULL &&    // Make sure there's no fish where we intend to drop
          fishes[i].carryingWeight() > 0)                      // Ensure we have something to drop
       {
         //drop 1 trash one tile above the fish
@@ -86,25 +87,25 @@ bool AI::run()
       // Try to attack to the right if not a cleaner shrimp
       if(fishes[i].species() != CLEANER_SHRIMP)
       {
-         if(fishes[i].x()+1 < mapWidth() &&                                                // We aren't attacking off the map
-            getFishIndex(fishes[i].x()+1,fishes[i].y()) != -1 &&                           // There is a fish at that spot
-            fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())].owner() != playerID() &&   // Then that fish is the opponent's
-            fishes[i].attacksLeft() > 0)                                                   // We have attacks left
+         if(fishes[i].x()+1 < mapWidth() &&                                   // We aren't attacking off the map
+            getFish(fishes[i].x()+1,fishes[i].y()) != NULL &&                 // There is a fish at that spot
+            getFish(fishes[i].x()+1,fishes[i].y())->owner() != playerID() &&  // Then that fish is the opponent's
+            fishes[i].attacksLeft() > 0)                                      // We have attacks left
          {
            //attack the fish one to the right
-           fishes[i].attack(fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())]);
+           fishes[i].attack(*getFish(fishes[i].x()+1,fishes[i].y()));
          }
       }
       else
       {
          //try to heal allied fish to the right
-         if(fishes[i].x()+1 < mapWidth() &&                                                // We aren't attacking off the map
-            getFishIndex(fishes[i].x()+1,fishes[i].y()) != -1 &&                           // There is a fish at that spot
-            fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())].owner() == playerID() &&   // Then that fish is one of mine
-            fishes[i].attacksLeft() > 0)                                                   // We have attacks left
+         if(fishes[i].x()+1 < mapWidth() &&                                   // We aren't attacking off the map
+            getFish(fishes[i].x()+1,fishes[i].y()) != NULL &&                 // There is a fish at that spot
+            getFish(fishes[i].x()+1,fishes[i].y())->owner() == playerID() &&  // Then that fish is one of mine
+            fishes[i].attacksLeft() > 0)                                      // We have attacks left
          {
            //heal the fish one to the right
-           fishes[i].attack(fishes[getFishIndex(fishes[i].x()+1,fishes[i].y())]);
+           fishes[i].attack(*getFish(fishes[i].x()+1,fishes[i].y()));
          }
       }
     }

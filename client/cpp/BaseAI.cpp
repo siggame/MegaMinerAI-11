@@ -106,16 +106,17 @@ bool BaseAI::startTurn()
   return run();
 }
 
-int BaseAI::getFishIndex(int x,int y)
+Fish* BaseAI::getFish(int x,int y)
 {
    for(int i = 0;i<fishes.size();i++)
    {
       if(x == fishes[i].x() &&
          y == fishes[i].y())
       {
-         return i;
+         return &fishes[i];
       }
    }
+   return NULL;
 }
 
 Tile& BaseAI::getTile(int x,int y)
