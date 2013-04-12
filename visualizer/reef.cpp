@@ -414,21 +414,19 @@ namespace visualizer
               // it is a cove, so draw it
               Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
               tile.bCove = true;
+              tile.spriteId = iter->second.owner;
+          }
+          else if(iter->second.owner == 3) // If the tile is not a water tile
+          {
+              // it is a cove, so draw it
+              Map::Tile& tile = (*pMap)(iter->second.y,iter->second.x);
+              tile.bCove = true;
               tile.spriteId = 2;
           }
 
           (*pMap)(iter->second.y,iter->second.x).id = iter->second.id;
 
       }
-
-      // Draw other coral on the bottom of the map.
-      for (int x = 0; x < pMap->GetWidth(); x++)
-      {
-         Map::Tile& tile = (*pMap)(pMap->GetHeight() - 1,x);
-         tile.bCove = true;
-         tile.spriteId = rand() % 2;
-      }
-
   }
   
   // The "main" function
