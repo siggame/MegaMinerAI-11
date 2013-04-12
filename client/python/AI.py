@@ -17,7 +17,7 @@ class AI(BaseAI):
 
   ##This function is called once, before your first turn
   def init(self):
-    pass
+    print self.mapHeight
 
   ##This function is called once, after your last turn
   def end(self):
