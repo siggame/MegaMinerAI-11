@@ -305,8 +305,8 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   //Do not move on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
     if (c->Fishes[ii].x == x && c->Fishes[ii].y == y) {
-      //Do not move onto a stealthed fish or dead fish
-      if(c->Fishes[ii].isVisible && c->Fishes[ii].currentHealth > 0) {
+      //Do not move onto an alive fish
+      if(c->Fishes[ii].currentHealth > 0) {
         return 0;
       }
     }
@@ -367,11 +367,6 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
-  //cannot pick up something that will kill you
-  else if(object->currentHealth < weight)
-  {
-    return 0;
-  }
   //can't pick up more trash than is present
   if(tile->trashAmount < weight)
   {
@@ -415,8 +410,8 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
   //Do not drop on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
     if (c->Fishes[ii].x == tile->x && c->Fishes[ii].y == tile->y) {
-      //Do not drop onto a stealthed fish or dead fish
-      if(c->Fishes[ii].isVisible && c->Fishes[ii].currentHealth > 0) {
+      //Do not drop onto an alive dead fish
+      if(c->Fishes[ii].currentHealth > 0) {
         return 0;
       }
     }
@@ -493,6 +488,16 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
           target->y == object->y)
   {
      return 0;
+  }
+  //make sure fish is not dead
+  else if(target->currentHealth <= 0)
+  {
+     return 0;
+  }
+  //Cannot attack if fish has trash on top of it
+  if(c->Tiles[object->x*c->mapHeight + object->y].trashAmount > 0)
+  {
+    return 0;
   }
 
   //Heal if cleanershrimp[]

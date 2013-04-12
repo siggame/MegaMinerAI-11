@@ -46,11 +46,11 @@ class Tile(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, self.damages, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, damages = self.damages, )
-  
+
   def nextTurn(self):
     if self.game.playerID == self.owner:
       if self.hasEgg:
@@ -175,7 +175,7 @@ class Fish(Mappable):
       del self.game.trashDict[(x,y)]
 
   def nextTurn(self):
-    speciesName = self.specName(self.species)
+    speciesName = self.game.speciesStrings[self.species]
     #TODO set fish stats to 0 if stunned by an eel
     if self.owner == self.game.playerID:
       self.attacked = []
@@ -204,14 +204,8 @@ class Fish(Mappable):
           self.game.removeObject(self)
     return True
 
-  def specName(self, index):
-    for spec in self.game.objects.speciesList:
-      if index == spec.index:
-        return spec.name
-    return "Invalid"
-
   def move(self, x, y):
-    speciesName = self.specName(self.species)
+    speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID: #check that you own the fish
       return "You cannot move the other player's %s %i." % (speciesName, self.id)
 
@@ -242,7 +236,7 @@ class Fish(Mappable):
       for fish in Fishes:
         #You can't move on a fish that is visible and alive
         if fish.isVisible == 1:
-          return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
+          return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
         else:
           #return "Fringe case: moving onto a stealthed fish."
           pass
@@ -256,7 +250,7 @@ class Fish(Mappable):
 
   def pickUp(self, tile, weight):
     x, y = tile.x, tile.y
-    speciesName = self.specName(self.id)
+    speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID:
       return "You cannot control your opponent's %s %i." % (speciesName, self.id)
 
@@ -299,7 +293,7 @@ class Fish(Mappable):
 
   def drop(self, tile, weight):
     x, y = tile.x, tile.y
-    speciesName = self.specName(self.species)
+    speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID:
       return "You cannot control the opponent's %s %i." % (speciesName, self.id)
 
@@ -320,7 +314,7 @@ class Fish(Mappable):
       for fish in Fishes:
         #If fish is visible and is alive, you cant drop on it.
         if fish.isVisible == 1:
-          return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.specName(fish.species), fish.id)
+          return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
         else:
           pass # "Fringe case: dropping onto a stealthed fish."
 
@@ -337,8 +331,8 @@ class Fish(Mappable):
   def attack(self, target):
     x = target.x
     y = target.y
-    speciesName = self.specName(self.species)
-    targetName = self.specName(target.species)
+    speciesName = self.game.speciesStrings[self.species]
+    targetName = self.game.speciesStrings[target.species]
 
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
@@ -370,6 +364,11 @@ class Fish(Mappable):
 
     elif self.x == x and self.y == y:
       return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
+
+    #Cannot attack if there's trash on top of your fish
+    T = self.game.getTile(self.x, self.y) #The tile the player wants to walk onto
+    if T.trashAmount > 0:
+      return "Your stealthed %s %i can't attack if there's trash on it! (%i, %i)" % (speciesName, self.id, self.x, self.y)
 
     #Add target to list of attacked targets
     self.attacked.append(target.id)

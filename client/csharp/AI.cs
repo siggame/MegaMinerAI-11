@@ -48,7 +48,7 @@ class AI : BaseAI
                     // If the species is in season and we can afford it...
                     if (speciesList[i].Season == currentSeason() && players[playerID()].SpawnFood >= speciesList[i].Cost)
                     {
-                        // Spawn it and break (can't spawn multiple fish on the same cove).
+                        // ...spawn it and break (can't spawn multiple fish on the same cove).
                         speciesList[i].spawn(getTile(tile.X, tile.Y));
                         break;
                     }
@@ -66,7 +66,7 @@ class AI : BaseAI
                 if (fish.X + 1 < mapWidth()                                         // We aren't moving off the map
                     && getTile(fish.X + 1, fish.Y).Owner != 1 - playerID()          // We aren't moving onto an enemy cove
                     && getTile(fish.X + 1, fish.Y).HasEgg == 0                      // We aren't moving onto an egg
-                    && fishes.Count(f => f.X == fish.X + 1 && f.Y == fish.Y) == 0   // There is no fish at that spot
+                    && getFish(fish.X + 1, fish.Y) == null                          // There is no fish at that spot
                     && getTile(fish.X + 1, fish.Y).TrashAmount == 0                 // There is no trash on the tile
                     && fish.MovementLeft > 0)                                       // We have moves left
                 {
@@ -83,20 +83,20 @@ class AI : BaseAI
                 }
 
                 // Drop some trash
-                if (fish.Y - 1 >= 0                                                 // Ensure we don't drop off the map
-                    && fishes.Count(f => f.X == fish.X && f.Y == fish.Y - 1) == 0   // Make sure there's no fish where we intend to drop
-                    && fish.CarryingWeight > 0)                                     // Ensure we have something to drop
+                if (fish.Y - 1 >= 0                             // Ensure we don't drop off the map
+                    && getFish(fish.X, fish.Y - 1) == null      // Make sure there's no fish where we intend to drop
+                    && fish.CarryingWeight > 0)                 // Ensure we have something to drop
                 {
                     fish.drop(getTile(fish.X, fish.Y - 1), 1);
                 }
 
                 // Try to attack to the right
-                if (fish.X + 1 < mapWidth()                                                     	// We aren't attacking off the map
-                    && fishes.Count(f => f.X == fish.X + 1 && f.Y == fish.Y) > 0                    // There is a fish at that spot
-                    && fishes.First(f => f.X == fish.X + 1 && f.Y == fish.Y).Owner != playerID()    // Then that fish belongs to the bad guy
-                    && fish.AttacksLeft > 0)                                                    	// We have attacks left
+                if (fish.X + 1 < mapWidth()                             // We aren't attacking off the map
+                    && getFish(fish.X + 1, fish.Y) != null              // There is a fish at that spot
+                    && getFish(fish.X + 1, fish.Y).Owner != playerID()  // Then that fish belongs to the bad guy
+                    && fish.AttacksLeft > 0)                            // We have attacks left
                 {
-                    fish.attack(fishes.First(f => f.X == fish.X + 1 && f.Y == fish.Y));             // We can attack the tile to the right!
+                    fish.attack(getFish(fish.X + 1, fish.Y));
                 }
             }
         }
@@ -120,6 +120,14 @@ class AI : BaseAI
             throw new ArgumentException(String.Format("There is no tile at ({0}, {1}).", x, y));
 
         return tiles[(mapHeight() * x) + y];
+    }
+
+    Fish getFish(int x, int y)
+    {
+        if(fishes.Count(f => f.X == x && f.Y == y) != 0)
+            return fishes.First(f => f.X == x && f.Y == y);
+
+        return null;
     }
     #endregion
 }
