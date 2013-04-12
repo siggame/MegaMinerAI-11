@@ -46,11 +46,11 @@ class Tile(Mappable):
 
   def toList(self):
     return [self.id, self.x, self.y, self.trashAmount, self.owner, self.hasEgg, self.damages, ]
-  
+
   # This will not work if the object has variables other than primitives
   def toJson(self):
     return dict(id = self.id, x = self.x, y = self.y, trashAmount = self.trashAmount, owner = self.owner, hasEgg = self.hasEgg, damages = self.damages, )
-  
+
   def nextTurn(self):
     if self.game.playerID == self.owner:
       if self.hasEgg:
@@ -370,6 +370,11 @@ class Fish(Mappable):
 
     elif self.x == x and self.y == y:
       return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
+
+    #Cannot attack if there's trash on top of your fish
+    T = self.game.getTile(self.x, self.y) #The tile the player wants to walk onto
+    if T.trashAmount > 0:
+      return "Your stealthed %s %i can't attack if there's trash on it! (%i, %i)" % (speciesName, self.id, self.x, self.y)
 
     #Add target to list of attacked targets
     self.attacked.append(target.id)
