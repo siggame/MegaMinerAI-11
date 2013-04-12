@@ -455,9 +455,9 @@ class Player(object):
       # Calculate currentPlayer's net worth by adding value of owned fish and spawning fish to available spawn food
       netWorth = fishWorth[self.id] + self.spawnFood + inSpawnQueue
       # How much your net worth should be if you have not lost any units
-      foodYouShouldHave = 250 + (self.game.spawnFoodPerTurn * (self.game.turnNumber / 2))
+      foodYouShouldHave = self.game.maxFood
       # How much spawn food you get
-      foodYouGet = int(self.game.spawnFoodPerTurn + math.ceil((foodYouShouldHave - netWorth) * 0.5))
+      foodYouGet = math.ceil((foodYouShouldHave - netWorth) * self.game.foodRate)
       self.spawnFood += foodYouGet
       #print "Giving player", self.id, foodYouGet, "spawn food"
 
