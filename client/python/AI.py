@@ -17,7 +17,7 @@ class AI(BaseAI):
 
   ##This function is called once, before your first turn
   def init(self):
-    print self.mapHeight
+    pass
 
   ##This function is called once, after your last turn
   def end(self):
@@ -31,7 +31,7 @@ class AI(BaseAI):
     for tile in self.tiles:
 
       #Check tile information
-      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFishIndex(tile.x, tile.y) == -1:
+      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFish(tile.x, tile.y) == None:
 
         #Iterate through all the species.
         for species in self.speciesList:
@@ -53,7 +53,8 @@ class AI(BaseAI):
         if (fish.x+1 < self.mapWidth                                         # We aren't moving off the map
           and self.getTile(fish.x+1, fish.y).owner != self.playerID^1   # We aren't moving onto an enemy cove
           and self.getTile(fish.x+1, fish.y).hasEgg == 0                   # We aren't moving onto an egg
-          and self.getFishIndex(fish.x+1, fish.y) == -1                      # There is no fish at that spot
+          and self.getTile(fish.x+1,fish.y).owner != 3
+          and self.getFish(fish.x+1, fish.y) == None                      # There is no fish at that spot
           and self.getTile(fish.x+1, fish.y).trashAmount == 0                # There is no trash on the tile
           and fish.movementLeft > 0):                                        # We have moves left
 
@@ -71,20 +72,30 @@ class AI(BaseAI):
 
         # Attempt to drop trash one above the fish
         if(fish.y-1 >= 0                                  # Ensure we don't drop off the map
-          and self.getFishIndex(fish.x, fish.y-1) == -1   # Make sure there's no fish where we intend to drop
+          and self.getFish(fish.x, fish.y-1) == None   # Make sure there's no fish where we intend to drop
           and fish.carryingWeight > 0):                 # Ensure we have something to drop
 
           # Drop 1 trash one tile above the fish
           fish.drop(self.getTile(fish.x, fish.y-1), 1)
 
-        # Try to attack to the right
-        if(fish.x+1 < self.mapWidth                                                         # We aren't attacking off the map
-          and self.getFishIndex(fish.x+1,fish.y) != -1                                  # There is a fish at that spot
-          and self.fishes[self.getFishIndex(fish.x+1, fish.y)].owner != self.playerID # Then that fish is the opponent's
-          and fish.attacksLeft > 0):                                                      # We have attacks left
+        # Try to attack to the right if not a cleaner shrimp
+        if fish.species != CLEANER_SHRIMP:
+          if(fish.x+1 < self.mapWidth                                 # We aren't attacking off the map
+            and self.getFish(fish.x+1,fish.y) != None                 # There is a fish at that spot
+            and self.getFish(fish.x+1,fish.y).owner != self.playerID  # Then that fish is the opponent's
+            and fish.attacksLeft > 0):                                # We have attacks left
 
-          # Attack the fish one to the right
-          fish.attack(self.fishes[self.getFishIndex(fish.x+1,fish.y)])
+            #attack the fish one to the right
+            fish.attack(self.getFish(fish.x+1,fish.y))
+        else:
+          #try to heal allied fish to the right
+          if(fish.x+1 < self.mapWidth                               # We aren't attacking off the map
+            and self.getFish(fish.x+1, fish.y) != None                # There is a fish at that spot
+            and self.getFish(fish.x+1,fish.y).owner == self.playerID  # Then that fish is one of mine
+            and fish.attacksLeft > 0):                                # We have attacks left
+
+            # Heal the fish one to the right
+            fish.attack(self.getFish(fish.x+1,fish.y))
 
     return 1
 
