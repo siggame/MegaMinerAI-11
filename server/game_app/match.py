@@ -35,7 +35,6 @@ class Match(DefaultGameWorld):
     self.maxReefHealth = self.maxReefHealth
     self.gameNumber = id
     self.initialFood = self.initialFood
-    self.spawnFoodPerTurn = self.spawnFoodPerTurn
     self.maxReefHealth = self.maxReefHealth
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
