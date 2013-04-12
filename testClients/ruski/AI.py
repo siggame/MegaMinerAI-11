@@ -1,196 +1,104 @@
 #-*-python-*-
 from BaseAI import BaseAI
 from GameObject import *
-import random
-import time
-import math
-import os
 
 SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH = range(12)
 
 class AI(BaseAI):
   """The class implementing gameplay logic."""
 
-  ########## LOCAL LISTS ##########
-  myCoves = []
-  enemyCoves = []
-  myFish = []
-  enemyFish = []
-  trash = []
-  charGrid = [[]]
-  gridHistory = []
-
-  ########## USERNAME AND PASSWORD ##########
   @staticmethod
   def username():
-    return "ruski"
+    return "Shell AI"
+
   @staticmethod
   def password():
     return "password"
 
-  ########## START AND END ##########
+  ##This function is called once, before your first turn
   def init(self):
-    print "Init"
-    self.getMyCoves()
-    self.getEnemyCoves()
-    return
+    pass
+
+  ##This function is called once, after your last turn
   def end(self):
-    print "The End"
-    #self.replayGrid()
-    return
+    pass
 
-  ########## LOCAL GETTERS ##########
-  def getSpecies(self, index):
-    for spec in self.species:
-      if spec.index is index:
-        return spec
-    return "Invalid Index"
-  def getMyCoves(self):
-    self.myCoves = []
-    for tile in self.tiles:
-      if tile.owner is self.playerID:
-        self.myCoves.append(tile)
-    return
-  def getEnemyCoves(self):
-    self.enemyCoves = []
-    for tile in self.tiles:
-      if tile.owner is self.playerID^1:
-        self.enemyCoves.append(tile)
-    return
-  def getMyFish(self):
-    self.myFish = []
-    for fish in self.fishes:
-      if fish.owner is self.playerID:
-        self.myFish.append(fish)
-  def getEnemyFish(self):
-    for fish in self.fishes:
-      if fish.owner is self.playerID^1:
-        self.enemyFish.append(fish)
-  def getTrash(self):
-    self.trash = []
-    for tile in self.tiles:
-      if tile.trashAmount > 0:
-        self.trash.append(tile)
-
-
-  ########## CHARACTER GRID ##########
-  def getCharGrid(self):
-    self.charGrid = [[' ' for _ in range(self.getMapHeight())] for _ in range(self.getMapWidth()) ]
-    for tile in self.tiles:
-      if tile.owner != 2:
-        self.charGrid[tile.x][tile.y] = 'C'
-      if tile.hasEgg:
-        self.charGrid[tile.x][tile.y] = 'E'
-      if tile.trashAmount > 0:
-        self.charGrid[tile.x][tile.y] = 'T'
-    for fish in self.fishes:
-      if fish.isVisible is 1:
-        self.charGrid[fish.x][fish.y] = 'F'
-      else:
-        self.charGrid[fish.x][fish.y] = 'f'
-    return
-  def replayGrid(self):
-    wantReplay = True
-    while wantReplay:
-      for grid in self.gridHistory:
-        time.sleep(0.25)
-        self.printCharGrid(grid)
-        print "--" * (self.mapWidth +2)
-      print "Do you want to replay?: "
-      usrinput = raw_input()
-      if "y" in usrinput:
-        wantReplay = True
-      else:
-        wantReplay = False
-    return
-  def printCharGrid(self, grid):
-    for y in range(self.getMapHeight()):
-      for x in range(self.getMapWidth()):
-        if x == self.mapWidth/2 - self.boundLength:
-          print "|",
-        elif x == self.mapWidth/2 + self.boundLength:
-          print "|",
-        print grid[x][y],
-      print
-    return
-
-  ########## DISTANCE FUNCTIONS ##########
-  def euclDist(self, x1, y1, x2, y2):
-    return math.sqrt( (x2-x1)**2 + (y2-y1)**2 )
-  def taxiDist(self, x1, y1, x2, y2):
-    return abs(x2-x1) + abs(y2-y1)
-
-  ########## FISH MOVE FUNCTIONS ##########
-  def moveTo(self, fish, tx, ty):
-    for _ in fish.maxMovement:
-      #Move Right
-      if fish.x < tx:
-        if not self.attemptMove(fish, fish.x+1, fish.y):
-          if not self.attemptMove(fish, fish.x, fish.y+1):
-            self.attemptMove(fish, fish.x, fish.y-1)
-      #Move Left
-      elif fish.x > tx:
-        if not self.attemptMove(fish, fish.x-1, fish.y):
-          if not self.attemptMove(fish, fish.x, fish.y+1):
-            self.attemptMove(fish, fish.x, fish.y-1)
-      #Move Up
-      elif fish.y < ty:
-        self.attemptMove(fish, fish.x, fish.y+1)
-
-      #Move Down
-      elif fish.y > ty:
-        self.attemptMove(fish, fish.x, fish.y-1)
-
-    return
-
-  def attemptMove(self, fish, tx, ty):
-    if 0 <= tx < self.mapWidth:
-      return False
-    if 0 <= ty < self.mapHeight:
-      return False
-
-    T = self.tiles[ty*self.mapWidth + tx]
-    print "Expected (%i, %i) Retrieved (%i, %i)" % (tx, ty, T.x, T.y)
-    if T.trashAmount > 0:
-      return False
-    if T.owner is self.playerID or 2:
-      return False
-    if T.hasEgg:
-      return False
-    if self.taxiDist(fish.x, fish.y, tx, ty) is not 1:
-      return False
-
-    for otherfish in self.fishes:
-      if otherfish.x == tx and otherfish.y == ty and otherfish.id != fish.id:
-        return False
-    return fish.move(tx, ty)
-
-  ########## DECIDE WHAT TO SPAWN ##########
-  def doSpawning(self):
-    spec = self.getSpecies(JELLYFISH)
-    me = self.players[self.playerID]
-    for cove in self.myCoves:
-      if me.spawnFood < spec.cost:
-        return
-      spec.spawn(cove.x, cove.y)
-    return
-
-  ########## RUN ##########
+  ##This function is called each time it is your turn
+  ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
-    print "Starting Turn #%i P1: %i P2: %i" % (self.turnNumber, self.players[0].currentReefHealth, self.players[1].currentReefHealth)
-    self.getMyFish()
-    self.getEnemyFish()
-    self.getTrash()
 
-    self.getCharGrid()
-    self.gridHistory.append(self.charGrid)
+    #Iterate through all tiles
+    for tile in self.tiles:
 
-    self.doSpawning()
+      #Check tile information
+      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFish(tile.x, tile.y) == None:
 
-    self.getCharGrid()
-    self.gridHistory.append(self.charGrid)
+        #Iterate through all the species.
+        for species in self.speciesList:
+
+          #If the species is in season and if there is enough money.
+          if species.season == self.currentSeason and self.players[self.playerID].spawnFood >= species.cost:
+
+            #Spawn the fish
+            species.spawn(tile)
+            #Don't spawn multiple fish on the same tile.
+            break
+
+    #Iterate through all the fish
+    for fish in self.fishes:
+
+      #Only attempt to move owned fish
+      if fish.owner == self.playerID:
+
+        if (fish.x+1 < self.mapWidth                                         # We aren't moving off the map
+          and self.getTile(fish.x+1, fish.y).owner != self.playerID^1   # We aren't moving onto an enemy cove
+          and self.getTile(fish.x+1, fish.y).hasEgg == 0                   # We aren't moving onto an egg
+          and self.getTile(fish.x+1,fish.y).owner != 3
+          and self.getFish(fish.x+1, fish.y) == None                      # There is no fish at that spot
+          and self.getTile(fish.x+1, fish.y).trashAmount == 0                # There is no trash on the tile
+          and fish.movementLeft > 0):                                        # We have moves left
+
+          #Move to the right one tile.
+          fish.move(fish.x+1, fish.y)
+
+        # Try to pick up trash one tile below the fish
+        if(fish.y+1 < self.mapHeight                               # Ensure we do not pick up off the map
+          and fish.carryCap - fish.carryingWeight > 0            # Ensure we have the necessary weight
+          and fish.currentHealth >= 1                              # Ensure we have enough health
+          and self.getTile(fish.x, fish.y+1).trashAmount > 0): # Ensure the tile has trash
+
+          # Pick up 1 trash one tile below the fish
+          fish.pickUp(self.getTile(fish.x, fish.y+1), 1)
+
+        # Attempt to drop trash one above the fish
+        if(fish.y-1 >= 0                                  # Ensure we don't drop off the map
+          and self.getFish(fish.x, fish.y-1) == None   # Make sure there's no fish where we intend to drop
+          and fish.carryingWeight > 0):                 # Ensure we have something to drop
+
+          # Drop 1 trash one tile above the fish
+          fish.drop(self.getTile(fish.x, fish.y-1), 1)
+
+        # Try to attack to the right if not a cleaner shrimp
+        if fish.species != CLEANER_SHRIMP:
+          if(fish.x+1 < self.mapWidth                                 # We aren't attacking off the map
+            and self.getFish(fish.x+1,fish.y) != None                 # There is a fish at that spot
+            and self.getFish(fish.x+1,fish.y).owner != self.playerID  # Then that fish is the opponent's
+            and fish.attacksLeft > 0):                                # We have attacks left
+
+            #attack the fish one to the right
+            fish.attack(self.getFish(fish.x+1,fish.y))
+        else:
+          #try to heal allied fish to the right
+          if(fish.x+1 < self.mapWidth                               # We aren't attacking off the map
+            and self.getFish(fish.x+1, fish.y) != None                # There is a fish at that spot
+            and self.getFish(fish.x+1,fish.y).owner == self.playerID  # Then that fish is one of mine
+            and fish.attacksLeft > 0):                                # We have attacks left
+
+            # Heal the fish one to the right
+            fish.attack(self.getFish(fish.x+1,fish.y))
 
     return 1
 
   def __init__(self, conn):
     BaseAI.__init__(self, conn)
+
