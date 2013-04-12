@@ -231,6 +231,9 @@ class Fish(Mappable):
     elif T.owner == self.owner^1:
       return "Your %s %i can't move into an opponent's cove. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
 
+    elif T.owner == 3:
+      return "Your %s %i can't move into an a wall. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+
     elif T.hasEgg:
       return "Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
 
