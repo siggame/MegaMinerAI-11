@@ -32,13 +32,13 @@ bool AI::run()
        getFish(tiles[i].x(), tiles[i].y()) == NULL)    //Is there not a fish on the cove
     {
       //Interate through all the species
-      for(int i = 0;i < speciesList.size(); i++)
+      for(int p = 0;p < speciesList.size(); p++)
       {
-        if(speciesList[i].season() == currentSeason() &&             //If the species is in season
-           players[playerID()].spawnFood() >= speciesList[i].cost()) //If there is enough money
+        if(speciesList[p].season() == currentSeason() &&             //If the species is in season
+           players[playerID()].spawnFood() >= speciesList[p].cost()) //If there is enough money
         {
           //spawn the fish
-          speciesList[i].spawn(tiles[i]);
+          speciesList[p].spawn(tiles[i]);
           //Don't spawn multiple fish on the same tile
           break;
         }
@@ -49,13 +49,13 @@ bool AI::run()
   //Iterate through all the fish
   for(int i = 0;i < fishes.size();i++)
   {
-     std::cout<<i<<std::endl;
     //only attempt to move owned fish
     if(fishes[i].owner() == playerID())
     {
       //Try to move to the right
       if(fishes[i].x()+1 < mapWidth() &&                                     // We aren't moving off the map
          getTile(fishes[i].x()+1,fishes[i].y()).owner() != 1-playerID() &&   // We aren't moving onto an enemy cove
+         getTile(fishes[i].x()+1,fishes[i].y()).owner() != 3            &&   // Don't move onto a wall
          getTile(fishes[i].x()+1,fishes[i].y()).hasEgg() == 0 &&             // We aren't moving onto an egg
          getFish(fishes[i].x()+1,fishes[i].y()) == NULL &&                   // There is no fish at that spot
          getTile(fishes[i].x()+1, fishes[i].y()).trashAmount() == 0 &&       // There is no trash on the tile
