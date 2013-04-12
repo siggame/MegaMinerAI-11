@@ -59,10 +59,11 @@ bool AI::isValidLoc(const int x,const int y)
   return true;
 }
 
-bool AI::isValidLoc(const int x,const int y,bool & isFish,bool & isTrash,int & trash)
+bool AI::isValidLoc(const int x,const int y,bool&isFish,bool&isTrash,int&trash,bool&isWall)
 {
   isFish = false;
   isTrash = false;
+  isWall = false;
   trash = 0;
   if(myGetTile(x,y).hasEgg()) //invalid if egg
   {
@@ -84,6 +85,8 @@ bool AI::isValidLoc(const int x,const int y,bool & isFish,bool & isTrash,int & t
   }
   if(myGetTile(x,y).owner() != 2) //invalid if cove or wall
   {
+    if(myGetTile(x,y).owner() == 3)
+      isWall = true;
     return false;
   }
   return true;
@@ -136,7 +139,7 @@ bool AI::findPath(const int beginX,const int beginY,const int endX,const int end
 bool AI::run()
 {
 	int myX = -1,myY = -1,enemyX = -1, enemyY = -1, count = 0, numTrash;
-  bool bob,hasFish,hasTrash,karl = false;
+  bool bob,hasFish,hasTrash,hasWall,karl = false,darryl = false;
   
 	for(int i = 0; i < tiles.size(); i++) //spawn fish
 	{
@@ -158,16 +161,17 @@ bool AI::run()
 	//moves to the right/left, attacking any enemy fish
   for(int i = 0; i < fishes.size(); i++)
   {
+    hasWall = false;
     if(fishes[i].owner() == playerID())
     {
-      while(fishes[i].movementLeft() > 0)
+      while(fishes[i].movementLeft() > 0 && !darryl)
       {
         playerID() == 0 ? bob = true : bob = false;
           
         //move right if player 1 else move left
         if(bob)
         {
-          if( isValidLoc(fishes[i].x()+1,fishes[i].y(),hasFish,hasTrash,numTrash) )
+          if( isValidLoc(fishes[i].x()+1,fishes[i].y(),hasFish,hasTrash,numTrash,hasWall) )
             fishes[i].move(fishes[i].x()+1,fishes[i].y());
           else if(hasFish) //attack if fish
             fishes[i].attack(myGetFish(fishes[i].x()+1,fishes[i].y()));
@@ -182,10 +186,18 @@ bool AI::run()
             if(karl) //drop behind to keep moving
               fishes[i].drop(myGetTile(fishes[i].x()-1,fishes[i].y()), numTrash);
           }
+          else if(fishes[i].carryCap() > 0 &&  //drop, stop moving cause can't keep moving
+                  (!hasWall || !myGetTile(fishes[i].x()+1,fishes[i].y()).hasEgg()) )
+          {
+            fishes[i].drop(myGetTile(fishes[i].x()-1,fishes[i].y()), fishes[i].carryingWeight());
+            darryl = true;
+          }
+          else
+            darryl = true;
         }
         else
         {
-          if( isValidLoc(fishes[i].x()-1,fishes[i].y(),hasFish,hasTrash,numTrash) ) 
+          if( isValidLoc(fishes[i].x()-1,fishes[i].y(),hasFish,hasTrash,numTrash,hasWall) ) 
             fishes[i].move(fishes[i].x()-1,fishes[i].y());
           else if(hasFish) //attack if fish
             fishes[i].attack(myGetFish(fishes[i].x()-1,fishes[i].y()));
@@ -200,6 +212,14 @@ bool AI::run()
             if(karl) //drop behind to keep moving
               fishes[i].drop(myGetTile(fishes[i].x()+1,fishes[i].y()), numTrash);
           }
+          else if(fishes[i].carryCap() > 0 &&  //drop, stop moving cause can't keep moving
+                  (!hasWall || !myGetTile(fishes[i].x()-1,fishes[i].y()).hasEgg()) )
+          {
+            fishes[i].drop(myGetTile(fishes[i].x()+1,fishes[i].y()), fishes[i].carryingWeight());
+            darryl = true;
+          }
+          else
+            darryl = true;
         }
       }
     }
