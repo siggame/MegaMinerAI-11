@@ -320,6 +320,10 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   if(c->Tiles[x*c->mapHeight +y].owner == abs(c->playerID - 1)) {
     return 0;
   }
+  //Do not move on top of a wall
+  if(c->Tiles[x*c->mapHeight +y].owner == 3){
+    return 0;
+  }
 
   //Decrement movement
   object->movementLeft = object->movementLeft-1;
