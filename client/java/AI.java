@@ -28,7 +28,7 @@ public class AI extends BaseAI
             // Check relevant tile info
             if(tile.getOwner() == playerID() &&                 // The tile is a cove that belongs to you
                tile.getHasEgg() == 0  &&                        // The tile is not already spawning a fish
-               getFishIndex(tile.getX(), tile.getY()) == -1)    // The tile has no fish on it already
+               getFish(tile.getX(), tile.getY()) == null)       // The tile has no fish on it already
             {
                 // Iterate across all species
                 for(int i=0; i<speciesList.length; i++)
@@ -37,7 +37,7 @@ public class AI extends BaseAI
                         players[playerID()].getSpawnFood() >= speciesList[i].getCost())      // Ensure we can afford this species
                     {
                         speciesList[i].spawn(tile);      // If so, spawn it!
-                        break;                                          // Don't spawn multiple fish on the same cove
+                        break;                           // Don't spawn multiple fish on the same cove
                     }
                 }
             }
@@ -52,7 +52,7 @@ public class AI extends BaseAI
                 if(fish.getX()+1 < mapWidth() &&                                        // We aren't moving off the map
                     getTile(fish.getX()+1,fish.getY()).getOwner() != 1-playerID() &&    // We aren't moving onto an enemy cove
                     getTile(fish.getX()+1,fish.getY()).getHasEgg() == 0 &&              // We aren't moving onto an egg
-                    getFishIndex(fish.getX()+1,fish.getY()) == -1 &&                    // There is no fish at that spot
+                    getFish(fish.getX()+1,fish.getY()) == null &&                       // There is no fish at that spot
                     getTile(fish.getX()+1, fish.getY()).getTrashAmount() == 0 &&        // There is no trash on the tile
                     fish.getMovementLeft() > 0)                                         // We have moves left
                 {
@@ -64,23 +64,23 @@ public class AI extends BaseAI
                     fish.getCurrentHealth() >= 1 &&                             // Ensure we have enough health
                     getTile(fish.getX(),fish.getY()+1).getTrashAmount() > 0)    // Ensure the tile has trash
                 {
-                    fish.pickUp(getTile(fish.getX(),fish.getY()+1),1);                   // Pick up that can!
+                    fish.pickUp(getTile(fish.getX(),fish.getY()+1),1);          // Pick up that can!
                 }
                 // Drop some trash
                 if(fish.getY()-1 >= 0 &&                                // Ensure we don't drop off the map
-                    getFishIndex(fish.getX(),fish.getY()-1) == -1 &&    // Make sure there's no fish where we intend to drop
+                    getFish(fish.getX(),fish.getY()-1) == null &&       // Make sure there's no fish where we intend to drop
                     fish.getCarryingWeight() > 0)                       // Ensure we have something to drop
                 {
-                    fish.drop(getTile(fish.getX(),fish.getY()-1),1);             // DROP IT! (Smashing!)
+                    fish.drop(getTile(fish.getX(),fish.getY()-1),1);    // DROP IT! (Smashing!)
                     // http://www.youtube.com/embed/3JJe2vwNUX4?autoplay=1&start=154&end=157&showinfo=0&controls=0
                 }
                 // Try to attack to the right
-                if(fish.getX()+1 < mapWidth() &&                                                // We aren't attacking off the map
-                    getFishIndex(fish.getX()+1,fish.getY()) != -1 &&                            // There is a fish at that spot
-                    fishes[getFishIndex(fish.getX()+1,fish.getY())].getOwner() != playerID() && // Then that fish belongs to the bad guy
-                    fish.getAttacksLeft() > 0)                                                  // We have attacks left
+                if(fish.getX()+1 < mapWidth() &&                                        // We aren't attacking off the map
+                        getFish(fish.getX()+1,fish.getY()) != null &&                   // There is a fish at that spot
+                    getFish(fish.getX()+1,fish.getY()).getOwner() != playerID() &&      // Then that fish belongs to the bad guy
+                    fish.getAttacksLeft() > 0)                                          // We have attacks left
                 {
-                    fish.attack(fishes[getFishIndex(fish.getX()+1,fish.getY())]);               // We can attack the tile to the right!
+                    fish.attack(getFish(fish.getX()+1,fish.getY()));                    // We can attack the tile to the right!
                 }
             }
         }
