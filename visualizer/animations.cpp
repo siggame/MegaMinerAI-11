@@ -35,29 +35,27 @@ namespace visualizer
         return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
     }
 
-    void DrawMap::animate(const float& t, AnimData*, IGame* game)
+   /* void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
-        // draw a blue background
-        game->renderer->setColor(Color(0.1f,0.1f,.8f,1.0f));
-        game->renderer->drawQuad(0.0f,0.0f,m_Map->GetWidth(),m_Map->GetHeight());
-
-        game->renderer->setColor(Color(1.0f,.8f,1.0f,1.0f));
-
         // render each tile on the map
+        int y = m_Map->GetHeight() - 1;
+        for (int x = 0; x < m_Map->GetWidth(); x++)
+        {
+            game->renderer->drawTexturedQuad(x,y,1,1,"ocean_floor");
+        }
         for (int x = 0; x < m_Map->GetWidth(); x++)
         {
           for (int y = 0; y < m_Map->GetHeight(); y++)
           {
-              Map::Tile& tile = (*m_Map)(y,x);
-
               if(tile.bCove)
               {
+                  Map::Tile& tile = (*m_Map)(y,x);
+
                   game->renderer->drawAnimQuad(x,y,1,1,"coral",tile.spriteId);
               }
           }
         }
-    }
-
+    }*/
     void DrawSprite::animate(const float &t, AnimData *d, IGame *game)
     {
         game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
