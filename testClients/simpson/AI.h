@@ -13,6 +13,10 @@ public:
   virtual void init();
   virtual bool run();
   virtual void end();
+  Tile myGetTile(const int x, const int y);
+  Fish myGetFish(const int targetX, const int targetY);
+  bool findPath(const int beginX, const int beginY,const int endX,const int endY,
+              Fish & f);
 };
 
 #endif
