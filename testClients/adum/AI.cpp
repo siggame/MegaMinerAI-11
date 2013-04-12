@@ -32,19 +32,6 @@ void AI::init()
    }
 }
 
-Fish* getFish(int x,int y,std::vector<Fish>& fishes)
-{
-   for(int i=0;i<fishes.size();i++)
-   {
-      if(fishes[i].x() == x &&
-         fishes[i].y() == y)
-      {
-         return &fishes[i];
-      }
-   }
-   return NULL;
-}
-
 void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int& y)
 {
    bool cool = false;
@@ -87,21 +74,21 @@ bool AI::run()
 {
    Species* toSpawn = NULL;
    //spawn da fish
-   for(int i=0;i<species.size();i++)
+   for(int i=0;i<speciesList.size();i++)
    {
-      if(species[i].season() == currentSeason() &&
-         species[i].carryCap() > 0)
+      if(speciesList[i].season() == currentSeason() &&
+         speciesList[i].carryCap() > 0)
       {
-         if(species[i].index() != CUTTLEFISH)
+         if(speciesList[i].index() != CUTTLEFISH)
          {
             if(toSpawn == NULL)
             {
-               toSpawn = &species[i];
+               toSpawn = &speciesList[i];
             }
             else if(toSpawn->maxMovement() * toSpawn->carryCap() <
-                    species[i].maxMovement() * species[i].carryCap())
+                    speciesList[i].maxMovement() * speciesList[i].carryCap())
             {
-               toSpawn = &species[i];
+               toSpawn = &speciesList[i];
             }
          }
       }
@@ -114,7 +101,7 @@ bool AI::run()
          if(tiles[p].hasEgg()==false &&
             toSpawn->cost() < players[playerID()].spawnFood())
          {
-            toSpawn->spawn(tiles[p].x(),tiles[p].y());
+            toSpawn->spawn(getTile(tiles[p].x(),tiles[p].y()));
          }
       }
    }
@@ -127,14 +114,15 @@ bool AI::run()
       findTrashYX(tiles,mapWidth(),mapHeight(),x,y);
       for(int p=0;p<fishes[i].movementLeft();p++)
       {
-         std::cout<<i<<std::endl;
-         std::cout<<fishes[i].x()<<std::endl;
          if(fishes[i].owner() == playerID())
          {
             if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
             {
-               fishes[i].pickUp(fishes[i].x()+1,fishes[i].y(),1);
-               fishes[i].pickUp(fishes[i].x()-1,fishes[i].y(),1);
+               if(x > 0 && x < mapWidth() - 1)
+               {
+                  fishes[i].pickUp(getTile(fishes[i].x()+1,fishes[i].y()),1);
+                  fishes[i].pickUp(getTile(fishes[i].x()-1,fishes[i].y()),1);
+               }
                if(y>fishes[i].y())
                {
                   if(fishes[i].move(fishes[i].x(),fishes[i].y()+1));
@@ -158,7 +146,7 @@ bool AI::run()
                   }
                   if(crap > 0)
                   {
-                     fishes[i].pickUp(fishes[i].x(),fishes[i].y()+1,crap);
+                     fishes[i].pickUp(getTile(fishes[i].x(),fishes[i].y()+1),crap);
                   }
                }
                if(fishes[i].y()!=0)
@@ -170,7 +158,7 @@ bool AI::run()
                   }
                   if(crap > 0)
                   {
-                     fishes[i].pickUp(fishes[i].x(),fishes[i].y()-1,crap);
+                     fishes[i].pickUp(getTile(fishes[i].x(),fishes[i].y()-1),crap);
                   }
                }
                if(fishes[i].x()!=0 && fishes[i].x()!=mapWidth()-1)
@@ -182,7 +170,7 @@ bool AI::run()
                   }
                   if(crap > 0)
                   {
-                     fishes[i].pickUp(fishes[i].x()+xChange,fishes[i].y(),crap);
+                     fishes[i].pickUp(getTile(fishes[i].x()+xChange,fishes[i].y()),crap);
                   }
                }
                if(fishes[i].carryingWeight() == 0)
@@ -205,7 +193,7 @@ bool AI::run()
                }
             }
 
-            Fish* target=getFish(fishes[i].x()+xChange,fishes[i].y(),fishes);
+            Fish* target=getFish(fishes[i].x()+xChange,fishes[i].y());
             if(target!=NULL)
             {
                fishes[i].attack(*target);
@@ -214,18 +202,18 @@ bool AI::run()
             {
                if(fishes[i].x() > mapWidth()/2+boundLength()+2)
                {
-                  if(fishes[i].drop(fishes[i].x()-1,fishes[i].y(),fishes[i].carryingWeight()));
-                  else if(fishes[i].drop(fishes[i].x(),fishes[i].y()-1,fishes[i].carryingWeight()));
-                  else if(fishes[i].drop(fishes[i].x(),fishes[i].y()+1,fishes[i].carryingWeight()));
+                  if(fishes[i].drop(getTile(fishes[i].x()-1,fishes[i].y()),fishes[i].carryingWeight()));
+                  else if(fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()-1),fishes[i].carryingWeight()));
+                  else if(fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()+1),fishes[i].carryingWeight()));
                }
             }
             else
             {
                if(fishes[i].x() < mapWidth()/2-boundLength()-2)
                {
-                  if(fishes[i].drop(fishes[i].x()+1,fishes[i].y(),fishes[i].carryingWeight()));
-                  else if(fishes[i].drop(fishes[i].x(),fishes[i].y()-1,fishes[i].carryingWeight()));
-                  else if(fishes[i].drop(fishes[i].x(),fishes[i].y()+1,fishes[i].carryingWeight()));
+                  if(fishes[i].drop(getTile(fishes[i].x()+1,fishes[i].y()),fishes[i].carryingWeight()));
+                  else if(fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()-1),fishes[i].carryingWeight()));
+                  else if(fishes[i].drop(getTile(fishes[i].x(),fishes[i].y()+1),fishes[i].carryingWeight()));
                }
             }
          }

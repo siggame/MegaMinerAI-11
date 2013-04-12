@@ -73,8 +73,8 @@ public:
   ///This function is called after the last turn.
   virtual void end() = 0;
 
-  ///Returns the index of a fish
-  int getFishIndex(int x,int y);
+  ///Returns the a pointer to the fish
+  Fish* getFish(int x,int y);
 
   ///Returns the tile based of off x and y
   Tile& getTile(int x,int y);
