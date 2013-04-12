@@ -231,7 +231,7 @@ namespace visualizer
   {
       // todo: need to make this look nice
       // todo: change these colors
-      //static const string seasons[] = {"winter" , "spring", "summer", "fall"};
+      static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
           glm::vec4(0.5f,0.5f,0.5f,0.0f), // white
@@ -251,6 +251,8 @@ namespace visualizer
                    newColor.z,newColor.w);
 
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+
+      renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);

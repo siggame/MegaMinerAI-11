@@ -16,6 +16,11 @@ texture sponge textures/sponge.png
 texture octopus textures/Octopus.png
 texture cuttlefish textures/Cuttlefish.png
 
+texture fall textures/seasons/Fall.png
+texture spring textures/seasons/Spring.png
+texture summer textures/seasons/Summer.png
+texture winter textures/seasons/Winter.png
+
 animation coral textures/coral.png
 animation trash textures/Trash.png
 
