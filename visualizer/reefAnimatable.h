@@ -9,68 +9,6 @@
 
 namespace visualizer
 {
-    // todo: remove this
-    // class that stores the info about how a map is rendered
-    class Map : public Animatable
-    {
-      public:
-
-        struct Tile
-        {
-            Tile() : bCove(false), bEgg(false), spriteId(0)
-            {
-            }
-
-            Tile(bool cove) : bCove(cove), bEgg(false), spriteId(0)
-            {
-            }
-
-            bool bCove; // teh cove, need to make it look nice, this value does not change between frames
-            bool bEgg; // teh egg
-            int spriteId;
-            int id;
-
-           // int turn;
-           // todo: add more?
-        };
-
-        Map(int w, int h) : m_tiles(w*h), width(w), height(h)
-        {
-        }
-
-        // todo: need to create a better interface
-        Tile& operator()(unsigned int r, unsigned int c)
-        {
-          return m_tiles[c + r*width];
-        }
-
-        const Tile& operator()(unsigned int r, unsigned int c) const
-        {
-          return m_tiles[c + r*width];
-        }
-
-        void AddTurn(int turn, const SmartPointer<struct TrashMovingInfo>& trash);
-
-        int GetWidth() const { return width; }
-        int GetHeight() const { return height; }
-        float GetPrevMapColor() const { return prevMapColor; }
-        float GetxPos() const { return xPos; }
-        float GetMapColor() const { return mapColor; }
-
-    private:
-
-      std::vector<Tile> m_tiles;
-      int width;
-      int height;
-
-      //todo: lighting
-      float prevMapColor;
-      float mapColor;
-      float xPos;
-
-        // todo: add more?
-    };
-
     struct Fish : public Animatable
     {
         // todo: maybe use the ctor for more init
