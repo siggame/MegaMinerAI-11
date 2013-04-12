@@ -91,10 +91,10 @@ class AI : BaseAI
                 }
 
                 // Try to attack to the right
-                if (fish.X + 1 < mapWidth()                                                     // We aren't attacking off the map
-                    && fishes.Count(f => f.X == fish.X + 1 && f.Y == fish.Y) == 0                   // There is a fish at that spot
+                if (fish.X + 1 < mapWidth()                                                     	// We aren't attacking off the map
+                    && fishes.Count(f => f.X == fish.X + 1 && f.Y == fish.Y) > 0                    // There is a fish at that spot
                     && fishes.First(f => f.X == fish.X + 1 && f.Y == fish.Y).Owner != playerID()    // Then that fish belongs to the bad guy
-                    && fish.AttacksLeft > 0)                                                    // We have attacks left
+                    && fish.AttacksLeft > 0)                                                    	// We have attacks left
                 {
                     fish.attack(fishes.First(f => f.X == fish.X + 1 && f.Y == fish.Y));             // We can attack the tile to the right!
                 }
