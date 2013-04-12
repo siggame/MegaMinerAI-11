@@ -388,7 +388,7 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
-      if self.isVisible:
+      if self.isVisible is 0:
         self.game.addAnimation(DeStealthAnimation(self.id))
       self.isVisible = 1
 
@@ -396,7 +396,7 @@ class Fish(Mappable):
     self.attacksLeft -= 1
     #check for sea urchin counter attacks
     if target.species == 4 and target.owner != self.owner: #Sea Urchin
-      self.currentHealth -= target.attackPower / 2.0
+      self.currentHealth -= target.attackPower
       #check if the counter attack killed the fish
       if self.currentHealth <= 0:
         if self.carryingWeight > 0:
