@@ -38,6 +38,7 @@ struct Tile: public Mappable
   int trashAmount;
   int owner;
   int hasEgg;
+  int damages;
 
   friend std::ostream& operator<<(std::ostream& stream, Tile obj);
 };
@@ -185,7 +186,7 @@ struct GameState
 {
   std::map<int,Mappable> mappables;
   std::map<int,Tile> tiles;
-  std::map<int,Species> species;
+  std::map<int,Species> speciesList;
   std::map<int,Fish> fishes;
   std::map<int,Player> players;
 
@@ -194,13 +195,13 @@ struct GameState
   int turnNumber;
   int playerID;
   int gameNumber;
-  int trashDamage;
   int mapWidth;
   int mapHeight;
   int trashAmount;
   int currentSeason;
   int seasonLength;
   int healPercent;
+  int maxFood;
 
   std::map< int, std::vector< SmartPointer< Animation > > > animations;
   friend std::ostream& operator<<(std::ostream& stream, GameState obj);

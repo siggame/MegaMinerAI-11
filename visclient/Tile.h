@@ -30,6 +30,8 @@ class Tile : public Mappable {
   int owner();
   ///Determines of a fish is set to spawn on this cove
   int hasEgg();
+  ///Determines which player the trash on this tile will hurt
+  int damages();
 
   // Actions
 

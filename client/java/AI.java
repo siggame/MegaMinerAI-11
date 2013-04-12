@@ -31,12 +31,12 @@ public class AI extends BaseAI
                getFishIndex(tile.getX(), tile.getY()) == -1)    // The tile has no fish on it already
             {
                 // Iterate across all species
-                for(int i=0; i<species.length; i++)
+                for(int i=0; i<speciesList.length; i++)
                 {
-                    if(species[i].getSeason() == currentSeason() &&                      // Ensure that species is in season
-                        players[playerID()].getSpawnFood() >= species[i].getCost())      // Ensure we can afford this species
+                    if(speciesList[i].getSeason() == currentSeason() &&                      // Ensure that species is in season
+                        players[playerID()].getSpawnFood() >= speciesList[i].getCost())      // Ensure we can afford this species
                     {
-                        species[i].spawn(tile.getX(),tile.getY());      // If so, spawn it!
+                        speciesList[i].spawn(tile);      // If so, spawn it!
                         break;                                          // Don't spawn multiple fish on the same cove
                     }
                 }
@@ -64,14 +64,14 @@ public class AI extends BaseAI
                     fish.getCurrentHealth() >= 1 &&                             // Ensure we have enough health
                     getTile(fish.getX(),fish.getY()+1).getTrashAmount() > 0)    // Ensure the tile has trash
                 {
-                    fish.pickUp(fish.getX(),fish.getY()+1,1);                   // Pick up that can!
+                    fish.pickUp(getTile(fish.getX(),fish.getY()+1),1);                   // Pick up that can!
                 }
                 // Drop some trash
                 if(fish.getY()-1 >= 0 &&                                // Ensure we don't drop off the map
                     getFishIndex(fish.getX(),fish.getY()-1) == -1 &&    // Make sure there's no fish where we intend to drop
                     fish.getCarryingWeight() > 0)                       // Ensure we have something to drop
                 {
-                    fish.drop(fish.getX(),fish.getY()-1,1);             // DROP IT! (Smashing!)
+                    fish.drop(getTile(fish.getX(),fish.getY()-1),1);             // DROP IT! (Smashing!)
                     // http://www.youtube.com/embed/3JJe2vwNUX4?autoplay=1&start=154&end=157&showinfo=0&controls=0
                 }
                 // Try to attack to the right

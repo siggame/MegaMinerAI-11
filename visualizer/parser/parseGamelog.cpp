@@ -120,6 +120,15 @@ static bool parseTile(Tile& object, sexp_t* expression)
   object.hasEgg = atoi(sub->val);
   sub = sub->next;
 
+  if ( !sub ) 
+  {
+    cerr << "Error in parseTile.\n Parsing: " << *expression << endl;
+    return false;
+  }
+
+  object.damages = atoi(sub->val);
+  sub = sub->next;
+
   return true;
 
 }
@@ -744,9 +753,6 @@ static bool parseSexp(Game& game, sexp_t* expression)
           gs.gameNumber = atoi(sub->val);
           sub = sub->next;
           if ( !sub ) return false;
-          gs.trashDamage = atoi(sub->val);
-          sub = sub->next;
-          if ( !sub ) return false;
           gs.mapWidth = atoi(sub->val);
           sub = sub->next;
           if ( !sub ) return false;
@@ -763,6 +769,9 @@ static bool parseSexp(Game& game, sexp_t* expression)
           sub = sub->next;
           if ( !sub ) return false;
           gs.healPercent = atoi(sub->val);
+          sub = sub->next;
+          if ( !sub ) return false;
+          gs.maxFood = atoi(sub->val);
           sub = sub->next;
       }
       else if(string(sub->val) == "Mappable")
@@ -799,7 +808,7 @@ static bool parseSexp(Game& game, sexp_t* expression)
         {
           Species object;
           flag = parseSpecies(object, sub);
-          gs.species[object.id] = object;
+          gs.speciesList[object.id] = object;
           sub = sub->next;
         }
         if ( !flag ) return false;

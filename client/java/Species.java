@@ -1,6 +1,6 @@
 import com.sun.jna.Pointer;
 
-///This class describes the characteristics for each type of fish. A groundbased fish is damaged each time it ends a turn above the groundBound Y value. Also, a species will only be available For so long, and new species will become available as a match progreses. 
+///This class describes the characteristics for each type of fish. A species will only be available for so long, and new species will become available as a match progreses. 
 class Species
 {
   Pointer ptr;
@@ -15,11 +15,11 @@ class Species
   boolean validify()
   {
     if(iteration == BaseAI.iteration) return true;
-    for(int i = 0; i < BaseAI.species.length; i++)
+    for(int i = 0; i < BaseAI.speciesList.length; i++)
     {
-      if(BaseAI.species[i].ID == ID)
+      if(BaseAI.speciesList[i].ID == ID)
       {
-        ptr = BaseAI.species[i].ptr;
+        ptr = BaseAI.speciesList[i].ptr;
         iteration = BaseAI.iteration;
         return true;
       }
@@ -29,11 +29,12 @@ class Species
 
     //commands
 
-  ///Have a new fish spawn and join the fight!
-  boolean spawn(int x, int y)
+  ///Have a new fish spawn and join the fight! Select which tile you want the fish to spawn on
+  boolean spawn(Tile tile)
   {
     validify();
-    return (Client.INSTANCE.speciesSpawn(ptr, x, y) == 0) ? false : true;
+    tile.validify();
+    return (Client.INSTANCE.speciesSpawn(ptr, tile.ptr) == 0) ? false : true;
   }
 
     //getters
@@ -86,7 +87,7 @@ class Species
     validify();
     return Client.INSTANCE.speciesGetAttackPower(ptr);
   }
-  ///The attack arrange of the fish
+  ///The attack range of the fish
   public int getRange()
   {
     validify();
