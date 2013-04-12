@@ -96,7 +96,7 @@ namespace visualizer
   }
 
   void Reef::UpdateBubbles()
-  { 
+  {
       int delay = (int)options->getNumber("Bubble Emitting Delay(ms)");
 
       if(m_BubbleTimer.elapsed() > delay )
@@ -367,7 +367,7 @@ namespace visualizer
       delete m_game;
       m_game = 0;
       WARNING(
-          "Cannot load gamelog, %s", 
+          "Cannot load gamelog, %s",
           gamelog.c_str()
           );
     }
@@ -444,7 +444,7 @@ namespace visualizer
 
     std::map<int,bool> dirMap;
 
-    SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].species.size());
+    SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].speciesList.size());
 
     // todo: this map should be removed
     SmartPointer<Map> pMap = new Map(m_game->states[0].mapWidth,m_game->states[0].mapHeight);
@@ -452,7 +452,7 @@ namespace visualizer
 
     BuildWorld(pMap);
 
-    for(auto iter = m_game->states[0].species.begin(); iter != m_game->states[0].species.end(); ++iter)
+    for(auto iter = m_game->states[0].speciesList.begin(); iter != m_game->states[0].speciesList.end(); ++iter)
     {
         m_Species[iter->second.season].push_back(iter->second);
 

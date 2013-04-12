@@ -3,6 +3,7 @@
 #include "Species.h"
 #include "game.h"
 
+#include "Tile.h"
 
 Species::Species(_Species* pointer)
 {
@@ -65,9 +66,9 @@ int Species::season()
 }
 
 
-bool Species::spawn(int x, int y)
+bool Species::spawn(Tile& tile)
 {
-  return speciesSpawn( (_Species*)ptr, x, y);
+  return speciesSpawn( (_Species*)ptr, (_Tile*) tile.ptr);
 }
 
 

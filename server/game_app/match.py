@@ -36,7 +36,6 @@ class Match(DefaultGameWorld):
     self.initialFood = self.initialFood
     self.spawnFoodPerTurn = self.spawnFoodPerTurn
     self.maxReefHealth = self.maxReefHealth
-    self.trashDamage = self.trashDamage
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
@@ -44,6 +43,7 @@ class Match(DefaultGameWorld):
     self.currentSeason = random.choice(range(4))
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
+    self.maxFood = self.maxFood
     self.count = 0
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
@@ -171,7 +171,12 @@ class Match(DefaultGameWorld):
 
     print "Starting game"
 
-    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False, -1]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    for tile in self.objects.tiles:
+      if tile.x < self.mapWidth/2 - self.boundLength:
+        tile.damages = 0
+      elif tile.x >= self.mapWidth/2 + self.boundLength:
+          tile.damages = 1
     self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
     self.turn = self.players[-1]
     self.turnNumber = -1
@@ -185,7 +190,7 @@ class Match(DefaultGameWorld):
       self.addObject(Species, [s[value] for value in self.statList])
 
     self.initSeasons()
-    self.speciesDict = {species.index:species for species in self.objects.species}
+    self.speciesDict = {species.index:species for species in self.objects.speciesList}
     self.nextTurn()
     return True
 
@@ -231,13 +236,13 @@ class Match(DefaultGameWorld):
           turnNumber = self.turnNumber,
           playerID = self.playerID,
           gameNumber = self.gameNumber,
-          trashDamage = self.trashDamage,
           mapWidth = self.mapWidth,
           mapHeight = self.mapHeight,
           trashAmount = self.trashAmount,
           currentSeason = self.currentSeason,
           seasonLength = self.seasonLength,
           healPercent = self.healPercent,
+          maxFood = self.maxFood,
           Mappables = [i.toJson() for i in self.objects.values() if i.__class__ is Mappable],
           Species = [i.toJson() for i in self.objects.values() if i.__class__ is Species],
           Tiles = [i.toJson() for i in self.objects.values() if i.__class__ is Tile],
@@ -327,21 +332,21 @@ class Match(DefaultGameWorld):
   def logPath(self):
     return "logs/" + str(self.id)
 
-  @derefArgs(Species, None, None)
-  def spawn(self, object, x, y):
-    return object.spawn(x, y, )
+  @derefArgs(Species, Tile)
+  def spawn(self, object, tile):
+    return object.spawn(tile, )
 
   @derefArgs(Fish, None, None)
   def move(self, object, x, y):
     return object.move(x, y, )
 
-  @derefArgs(Fish, None, None, None)
-  def pickUp(self, object, x, y, weight):
-    return object.pickUp(x, y, weight, )
+  @derefArgs(Fish, Tile, None)
+  def pickUp(self, object, tile, weight):
+    return object.pickUp(tile, weight, )
 
-  @derefArgs(Fish, None, None, None)
-  def drop(self, object, x, y, weight):
-    return object.drop(x, y, weight, )
+  @derefArgs(Fish, Tile, None)
+  def drop(self, object, tile, weight):
+    return object.drop(tile, weight, )
 
   @derefArgs(Fish, Fish)
   def attack(self, object, target):
@@ -383,16 +388,16 @@ class Match(DefaultGameWorld):
       randSeason[count] = randSeason[count] % 4
       count += 1
     
-    for num in range (len(self.objects.species)):
-      self.objects.species[num].season = randSeason[num]
+    for num in range (len(self.objects.speciesList)):
+      self.objects.speciesList[num].season = randSeason[num]
     
-#    print [species.season for species in self.objects.species]
+#    print [species.season for species in self.objects.speciesList]
     return True
 
   def status(self, connection):
     msg = ["status"]
 
-    msg.append(["game", self.maxReefHealth, self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.trashDamage, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent])
+    msg.append(["game", self.maxReefHealth, self.boundLength, self.turnNumber, self.playerID, self.gameNumber, self.mapWidth, self.mapHeight, self.trashAmount, self.currentSeason, self.seasonLength, self.healPercent, self.maxFood])
 
     typeLists = []
     typeLists.append(["Mappable"] + [i.toList() for i in self.objects.values() if i.__class__ is Mappable])

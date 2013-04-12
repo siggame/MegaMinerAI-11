@@ -39,6 +39,10 @@ DLLEXPORT int tileGetHasEgg(_Tile* ptr)
 {
   return ptr->hasEgg;
 }
+DLLEXPORT int tileGetDamages(_Tile* ptr)
+{
+  return ptr->damages;
+}
 DLLEXPORT int speciesGetId(_Species* ptr)
 {
   return ptr->id;

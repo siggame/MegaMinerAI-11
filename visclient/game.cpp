@@ -57,18 +57,18 @@ DLLEXPORT Connection* createConnection()
   c->turnNumber = 0;
   c->playerID = 0;
   c->gameNumber = 0;
-  c->trashDamage = 0;
   c->mapWidth = 0;
   c->mapHeight = 0;
   c->trashAmount = 0;
   c->currentSeason = 0;
   c->seasonLength = 0;
   c->healPercent = 0;
+  c->maxFood = 0;
   c->Mappables = NULL;
   c->MappableCount = 0;
   c->Tiles = NULL;
   c->TileCount = 0;
-  c->Species = NULL;
+  c->SpeciesList = NULL;
   c->SpeciesCount = 0;
   c->Fishes = NULL;
   c->FishCount = 0;
@@ -96,13 +96,13 @@ DLLEXPORT void destroyConnection(Connection* c)
     }
     delete[] c->Tiles;
   }
-  if(c->Species)
+  if(c->SpeciesList)
   {
     for(int i = 0; i < c->SpeciesCount; i++)
     {
-      delete[] c->Species[i].name;
+      delete[] c->SpeciesList[i].name;
     }
-    delete[] c->Species;
+    delete[] c->SpeciesList;
   }
   if(c->Fishes)
   {
@@ -221,12 +221,11 @@ DLLEXPORT void getStatus(Connection* c)
 
 
 
-DLLEXPORT int speciesSpawn(_Species* object, int x, int y)
+DLLEXPORT int speciesSpawn(_Species* object, _Tile* tile)
 {
   stringstream expr;
   expr << "(game-spawn " << object->id
-       << " " << x
-       << " " << y
+      << " " << tile->id
        << ")";
   LOCK( &object->_c->mutex);
   send_string(object->_c->socket, expr.str().c_str());
@@ -248,12 +247,11 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   return 1;
 }
 
-DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
+DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
 {
   stringstream expr;
   expr << "(game-pick-up " << object->id
-       << " " << x
-       << " " << y
+      << " " << tile->id
        << " " << weight
        << ")";
   LOCK( &object->_c->mutex);
@@ -262,12 +260,11 @@ DLLEXPORT int fishPickUp(_Fish* object, int x, int y, int weight)
   return 1;
 }
 
-DLLEXPORT int fishDrop(_Fish* object, int x, int y, int weight)
+DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
 {
   stringstream expr;
   expr << "(game-drop " << object->id
-       << " " << x
-       << " " << y
+      << " " << tile->id
        << " " << weight
        << ")";
   LOCK( &object->_c->mutex);
@@ -336,6 +333,8 @@ void parseTile(Connection* c, _Tile* object, sexp_t* expression)
   object->owner = atoi(sub->val);
   sub = sub->next;
   object->hasEgg = atoi(sub->val);
+  sub = sub->next;
+  object->damages = atoi(sub->val);
   sub = sub->next;
 
 }
@@ -518,9 +517,6 @@ DLLEXPORT int networkLoop(Connection* c)
           c->gameNumber = atoi(sub->val);
           sub = sub->next;
 
-          c->trashDamage = atoi(sub->val);
-          sub = sub->next;
-
           c->mapWidth = atoi(sub->val);
           sub = sub->next;
 
@@ -537,6 +533,9 @@ DLLEXPORT int networkLoop(Connection* c)
           sub = sub->next;
 
           c->healPercent = atoi(sub->val);
+          sub = sub->next;
+
+          c->maxFood = atoi(sub->val);
           sub = sub->next;
 
         }
@@ -576,20 +575,20 @@ DLLEXPORT int networkLoop(Connection* c)
         }
         else if(string(sub->val) == "Species")
         {
-          if(c->Species)
+          if(c->SpeciesList)
           {
             for(int i = 0; i < c->SpeciesCount; i++)
             {
-              delete[] c->Species[i].name;
+              delete[] c->SpeciesList[i].name;
             }
-            delete[] c->Species;
+            delete[] c->SpeciesList;
           }
           c->SpeciesCount =  sexp_list_length(expression)-1; //-1 for the header
-          c->Species = new _Species[c->SpeciesCount];
+          c->SpeciesList = new _Species[c->SpeciesCount];
           for(int i = 0; i < c->SpeciesCount; i++)
           {
             sub = sub->next;
-            parseSpecies(c, c->Species+i, sub);
+            parseSpecies(c, c->SpeciesList+i, sub);
           }
         }
         else if(string(sub->val) == "Fish")
@@ -661,7 +660,7 @@ DLLEXPORT int getTileCount(Connection* c)
 
 DLLEXPORT _Species* getSpecies(Connection* c, int num)
 {
-  return c->Species + num;
+  return c->SpeciesList + num;
 }
 DLLEXPORT int getSpeciesCount(Connection* c)
 {
@@ -707,10 +706,6 @@ DLLEXPORT int getGameNumber(Connection* c)
 {
   return c->gameNumber;
 }
-DLLEXPORT int getTrashDamage(Connection* c)
-{
-  return c->trashDamage;
-}
 DLLEXPORT int getMapWidth(Connection* c)
 {
   return c->mapWidth;
@@ -734,6 +729,10 @@ DLLEXPORT int getSeasonLength(Connection* c)
 DLLEXPORT int getHealPercent(Connection* c)
 {
   return c->healPercent;
+}
+DLLEXPORT int getMaxFood(Connection* c)
+{
+  return c->maxFood;
 }
 
 }

@@ -25,7 +25,7 @@ protected:
   Connection* c;
   std::vector<Mappable> mappables;
   std::vector<Tile> tiles;
-  std::vector<Species> species;
+  std::vector<Species> speciesList;
   std::vector<Fish> fishes;
   std::vector<Player> players;
 public:
@@ -39,8 +39,6 @@ public:
   int playerID();
   ///What number game this is for the server
   int gameNumber();
-  ///How much damage trash does
-  int trashDamage();
   ///How wide the map is
   int mapWidth();
   ///How high the map is
@@ -53,6 +51,8 @@ public:
   int seasonLength();
   ///Percentage of max health a fish gets back whenever it is healed, by either cove or other fish
   int healPercent();
+  ///The maximum amount of food a player can have.
+  int maxFood();
 
   BaseAI(Connection* c);
   virtual ~BaseAI();
