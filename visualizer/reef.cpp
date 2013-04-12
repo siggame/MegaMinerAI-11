@@ -200,10 +200,10 @@ namespace visualizer
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
-  void Reef::RenderGrid();
+  void Reef::RenderGrid() const
   {
       int h = m_game->states[0].mapHeight;
-      int w = m_game->states[0].mapWidthd;
+      int w = m_game->states[0].mapWidth;
       //draw horizontal lines
       for(unsigned int i = 0; i < h, i++)
       {
@@ -282,6 +282,8 @@ namespace visualizer
       ostringstream stream;
       stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+      //RenderProgressBar(*renderer,13.0f + 8*i,20.0f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
