@@ -59,6 +59,7 @@ struct point
 {
    int x;
    int y;
+   point(int x,int y):x(x),y(y){}
 };
 
 void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int& y)
@@ -97,16 +98,83 @@ void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int&
    return;
 }
 
-//X = can't walk
-void pathFind(int startX,int startY,int endX,int endY,char[] map,
+//x = can't walk
+/*void findPath(int startX,int startY,int endX,int endY,char map2[],
               std::vector<point>& path)
 {
+   char map[20*40];
+   for(int i=0;i<20*40;i++)
+   {
+      map2[i]=map[i];
+   }
    int x = startX, y = startY;
+   path.push_back(point(x+1,y));
    while(x != endX && y != endY)
    {
-      ;
+      if(map[(x+1)*40 + y] != 'x')
+      {
+         path.push_back(point(x+1,y));
+         x++;
+      }
+         else
+         {
+            map[x*40 + y] = 'x';
+            x = path.end()->x;
+            y = path.end()->y;
+            path.pop_back();
+         }
+      }
+      else if(x>endX)
+      {
+         if(map[(x-1)*40 + y] != 'x')
+         {
+            path.push_back(point(x-1,y));
+            x--;
+         }
+         else
+         {
+            map[x*40 + y] = 'x';
+            x = path.end()->x;
+            y = path.end()->y;
+            path.pop_back();
+         }
+      }
+      else if (y<endY)
+      {
+         if(map[x*40 + y + 1]!='x')
+         {
+            path.push_back(point(x,y+1));
+            y++;
+         }
+         else
+         {
+            map[x*40 + y] = 'x';
+            x = path.end()->x;
+            y = path.end()->y;
+            path.pop_back();
+         }
+      }
+      else if (y>endY)
+      {
+         if(map[x*40 + y - 1]!='x')
+         {
+            path.push_back(point(x,y-1));
+            y--;
+         }
+         else
+         {
+            map[x*40 + y] = 'x';
+            x = path.end()->x;
+            y = path.end()->y;
+            path.pop_back();
+         }
+      }
+      if(x == startX && y == startY)
+      {
+         return;
+      }
    }
-}
+}*/
 
 //This function is called each time it is your turn.
 //Return true to end your turn, return false to ask the server for updated information.
@@ -148,6 +216,16 @@ bool AI::run()
       }
    }
 
+   //make a map
+   for(int i=0;i<wallz.size();i++)
+   {
+      map[wallz[i]->x() + wallz[i]->y()*mapWidth()]='x';
+   }
+   for(int i=0;i<fishes.size();i++)
+   {
+      map[fishes[i].x() + fishes[i].y()*mapWidth()]='x';
+   }
+
    //be a slave driver to da fish
    for(int i=0;i<fishes.size();i++)
    {
@@ -156,15 +234,11 @@ bool AI::run()
       findTrashYX(tiles,mapWidth(),mapHeight(),x,y);
       if(fishes[i].owner() == playerID())
       {
-         findPath(fishes[i].x(),fishes[i].y(),0,0,map,path);
-         /*
-         VECTOR2D start(fishes[i].x(),fishes[i].y());
-         VECTOR2D end(mapWidth()-2,mapHeight()-2);
-         FindPath(start,end,HeuristicManhattanDistance(),fishes[i].movementLeft(),
-                  yoyoyo);*/
+         //findPath(fishes[i].x(),fishes[i].y(),0,0,map,path);
          for(int p=0;p<fishes[i].movementLeft();p++)
          {
-            //fishes[i].move(yoyoyo[i].x,yoyoyo[i].y);
+            //fishes[i].move(path[i+1].x,path[i+1].y);
+
             if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
             {
                if(x > 0 && x < mapWidth() - 1)
@@ -267,7 +341,6 @@ bool AI::run()
             }
          }
       }
-      //yoyoyo.clear();
    }
    return true;
 }
