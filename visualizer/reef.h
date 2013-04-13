@@ -73,7 +73,7 @@ namespace visualizer
     {
         Q_OBJECT;
         Q_INTERFACES( visualizer::IGame );
-        public: 
+        public:
             Reef();
             ~Reef();
 
@@ -88,9 +88,9 @@ namespace visualizer
             void postDraw();
 
             void addCurrentBoard();
-    
+
             map<string, int> programs;
-            
+
             list<int> getSelectedUnits();
 
              static const int SEA_OFFSET = 2;
@@ -132,6 +132,8 @@ namespace visualizer
 
             void RenderBubbles() const;
 
+            void RenderGrid() const;
+
             void RenderPlayerInfo(int id, float xPos = 1.0f) const;
 
             template< class T >
@@ -150,7 +152,7 @@ namespace visualizer
 
               return false;
             }
-    }; 
+    };
 
 } // visualizer
 

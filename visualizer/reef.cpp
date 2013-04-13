@@ -60,9 +60,9 @@ namespace visualizer
     clear();
     delete m_game;
     m_game = 0;
-    
+
     // Clear your memory here
-    
+
     programs.clear();
 
   } // Reef::~Reef()
@@ -86,16 +86,6 @@ namespace visualizer
       R.right = max(x,right);
       R.bottom = max(y,bottom);
     }
-
-  void Reef::preDraw()
-  {
-      m_WaterTimer.restart();
-
-      ProccessInput();
-      UpdateBubbles();
-
-      RenderPreWorld();
-  }
 
   void Reef::UpdateBubbles()
   {
@@ -186,6 +176,19 @@ namespace visualizer
       }
   }
 
+
+  void Reef::preDraw()
+  {
+      m_WaterTimer.restart();
+
+      ProccessInput();
+      UpdateBubbles();
+
+      RenderGrid();
+      RenderPreWorld();
+  }
+
+
   void Reef::postDraw()
   {
       RenderPostWorld();
@@ -197,6 +200,23 @@ namespace visualizer
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
+  void Reef::RenderGrid() const
+  {
+      int h = m_game->states[0].mapHeight;
+      int w = m_game->states[0].mapWidth;
+      //draw horizontal lines
+      for(unsigned int i = 0; i < h; i++)
+      {
+          renderer->drawLine(0,i,w,i,1.0f);
+      }
+
+      //draw vertical lines
+      for(unsigned int i = 0; i < w; i++)
+      {
+          renderer->drawLine(i,0,i,h,1.0f);
+      }
+
+  }
 
   void Reef::RenderPlayerInfo(int id, float xPos) const
   {
@@ -216,7 +236,7 @@ namespace visualizer
       renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
 
       float xHealthPos = m_game->states[0].mapWidth/3.0f;
-      
+
       // Health bar
       RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
   }
@@ -262,6 +282,8 @@ namespace visualizer
       ostringstream stream;
       stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
       renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+      //RenderProgressBar(*renderer,13.0f + 8*i,20.0f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
@@ -390,7 +412,7 @@ namespace visualizer
     options->loadOptionFile( "./plugins/reef/reef.xml", "reef" );
     resourceManager->loadResourceFile( "./plugins/reef/resources.r" );
   }
-  
+
   // Give the Debug Info widget the selected object IDs in the Gamelog
   list<int> Reef::getSelectedUnits()
   {
@@ -438,6 +460,8 @@ namespace visualizer
     m_ReefPlayerInfo.clear();
     m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
 
+    m_Tiles.clear();
+
     start();
   } // Reef::loadGamelog()
 
@@ -471,7 +495,7 @@ namespace visualizer
           idMap[iter->second.y * m_game->states[0].mapWidth + iter->second.x] = iter->second.id;
       }
   }
-  
+
   // The "main" function
   void Reef::run()
   {
@@ -630,7 +654,7 @@ namespace visualizer
               	trash.amount += p.second.carryingWeight;
               	trash.x = p.second.x;
               	trash.y = p.second.y;
-              
+
               }
           }
         }
@@ -696,7 +720,7 @@ namespace visualizer
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);
-      
+
       // Register the game and begin playing delayed due to multithreading
       if(state > 5)
       {
@@ -718,7 +742,7 @@ namespace visualizer
         timeManager->play();
       }
     }
-    
+
     if(!m_suicide)
     {
       timeManager->setNumTurns( m_game->states.size() );
