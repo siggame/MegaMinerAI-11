@@ -413,7 +413,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.owner is self.playerID or connection.type != "player")])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
