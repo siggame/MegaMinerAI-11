@@ -62,11 +62,17 @@ class AI(BaseAI):
 
 
 ########## GET LOCAL LISTS ##########
+  def getTileInfo(self):
+    for tile in self.tiles:
+      if tile.owner == self.playerID:
+        self.myCoves.append(tile)
+    return
+
   def getMyCoves(self):
     print "Get My Coves"
     for tile in self.tiles:
-      if tile.trashAmount > 0:
-        self.trash.append(tile)
+      if tile.owner == self.playerID:
+        self.myCoves.append(tile)
     return
   def getMyFish(self):
     print "Get My Fish"
@@ -86,13 +92,14 @@ class AI(BaseAI):
             break
     return
   def generatePath(self, sourceX, sourceY, targetX, targetY):
-
+    # Do some pathfinding here
     return
 
   def actFish(self):
-    #for fish in self.myFish:
+    # Have all the fish do something
 
     return
+
 
 ########## DISTANCE FUNCTIONS ##########
   def euclDist(self, x1, y1, x2, y2):
@@ -122,7 +129,7 @@ class AI(BaseAI):
     return
 
   def run(self):
-    print "Turn %i P1: %i P2 %i" % (self.turnNumber, self.players[0].currentReefHealth, self.players[1].currentReefHealth)
+    print "Turn %i -- P1: %i P2: %i" % (self.turnNumber, self.players[0].currentReefHealth, self.players[1].currentReefHealth)
     self.saveGrid()
 
     self.spawnFish()
