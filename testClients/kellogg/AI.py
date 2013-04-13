@@ -49,13 +49,15 @@ class AI(BaseAI):
          if next!=(fish.x,fish.y) and fish.movementLeft>0:
            self.removeGrid(fish)
            fish.move(next[0],next[1])
-           self.addGrid(fish.x,fish.y,fish)    
+           self.addGrid(fish.x,fish.y,fish)
+       return True
+     return False
 
   def findAdjacent(self,x,y):
     for adj in self.adjacentList:
       dx = x+adj[0]; dy = y+adj[1]
       thing = self.getObject(dx,dy)
-      if isinstance(thing, Tile) and thing.trashAmount == 0 and thing.owner != self.playerID^1 and not thing.hasEgg:
+      if isinstance(thing, Tile) and thing.trashAmount == 0 and thing.owner != self.playerID^1 and not thing.hasEgg and thing.owner!=3:
         if 0<=thing.x<self.mapWidth and 0<=thing.y<self.mapHeight:
           return (dx,dy)
     return None
@@ -124,11 +126,12 @@ class AI(BaseAI):
 
   def pickUpTrash(self,fish):
     #find nearest trash
-    trashDir = {self.distance(fish.x,fish.x,key[0],key[1]):key for key in self.trashDict if not self.isSafe(key[0])}
+    trashDir = { self.distance(fish.x,fish.x,tile.x,tile.y): tile for tile in self.trashList if tile.damages in [self.playerID,2] }
     if len(trashDir)<1:
       return False
-    trash = self.getTile(trashDir[min(trashDir)][0],trashDir[min(trashDir)][1])
-    self.moveTo(fish,trash)
+    trash = self.getTile(trashDir[min(trashDir)].x,trashDir[min(trashDir)].y)
+    if not self.moveTo(fish,trash):
+      print "got lost"
     if self.distance(fish.x,fish.y,trash.x,trash.y)==1 and fish.carryingWeight!=fish.carryCap:
       x = trash.trashAmount
       amount = min(fish.carryCap-fish.carryingWeight,trash.trashAmount, fish.currentHealth-1)   
@@ -158,18 +161,12 @@ class AI(BaseAI):
     return False
 
   def pushTrash(self, fish):
-    #theirTiles = [tile for tile in self.tiles if self.isSafe(tile.x) and tile.owner==2]
-    #tile = random.choice(theirTiles)
-    if self.playerID == 0:
-      while fish.movementLeft > 0:
-        y = fish.move(fish.x + 1, fish.y)
-        if not y:
-          return False
-    else:
-     while fish.movementLeft > 0:
-       y = fish.move(fish.x - 1, fish.y)
-       if not y:
-         return False
+    theirTiles = { self.distance(tile.x,tile.y,fish.x,fish.y):tile for tile in self.tiles if tile.damages == self.playerID^1 }
+    trash = self.getTile(theirTiles[min(theirTiles)].x,theirTiles[min(theirTiles)].y)
+    if not self.moveTo(fish,trash):
+      print "Got Lost"
+    if self.distance(trash.x,trash.y,fish.x,fish.y)==1:
+      fish.drop(trash,fish.carryingWeight)
 
   def smartSpawn(self):
     seasonal = self.seasonDict[self.currentSeason]
@@ -185,7 +182,7 @@ class AI(BaseAI):
     self.grid = [[[] for x in range(self.mapHeight)] for i in range(self.mapWidth)]
     for life in self.tiles+self.fishes:
       self.addGrid(life.x, life.y, life)
-    
+    self.trashList = [ tile for tile in self.tiles if tile.trashAmount>0 ]
     self.trashDict = {(tile.x, tile.y):tile.trashAmount for tile in self.tiles if tile.trashAmount > 0}
     self.myFish = [fish for fish in self.fishes if fish.owner == self.myPlayer.id]
     self.enemyFish = [fish for fish in self.fishes if fish.owner != self.myPlayer.id]
@@ -201,15 +198,9 @@ class AI(BaseAI):
     #spawn some dudes
     seasonal = self.seasonDict[self.currentSeason]
 
-
-
-
-
-
-
     for cove in self.coves:
       for species in seasonal:
-        if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.index != 8:
+        if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.getSpeciesNum != 8:
           species.spawn(cove)
 
     for fish in self.fishes: 

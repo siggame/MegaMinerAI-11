@@ -51,11 +51,11 @@ class Species
     validify();
     return Client.INSTANCE.speciesGetName(ptr);
   }
-  ///The species index of the species.
-  public int getIndex()
+  ///The number assigned to the species, unique to each.
+  public int getSpeciesNum()
   {
     validify();
-    return Client.INSTANCE.speciesGetIndex(ptr);
+    return Client.INSTANCE.speciesGetSpeciesNum(ptr);
   }
   ///The amount of food it takes to raise this fish
   public int getCost()

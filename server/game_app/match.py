@@ -39,7 +39,8 @@ class Match(DefaultGameWorld):
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
-    self.boundLength = random.choice(range(1, self.boundLength))
+    self.boundMin = self.boundMin
+    self.boundLength = random.choice(range(self.boundMin, self.boundLength))
     self.currentSeason = random.choice(range(4))
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
@@ -47,7 +48,6 @@ class Match(DefaultGameWorld):
     self.count = 0
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
-
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
@@ -157,7 +157,12 @@ class Match(DefaultGameWorld):
     for key in self.trashDict:
       if min <= key[0] < max:
         damage+=self.trashDict[key]
-    #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
+    #TODO: verify sea star damage works properly with actual gamelogs!
+    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages == star.owner^1 ]
+    starDamage = sum(stars)
+    damage += starDamage
+    if starDamage > 0:
+      print "Sea stars did " + str(starDamage) + " damage on turn " + str(self.turnNumber)
   #  print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
   #  print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
@@ -216,12 +221,12 @@ class Match(DefaultGameWorld):
     for obj in self.objects.values():
       obj.nextTurn()
 
-    if self.turn == self.players[0]:
-      pass #self.objects.players[0].currentReefHealth -= self.findDamage(0)
+    #if self.turn == self.players[0]:
+    #  pass #self.objects.players[0].currentReefHealth -= self.findDamage(0)
 
-    elif self.turn == self.players[1]:
-     self.objects.players[0].currentReefHealth -= self.findDamage(0)
-     self.objects.players[1].currentReefHealth -= self.findDamage(1)
+    #elif self.turn == self.players[1]:
+    self.objects.players[0].currentReefHealth -= self.findDamage(0)
+    self.objects.players[1].currentReefHealth -= self.findDamage(1)
 
     self.checkWinner()
     if self.winner is None:

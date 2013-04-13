@@ -24,12 +24,8 @@ public class AI extends BaseAI
         // Test player.talk()
         players[playerID()].talk("I appreciate it, BUT LOOK WHAT WE'RE DEALING WITH MAN!");
 
-//        PathFinder pathFinder = new PathFinder(new Point(0,3), new Point(0,0));
-//        try {
-//            pathFinder.getPath();
-//        } catch (PathFinder.InvalidDestinationException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
+//        PathFinder pathFinder = new PathFinder(new Point(1,6), new Point(0,0));
+//        pathFinder.getPath();
 
         // Iterate across all the fishes!
         for(Fish fish : fishes)
