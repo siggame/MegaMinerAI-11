@@ -107,7 +107,9 @@ class Species(object):
     if tile.owner != self.game.playerID:
       return "You can only spawn fish inside of your cove tiles"
     elif tile.hasEgg:
-      return "There is already a fish to be spawned here"
+      return "There is already a fish to be spawned here."
+    elif tile.trashAmount > 0:
+      return "You cannot spawn on a cove with trash on it."
     else:
       tile.hasEgg = True
       tile.species = self
@@ -287,6 +289,9 @@ class Fish(Mappable):
 
     elif self.taxiDist(self, x, y) != 1:
       return "Your %s %i can only drop onto adjacent locations. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
+
+    elif tile.hasEgg == 1:
+      return "Your %s %i cannot drop trash on a tile that has an egg." % (speciesName, self.id)
 
     elif weight > self.carryingWeight:
       return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
