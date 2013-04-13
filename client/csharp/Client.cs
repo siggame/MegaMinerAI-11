@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 public class Client {
   [DllImport("client", ExactSpelling = false)]
-  public static extern IntPtr createConnection();
+  public static extern IntPtr CreateConnection();
   [DllImport("client")]
   public static extern int ServerConnect(IntPtr connection, string host, string port);
 

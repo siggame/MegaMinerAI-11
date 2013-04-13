@@ -12,10 +12,10 @@ public class main
       return;
     }
 
-    IntPtr connection = Client.createConnection();
+    IntPtr connection = Client.CreateConnection();
 
     AI ai = new AI(connection);
-    if((Client.serverConnect(connection, args[0], "19000")) == 0)
+    if((Client.ServerConnect(connection, args[0], "19000")) == 0)
     {
       System.Console.WriteLine("Unable to connect to server");
       return;
