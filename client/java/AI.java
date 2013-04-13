@@ -28,6 +28,7 @@ public class AI extends BaseAI
             // Check relevant tile info
             if(tile.getOwner() == playerID() &&                 // The tile is a cove that belongs to you
                tile.getHasEgg() == 0  &&                        // The tile is not already spawning a fish
+               tile.getTrashAmount() == 0 &&                    // The tile has no trash on it
                getFish(tile.getX(), tile.getY()) == null)       // The tile has no fish on it already
             {
                 // Iterate across all species
