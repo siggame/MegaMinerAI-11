@@ -113,6 +113,8 @@ namespace visualizer
 
             std::list<Bubble> m_Bubbles;
 
+            SmartPointer<std::vector<string>> m_speciesList;
+
             void BuildWorld(std::vector<int>&);
 
             void ProccessInput();
