@@ -245,7 +245,7 @@ namespace visualizer
       float xHealthPos = m_game->states[0].mapWidth/3.0f;
 
       // Health bar
-      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.25f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
       // Food bar
       RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.45f,xHealthPos,0.25f,foodPercent,Color(0.0f,1.0f,0.0f,1.0f),true);
   }
@@ -288,8 +288,8 @@ namespace visualizer
       renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
       //Display text for Current Selection and Next Selection of fish
-      renderer->drawText(1.0f,20.0f,"Roboto","Available Fish: ",2.0f);
-      renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",2.0f);
+      renderer->drawText(1.0f,20.0f,"Roboto","Available Fish: ",4.0f);
+      renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
       //Display Next Season Progress Bar
       //ostringstream stream;
@@ -335,6 +335,7 @@ namespace visualizer
             //case 2:
             //break;
             case 3:
+              renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
               renderer->drawTexturedQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"wall");
               // Render wall
               break;
