@@ -264,6 +264,11 @@ DLLEXPORT int speciesSpawn(_Species* object, _Tile* tile)
   {
     return 0;
   }
+  //tile can't have trash
+  if(tile->trashAmount > 0)
+  {
+     return 0;
+  }
 
   c->Players[c->playerID].spawnFood -= object->cost;
   tile->hasEgg = true;
@@ -305,7 +310,10 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   //Do not move on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
     if (c->Fishes[ii].x == x && c->Fishes[ii].y == y) {
-     return 0;
+      //Do not move onto an alive fish
+      if(c->Fishes[ii].currentHealth > 0) {
+        return 0;
+      }
     }
   }
   //Do not move on top of trash (tile with trash amount > 0) with size.
@@ -364,19 +372,11 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
-  //cannot pick up something that will kill you
-  else if(object->currentHealth < weight)
-  {
-    return 0;
-  }
   //can't pick up more trash than is present
   if(tile->trashAmount < weight)
   {
     return 0;
   }
-
-  if(!object->isVisible)
-    object->isVisible = true;
 
   if(object->species != 6) //Tomcod
     object->currentHealth -= weight;
@@ -409,20 +409,20 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
-
-  //Cannot drop on a fish
-  int x = tile->x;
-  int y = tile->y;
-  for(int i = 0; i < c->FishCount; i++)
-  {
-    if(x == c->Fishes[i].x &&
-       y == c->Fishes[i].y)
-    {
-       return 0;
+  //Do not drop on top of another fish.
+  for(int ii = 0; ii < c->FishCount; ii++) {
+    if (c->Fishes[ii].x == tile->x && c->Fishes[ii].y == tile->y) {
+      //Do not drop onto an alive dead fish
+      if(c->Fishes[ii].currentHealth > 0) {
+        return 0;
+      }
     }
   }
-  //Make fish visible when dropping
-  object->isVisible = true;
+  //Do not drop on an egg
+  if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
+  {
+     return 0;
+  }
 
   //add weight to tile
   object->carryingWeight -= weight;
@@ -458,12 +458,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   {
     return 0;
   }
-  //can't attack opponents invisible fish
-  else if(target->owner != c->playerID &&
-          !target->isVisible)
-  {
-    return 0;
-  }
   //can't heal opponent fish
   else if(target->owner != c->playerID &&
           object->attackPower < 0)
@@ -482,6 +476,16 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   {
      return 0;
   }
+  //make sure fish is not dead
+  else if(target->currentHealth <= 0)
+  {
+     return 0;
+  }
+  //Cannot attack if fish has trash on top of it
+  if(c->Tiles[object->x*c->mapHeight + object->y].trashAmount > 0)
+  {
+    return 0;
+  }
 
   //Heal if cleanershrimp[]
   if(object->species == 9) //Cleaner Shrimp
@@ -493,8 +497,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     {
       target->currentHealth = target->maxHealth;
     }
-    //The healed target should be visible after being healed
-    target->isVisible = true;
   }
   else if(object->species == 10) //Electric Eel
   {
@@ -589,7 +591,7 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
-  object->index = atoi(sub->val);
+  object->speciesNum = atoi(sub->val);
   sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
@@ -637,8 +639,6 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   object->carryingWeight = atoi(sub->val);
   sub = sub->next;
   object->attackPower = atoi(sub->val);
-  sub = sub->next;
-  object->isVisible = atoi(sub->val);
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;

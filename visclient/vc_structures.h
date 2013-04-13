@@ -38,7 +38,7 @@ struct _Species
   Connection* _c;
   int id;
   char* name;
-  int index;
+  int speciesNum;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -62,7 +62,6 @@ struct _Fish
   int carryCap;
   int carryingWeight;
   int attackPower;
-  int isVisible;
   int maxAttacks;
   int attacksLeft;
   int range;

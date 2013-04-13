@@ -9,10 +9,15 @@
 
 namespace visualizer
 {
+    inline Color GetTeamColor(int team)
+    {
+        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
+    }
+
     struct Fish : public Animatable
     {
         // todo: maybe use the ctor for more init
-        Fish() : flipped(false), isVisible(true) {}
+        Fish() : flipped(false) {}
 
         struct Moves
         {
@@ -30,9 +35,9 @@ namespace visualizer
         int owner;          // color of the fish
         int maxHealth;      // would this effect the way the fish will be rendered?
         int currentHealth;  // A healthbar?
-        int maxMovement;    //
-        int movementLeft;   //
-        int carryCap;       //
+        //int maxMovement;    //
+        //int movementLeft;   //
+        //int carryCap;       //
         int carryingWeight; //
         //int attackPower;    //
         //int maxAttacks;     //
@@ -40,7 +45,6 @@ namespace visualizer
         int range;          //
         int species;      //
         bool flipped;
-        bool isVisible;      //
 
         SmartPointer<std::vector<string>> speciesList;
 
@@ -73,13 +77,11 @@ namespace visualizer
 
     struct BaseSprite : public Animatable
     {
-        BaseSprite(float posX, float posY, float dx, float dy, const string& s) :
-            x(posX), y(posY), dx(dx), dy(dy), m_sprite(s)  {}
+        BaseSprite(const glm::vec2& pos, const glm::vec2& scale, const string& sprite) :
+            pos(pos), scale(scale), m_sprite(sprite)  {}
 
-        float x;
-        float y;
-        float dx;
-        float dy;
+        glm::vec2 pos;
+        glm::vec2 scale;
         string m_sprite;
     };
 
@@ -87,11 +89,21 @@ namespace visualizer
     struct SpriteAnimation : public BaseSprite
     {
         // todo: maybe reorder these
-        SpriteAnimation(float posX, float posY, float dx, float dy ,const string& sprite, int f, const string& e = "") :
-            BaseSprite(posX,posY,dx,dy,sprite), frames(f), enable(e) {}
+        SpriteAnimation(const glm::vec2& pos, const glm::vec2& scale,const string& sprite, int f, const string& e = "") :
+            BaseSprite(pos,scale,sprite), frames(f), enable(e) {}
 
         int frames;
         string enable; // used for enabling/disabling this sprite via gui
+    };
+
+    struct MovingSpriteAnimation : public SpriteAnimation
+    {
+        // todo: maybe reorder these
+        MovingSpriteAnimation(const glm::vec2& source, const glm::vec2& target, const glm::vec2& scale,const string& sprite, int f, const string& e = "") :
+            SpriteAnimation(target,scale,sprite,f,e), source(source) {}
+
+        glm::vec2 source;
+
     };
 
     struct SplashScreen : public Animatable
@@ -104,7 +116,6 @@ namespace visualizer
         int width;
         int height;
     };
-
 
 } // visualizer
 

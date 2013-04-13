@@ -2,6 +2,15 @@
 #include "util.h"
 
 #include <cstdlib>
+#include <memory.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <memory.h>
+#include <math.h>
+
+#include <vector>
+#include <iostream>
+
 
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
 
@@ -72,6 +81,8 @@ void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int&
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
 {
+   BuildMapArray();
+   std::vector<VECTOR2D> yoyoyo;
    Species* toSpawn = NULL;
    //spawn da fish
    for(int i=0;i<speciesList.size();i++)
@@ -99,7 +110,8 @@ bool AI::run()
       for(int p=0;p<tiles.size();p++)
       {
          if(tiles[p].hasEgg()==false &&
-            toSpawn->cost() < players[playerID()].spawnFood())
+            toSpawn->cost() < players[playerID()].spawnFood() &&
+            tiles[p].owner() == playerID())
          {
             toSpawn->spawn(getTile(tiles[p].x(),tiles[p].y()));
          }
@@ -112,10 +124,16 @@ bool AI::run()
    {
       int y,x;
       findTrashYX(tiles,mapWidth(),mapHeight(),x,y);
-      for(int p=0;p<fishes[i].movementLeft();p++)
+      if(fishes[i].owner() == playerID())
       {
-         if(fishes[i].owner() == playerID())
+         /*
+         VECTOR2D start(fishes[i].x(),fishes[i].y());
+         VECTOR2D end(mapWidth()-2,mapHeight()-2);
+         FindPath(start,end,HeuristicManhattanDistance(),fishes[i].movementLeft(),
+                  yoyoyo);*/
+         for(int p=0;p<fishes[i].movementLeft();p++)
          {
+            //fishes[i].move(yoyoyo[i].x,yoyoyo[i].y);
             if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
             {
                if(x > 0 && x < mapWidth() - 1)
@@ -218,6 +236,7 @@ bool AI::run()
             }
          }
       }
+      yoyoyo.clear();
    }
    return true;
 }

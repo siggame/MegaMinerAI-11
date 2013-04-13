@@ -60,9 +60,9 @@ namespace visualizer
     clear();
     delete m_game;
     m_game = 0;
-    
+
     // Clear your memory here
-    
+
     programs.clear();
 
   } // Reef::~Reef()
@@ -86,16 +86,6 @@ namespace visualizer
       R.right = max(x,right);
       R.bottom = max(y,bottom);
     }
-
-  void Reef::preDraw()
-  {
-      m_WaterTimer.restart();
-
-      ProccessInput();
-      UpdateBubbles();
-
-      RenderPreWorld();
-  }
 
   void Reef::UpdateBubbles()
   {
@@ -186,6 +176,19 @@ namespace visualizer
       }
   }
 
+
+  void Reef::preDraw()
+  {
+      m_WaterTimer.restart();
+
+      ProccessInput();
+      UpdateBubbles();
+
+      RenderGrid();
+      RenderPreWorld();
+  }
+
+
   void Reef::postDraw()
   {
       RenderPostWorld();
@@ -197,6 +200,29 @@ namespace visualizer
       m_fDt = (m_WaterTimer.elapsed()) / 1000.0f;
   }
 
+  void Reef::RenderGrid() const
+  {
+      bool bEnableGrid = options->getNumber("Enable Grid") > 0;
+      if(bEnableGrid)
+      {
+        int h = m_game->states[0].mapHeight;
+        int w = m_game->states[0].mapWidth;
+
+        //draw horizontal lines
+        renderer->setColor(Color(0.0f,0.0f,0.0f,1.0f));
+        for(unsigned int i = 0; i < h; i++)
+        {
+            renderer->drawLine(0,i,w,i,1.0f);
+        }
+
+        //draw vertical lines
+        for(unsigned int i = 0; i < w; i++)
+        {
+            renderer->drawLine(i,0,i,h,1.0f);
+        }
+
+      }
+  }
 
   void Reef::RenderPlayerInfo(int id, float xPos) const
   {
@@ -205,6 +231,7 @@ namespace visualizer
       int index = id + turn * 2; // index into the player info vector
       const ReefPlayerInfo& info = m_ReefPlayerInfo[index];
       float currentPercent = (float)info.currentReefHealth / (float)m_game->states[0].maxReefHealth; // current power lvl
+      float foodPercent = (float)info.spawnFood / (float)m_game->states[0].maxFood; // current food
 
       stringstream stream;
 
@@ -212,13 +239,15 @@ namespace visualizer
 
       // Render AI's time
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
-      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,3.0f);
+      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),3.0f);
 
       float xHealthPos = m_game->states[0].mapWidth/3.0f;
-      
+
       // Health bar
       RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      // Food bar
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.45f,xHealthPos,0.25f,foodPercent,Color(0.0f,1.0f,0.0f,1.0f),true);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -233,6 +262,8 @@ namespace visualizer
   {
       // todo: need to make this look nice
       // todo: change these colors
+
+      //Render season colors
       static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
@@ -256,18 +287,24 @@ namespace visualizer
 
       renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
-      renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
+      //Display text for Current Selection and Next Selection of fish
+      renderer->drawText(1.0f,20.0f,"Roboto","Available Fish: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
-      ostringstream stream;
-      stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
-      renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+      //Display Next Season Progress Bar
+      //ostringstream stream;
+      //stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
+      //renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
           renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
           renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
+
+      RenderProgressBar(*renderer,0.0f,m_game->states[0].mapHeight, m_game->states[0].mapWidth, 0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
+
   }
 
 
@@ -291,10 +328,15 @@ namespace visualizer
           {
             case 0:
             case 1:
+              renderer->setColor(GetTeamColor(m_Tiles[i].owner));
               renderer->drawAnimQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"coral",2);
               // Render cove
               break;
+            //case 2:
+            //break;
             case 3:
+              renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
+              renderer->drawTexturedQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"wall");
               // Render wall
               break;
 
@@ -389,7 +431,7 @@ namespace visualizer
     options->loadOptionFile( "./plugins/reef/reef.xml", "reef" );
     resourceManager->loadResourceFile( "./plugins/reef/resources.r" );
   }
-  
+
   // Give the Debug Info widget the selected object IDs in the Gamelog
   list<int> Reef::getSelectedUnits()
   {
@@ -437,6 +479,8 @@ namespace visualizer
     m_ReefPlayerInfo.clear();
     m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
 
+    m_Tiles.clear();
+
     start();
   } // Reef::loadGamelog()
 
@@ -464,11 +508,13 @@ namespace visualizer
               m_Tiles.push_back(iter->second);
           }
 
+          //idMap.insert(make_pair(iter->second))
+
           // creating a map of ids
           idMap[iter->second.y * m_game->states[0].mapWidth + iter->second.x] = iter->second.id;
       }
   }
-  
+
   // The "main" function
   void Reef::run()
   {
@@ -480,19 +526,18 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
-    std::vector<int> idMap; // this will be a 2d array mapping the pos of the fish to the id
-
     std::map<int,bool> dirMap;
 
     SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].speciesList.size());
 
+    std::vector<int> idMap;
     BuildWorld(idMap);
 
     for(auto iter = m_game->states[0].speciesList.begin(); iter != m_game->states[0].speciesList.end(); ++iter)
     {
         m_Species[iter->second.season].push_back(iter->second);
 
-        string& speciesStr = (*speciesList)[iter->second.index] = iter->second.name;
+        string& speciesStr = (*speciesList)[iter->second.speciesNum] = iter->second.name;
         StringToLower(speciesStr);
         auto spacePos = speciesStr.find(' ');
 
@@ -525,21 +570,37 @@ namespace visualizer
       {
         SmartPointer<Fish> newFish = new Fish();
 
+        newFish->addKeyFrame( new DrawFish( newFish ) );
+        turn.addAnimatable(newFish);
+
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
-            if(j->type == parser::STEALTH)
+            if(j->type == parser::ATTACK)
             {
-            	 //parser::stealth& stealthAnim = (parser::stealth&)*j;
-            	 //newFish->isVisible = tr
-                 newFish->isVisible = false;
-            	 cout<<"Stealth!"<<endl;
-            }
-            else if(j->type == parser::DESTEALTH)
-            {
-            	 //parser::deStealth& destealthAnim = (parser::deStealth&)*j;
+                parser::attack& attackAnim = (parser::attack&)*j;
 
-            	 cout<<"DEStealth!"<<endl;
+                auto targetIter = m_game->states[state].fishes.find(attackAnim.targetID); // get the target fish
+                auto sourceIter = m_game->states[state - 1].fishes.find(attackAnim.actingID); // get the source fish
+
+                if(targetIter != m_game->states[state].fishes.end() &&
+                   sourceIter != m_game->states[state - 1].fishes.end())
+                {
+
+
+                    SmartPointer<MovingSpriteAnimation> pAttackAnim = new MovingSpriteAnimation(glm::vec2(sourceIter->second.x,sourceIter->second.y),
+                        glm::vec2(targetIter->second.x, targetIter->second.y),glm::vec2(1.0f),"fin",2);
+
+                    pAttackAnim->addKeyFrame( new DrawMovingAnimation( pAttackAnim ) );
+                    turn.addAnimatable(pAttackAnim);
+
+                    cout<<"Attack: "<<state<<endl;
+                }
+                else
+                {
+                    cout << "Error, fish not found"<<endl;
+                }
+
             }
             else if(j->type == parser::MOVE)
             {
@@ -560,7 +621,8 @@ namespace visualizer
                     }
                     else
                     {
-                        BasicTrash& trash = m_Trash[state][idMap[dropAnim.y * m_game->states[0].mapWidth + dropAnim.x]];
+                        BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+                        //BasicTrash& trash = m_Trash[state][idMap[dropAnim.y * m_game->states[0].mapWidth + dropAnim.x]];
                         trash.amount += dropAnim.amount;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
@@ -571,7 +633,7 @@ namespace visualizer
                     parser::pickUp& pickupAnim = (parser::pickUp&)*j;
                     if(pickupAnim.amount > 0)
                     {
-                        BasicTrash& trash = m_Trash[state][idMap[pickupAnim.y * m_game->states[0].mapWidth + pickupAnim.x]];
+                        BasicTrash& trash = m_Trash[state][pickupAnim.targetID];
                         //trash.moveTurn = state;
 
                         if(trash.amount == 0)
@@ -584,7 +646,7 @@ namespace visualizer
 
                         if(trash.amount < 1)
                         {
-                           m_Trash[state].erase(idMap[pickupAnim.y * m_game->states[0].mapWidth + pickupAnim.x]);
+                           m_Trash[state].erase(pickupAnim.targetID);
                         }
                     }
                 }
@@ -622,7 +684,7 @@ namespace visualizer
               	trash.amount += p.second.carryingWeight;
               	trash.x = p.second.x;
               	trash.y = p.second.y;
-              
+
               }
           }
         }
@@ -631,9 +693,9 @@ namespace visualizer
         newFish->owner = p.second.owner;
         newFish->maxHealth = p.second.maxHealth;
         newFish->currentHealth = p.second.currentHealth;
-        newFish->maxMovement = p.second.maxMovement;
-        newFish->movementLeft = p.second.movementLeft;
-        newFish->carryCap = p.second.carryCap;
+        //newFish->maxMovement = p.second.maxMovement;
+        //newFish->movementLeft = p.second.movementLeft;
+        //newFish->carryCap = p.second.carryCap;
         //newFish->attackPower = p.second.attackPower;
         //newFish->maxAttacks = p.second.maxAttacks;
        // newFish->attacksLeft = p.second.attacksLeft;
@@ -650,9 +712,6 @@ namespace visualizer
         turn[p.second.id]["Fish Health"] = p.second.currentHealth;
         turn[p.second.id]["Max Health"] = p.second.maxHealth;
         turn[p.second.id]["Attack Power"] = p.second.attackPower;
-
-        newFish->addKeyFrame( new DrawFish( newFish ) );
-        turn.addAnimatable(newFish);
      }
 
       // Loop over all the trash in the current turn
@@ -688,7 +747,7 @@ namespace visualizer
 
       animationEngine->buildAnimations(turn);
       addFrame(turn);
-      
+
       // Register the game and begin playing delayed due to multithreading
       if(state > 5)
       {
@@ -710,7 +769,7 @@ namespace visualizer
         timeManager->play();
       }
     }
-    
+
     if(!m_suicide)
     {
       timeManager->setNumTurns( m_game->states.size() );

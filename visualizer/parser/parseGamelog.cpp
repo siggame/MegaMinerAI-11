@@ -164,7 +164,7 @@ static bool parseSpecies(Species& object, sexp_t* expression)
     return false;
   }
 
-  object.index = atoi(sub->val);
+  object.speciesNum = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -345,15 +345,6 @@ static bool parseFish(Fish& object, sexp_t* expression)
   }
 
   object.attackPower = atoi(sub->val);
-  sub = sub->next;
-
-  if ( !sub ) 
-  {
-    cerr << "Error in parseFish.\n Parsing: " << *expression << endl;
-    return false;
-  }
-
-  object.isVisible = atoi(sub->val);
   sub = sub->next;
 
   if ( !sub ) 
@@ -662,22 +653,6 @@ static bool parseAttack(attack& object, sexp_t* expression)
   return true;
 
 }
-static bool parseStealth(stealth& object, sexp_t* expression)
-{
-  sexp_t* sub;
-  if ( !expression ) return false;
-  object.type = STEALTH;
-  sub = expression->list->next;
-  if( !sub ) 
-  {
-    cerr << "Error in parsestealth.\n Parsing: " << *expression << endl;
-    return false;
-  }
-  object.actingID = atoi(sub->val);
-  sub = sub->next;
-  return true;
-
-}
 static bool parsePlayerTalk(playerTalk& object, sexp_t* expression)
 {
   sexp_t* sub;
@@ -699,22 +674,6 @@ static bool parsePlayerTalk(playerTalk& object, sexp_t* expression)
   object.message = new char[strlen(sub->val)+1];
   strncpy(object.message, sub->val, strlen(sub->val));
   object.message[strlen(sub->val)] = 0;
-  sub = sub->next;
-  return true;
-
-}
-static bool parseDeStealth(deStealth& object, sexp_t* expression)
-{
-  sexp_t* sub;
-  if ( !expression ) return false;
-  object.type = DESTEALTH;
-  sub = expression->list->next;
-  if( !sub ) 
-  {
-    cerr << "Error in parsedeStealth.\n Parsing: " << *expression << endl;
-    return false;
-  }
-  object.actingID = atoi(sub->val);
   sub = sub->next;
   return true;
 
@@ -898,26 +857,10 @@ static bool parseSexp(Game& game, sexp_t* expression)
 
         animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
       }
-      if(string(ToLower( sub->val ) ) == "stealth")
-      {
-        SmartPointer<stealth> animation = new stealth;
-        if ( !parseStealth(*animation, expression) )
-          return false;
-
-        animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
-      }
       if(string(ToLower( sub->val ) ) == "player-talk")
       {
         SmartPointer<playerTalk> animation = new playerTalk;
         if ( !parsePlayerTalk(*animation, expression) )
-          return false;
-
-        animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
-      }
-      if(string(ToLower( sub->val ) ) == "de-stealth")
-      {
-        SmartPointer<deStealth> animation = new deStealth;
-        if ( !parseDeStealth(*animation, expression) )
           return false;
 
         animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );

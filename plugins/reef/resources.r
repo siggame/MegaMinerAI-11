@@ -21,8 +21,13 @@ texture spring textures/seasons/Spring.png
 texture summer textures/seasons/Summer.png
 texture winter textures/seasons/Winter.png
 
-texture ocean_floor textures/OceanFloor.jpg
+texture ocean_floor textures/OceanFloor.png
+texture wall textures/Wall.png
 
 animation coral textures/coral.png
 animation trash textures/Trash.png
 
+animation fin textures/fin.png
+animation tentacles textures/tentacles.png
+animation shock textures/shock.png
+animation spike textures/spike.png

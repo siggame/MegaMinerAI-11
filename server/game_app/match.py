@@ -47,11 +47,11 @@ class Match(DefaultGameWorld):
     self.count = 0
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
-    
+
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
-   
+
   def getAdjacent(self,node):
      adjacent = []
      for adj in self.offset:
@@ -87,11 +87,11 @@ class Match(DefaultGameWorld):
         else:
           open.append(neighbor)
     return True
-    
+
   #getTile RETURN TILE
   def getTile(self, x, y):
     return  self.grid[x][y][0]
-  
+
   #getFish RETURN LIST OF FISH
   def getFish(self, x, y):
     return self.grid[x][y][1:]
@@ -126,7 +126,7 @@ class Match(DefaultGameWorld):
       self.players.remove(connection)
     else:
       self.spectators.remove(connection)
-      
+
   def spawnTrash(self):
     trashableTiles = list(self.objects.tiles)
     while self.trashAmount > 0:
@@ -137,7 +137,7 @@ class Match(DefaultGameWorld):
         randTile = random.choice(trashableTiles)
         trashableTiles.remove(randTile)
       oppTile = self.getTile(self.mapWidth-randTile.x-1, randTile.y)
-      
+
       if randTile.owner == 2 and (randTile.x,randTile.y) not in self.trashDict:
          val = random.randint(1,min([self.minTrash, self.trashAmount]))
          randTile.trashAmount += val
@@ -147,7 +147,7 @@ class Match(DefaultGameWorld):
          self.trashAmount -= val
    # print sum(self.trashDict.values())
     return True
-     
+
   def findDamage(self,player):
     damage = 0
     if player == 0:
@@ -163,7 +163,7 @@ class Match(DefaultGameWorld):
   #  print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
   #  print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
-      
+
 
   def start(self):
     if len(self.players) < 2:
@@ -179,20 +179,21 @@ class Match(DefaultGameWorld):
         tile.damages = 0
       elif tile.x >= self.mapWidth/2 + self.boundLength:
         tile.damages = 1
-    self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
+    self.statList = ["name","speciesNum","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)
     set_tiles(self)
     self.spawnTrash()
-    
+
     species = cfgSpecies.values()
-    species.sort(key=itemgetter('index'))
+    species.sort(key=itemgetter('speciesNum'))
     for s in species:
       self.addObject(Species, [s[value] for value in self.statList])
 
     self.initSeasons()
-    self.speciesDict = {species.index:species for species in self.objects.speciesList}
+    self.speciesDict = {species.speciesNum:species for species in self.objects.speciesList}
+    self.speciesStrings = {species.speciesNum:species.name for species in self.objects.speciesList}
     self.nextTurn()
     return True
 
@@ -209,17 +210,17 @@ class Match(DefaultGameWorld):
 
     else:
       return "Game is over."
-      
+
     #change seasons if applicable
     if self.turnNumber % self.seasonLength == 0:
       self.currentSeason = (self.currentSeason + 1) % 4 #Modded by 4 in case of multiple years
 
     for obj in self.objects.values():
       obj.nextTurn()
-   
+
     if self.turn == self.players[0]:
       pass #self.objects.players[0].currentReefHealth -= self.findDamage(0)
-    
+
     elif self.turn == self.players[1]:
      self.objects.players[0].currentReefHealth -= self.findDamage(0)
      self.objects.players[1].currentReefHealth -= self.findDamage(1)
@@ -229,7 +230,7 @@ class Match(DefaultGameWorld):
       self.sendStatus([self.turn] +  self.spectators)
     else:
       self.sendStatus(self.spectators)
-    
+
     if self.logJson:
       self.dictLog['turns'].append(
         dict(
@@ -311,19 +312,19 @@ class Match(DefaultGameWorld):
     print "Player", self.getPlayerIndex(self.winner) + 1, "wins game", self.id
 
     msg = ["game-winner", self.id, self.winner.user, self.getPlayerIndex(self.winner), reason]
-    
+
     if self.logJson:
       self.dictLog["winnerID"] =  self.getPlayerIndex(self.winner)
       self.dictLog["winReason"] = reason
       self.jsonLogger.writeLog( self.dictLog )
-    
+
     self.scribe.writeSExpr(msg)
     self.scribe.finalize()
     self.removePlayer(self.scribe)
 
     for p in self.players + self.spectators:
       p.writeSExpr(msg)
-    
+
     self.sendStatus([self.turn])
     self.playerID ^= 1
     self.sendStatus([self.players[self.playerID]])
@@ -380,7 +381,7 @@ class Match(DefaultGameWorld):
       i.writeSExpr(self.status(i))
       i.writeSExpr(self.animations)
     return True
-    
+
   def initSeasons(self):
     #random distribution of seasons, assigns each species a random season
     randSeason = range(len(cfgSpecies.keys()))
@@ -389,10 +390,10 @@ class Match(DefaultGameWorld):
     while count < len(randSeason):
       randSeason[count] = randSeason[count] % 4
       count += 1
-    
+
     for num in range (len(self.objects.speciesList)):
       self.objects.speciesList[num].season = randSeason[num]
-    
+
 #    print [species.season for species in self.objects.speciesList]
     return True
 
@@ -409,7 +410,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.isVisible is 1 or i.owner is self.playerID or connection.type != "player")])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.owner is self.playerID or connection.type != "player")])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
@@ -422,7 +423,7 @@ class Match(DefaultGameWorld):
     # generate the json
     if self.logJson:
       self.jsonAnimations.append(anim.toJson())
-  
+
 
 
 loadClassDefaults()

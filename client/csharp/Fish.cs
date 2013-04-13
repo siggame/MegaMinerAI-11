@@ -186,17 +186,6 @@ public class Fish: Mappable
     }
   }
 
-  ///The visibleness of the fish
-  public int IsVisible
-  {
-    get
-    {
-      validify();
-      int value = Client.fishGetIsVisible(ptr);
-      return value;
-    }
-  }
-
   ///The maximum number of attacks this fish has per turn
   public int MaxAttacks
   {

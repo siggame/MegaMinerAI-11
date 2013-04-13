@@ -14,6 +14,13 @@
     <maxvalue>1</maxvalue>
   </option>
   <option>
+    <key>Enable Grid</key>
+    <type>Integer</type>
+    <value>1</value>
+    <minvalue>0</minvalue>
+    <maxvalue>1</maxvalue>
+  </option>
+  <option>
     <key>Enable Water Animation</key>
     <type>Integer</type>
     <value>1</value>
