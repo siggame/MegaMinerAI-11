@@ -2,10 +2,10 @@ using System;
 using System.Runtime.InteropServices;
 
 public class Client {
-  [DllImport("client")]
+  [DllImport("client", ExactSpelling = false)]
   public static extern IntPtr createConnection();
   [DllImport("client")]
-  public static extern int serverConnect(IntPtr connection, string host, string port);
+  public static extern int ServerConnect(IntPtr connection, string host, string port);
 
   [DllImport("client")]
   public static extern int serverLogin(IntPtr connection, string username, string password);
@@ -113,7 +113,7 @@ public class Client {
   [DllImport("client")]
   public static extern IntPtr speciesGetName(IntPtr ptr);
   [DllImport("client")]
-  public static extern int speciesGetSpeciesNum(IntPtr ptr);
+  public static extern int speciesGetIndex(IntPtr ptr);
   [DllImport("client")]
   public static extern int speciesGetCost(IntPtr ptr);
   [DllImport("client")]
@@ -153,6 +153,8 @@ public class Client {
   public static extern int fishGetCarryingWeight(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttackPower(IntPtr ptr);
+  [DllImport("client")]
+  public static extern int fishGetIsVisible(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
