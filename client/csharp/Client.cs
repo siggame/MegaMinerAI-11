@@ -113,7 +113,7 @@ public class Client {
   [DllImport("client")]
   public static extern IntPtr speciesGetName(IntPtr ptr);
   [DllImport("client")]
-  public static extern int speciesGetIndex(IntPtr ptr);
+  public static extern int speciesGetSpeciesNum(IntPtr ptr);
   [DllImport("client")]
   public static extern int speciesGetCost(IntPtr ptr);
   [DllImport("client")]
