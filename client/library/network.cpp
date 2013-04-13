@@ -10,6 +10,7 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #pragma comment(lib, "Ws2_32.lib")
+#pragma warning(disable : 4996)
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -43,11 +44,7 @@ DLLEXPORT int open_server_connection(const char* host, const char* port)
         return -1;
     }
 
-	#ifdef _WIN32
-	char* address = _strdup(host);
-	#else
 	char* address = strdup(host);
-	#endif
 
     if(strchr(address, ':'))
     {
