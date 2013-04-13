@@ -209,7 +209,7 @@ namespace visualizer
         int w = m_game->states[0].mapWidth;
 
         //draw horizontal lines
-        setColor(0.0f,0.0f,0.0f,1.0f);
+        renderer->setColor(Color(0.0f,0.0f,0.0f,1.0f));
         for(unsigned int i = 0; i < h; i++)
         {
             renderer->drawLine(0,i,w,i,1.0f);
