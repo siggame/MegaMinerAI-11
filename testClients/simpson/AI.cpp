@@ -8,7 +8,7 @@ AI::AI(Connection* conn) : BaseAI(conn) {}
 
 const char* AI::username()
 {
-  return "Shell AI";
+  return "O.o";
 }
 
 const char* AI::password()
@@ -130,6 +130,8 @@ bool AI::findPath(const int beginX,const int beginY,const int endX,const int end
         findPath(currentX,currentY,endX,endY,f);
       }
     }
+    else
+      return false;
   }
   return false;
 }
@@ -228,7 +230,7 @@ bool AI::run()
   
   /*do //find some enemy fish
   {
-    if(fishes[count].owner != playerID())
+    if(fishes[count].owner() != playerID())
     {
       enemyX = fishes[count].x();
       enemyY = fishes[count].y();

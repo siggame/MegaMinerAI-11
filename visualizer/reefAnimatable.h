@@ -104,6 +104,12 @@ namespace visualizer
         int height;
     };
 
+  Color GetTeamColor(int team)
+    {
+        // todo: need to change these colors
+        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
+    }
+
 
 } // visualizer
 

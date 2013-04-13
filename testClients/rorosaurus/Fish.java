@@ -31,16 +31,18 @@ class Fish extends Mappable
     return (Client.INSTANCE.fishMove(ptr, x, y) == 0) ? false : true;
   }
   ///Command a fish to pick up some trash at a specified position
-  boolean pickUp(int x, int y, int weight)
+  boolean pickUp(Tile tile, int weight)
   {
     validify();
-    return (Client.INSTANCE.fishPickUp(ptr, x, y, weight) == 0) ? false : true;
+    tile.validify();
+    return (Client.INSTANCE.fishPickUp(ptr, tile.ptr, weight) == 0) ? false : true;
   }
   ///Command a fish to drop some trash at a specified position
-  boolean drop(int x, int y, int weight)
+  boolean drop(Tile tile, int weight)
   {
     validify();
-    return (Client.INSTANCE.fishDrop(ptr, x, y, weight) == 0) ? false : true;
+    tile.validify();
+    return (Client.INSTANCE.fishDrop(ptr, tile.ptr, weight) == 0) ? false : true;
   }
   ///Command a fish to attack a target
   boolean attack(Fish target)
