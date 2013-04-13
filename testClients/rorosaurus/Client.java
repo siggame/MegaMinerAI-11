@@ -18,10 +18,10 @@ public interface Client extends Library {
 
 
     //commands
-  int speciesSpawn(Pointer object, int x, int y);
+  int speciesSpawn(Pointer object, Pointer tile);
   int fishMove(Pointer object, int x, int y);
-  int fishPickUp(Pointer object, int x, int y, int weight);
-  int fishDrop(Pointer object, int x, int y, int weight);
+  int fishPickUp(Pointer object, Pointer tile, int weight);
+  int fishDrop(Pointer object, Pointer tile, int weight);
   int fishAttack(Pointer object, Pointer target);
   int playerTalk(Pointer object, String message);
 
@@ -31,13 +31,13 @@ public interface Client extends Library {
   int getTurnNumber(Pointer connection);
   int getPlayerID(Pointer connection);
   int getGameNumber(Pointer connection);
-  int getTrashDamage(Pointer connection);
   int getMapWidth(Pointer connection);
   int getMapHeight(Pointer connection);
   int getTrashAmount(Pointer connection);
   int getCurrentSeason(Pointer connection);
   int getSeasonLength(Pointer connection);
   int getHealPercent(Pointer connection);
+  int getMaxFood(Pointer connection);
 
   Pointer getMappable(Pointer connection, int num);
   int getMappableCount(Pointer connection);
@@ -62,6 +62,7 @@ public interface Client extends Library {
   int tileGetTrashAmount(Pointer ptr);
   int tileGetOwner(Pointer ptr);
   int tileGetHasEgg(Pointer ptr);
+  int tileGetDamages(Pointer ptr);
 
   int speciesGetId(Pointer ptr);
   String speciesGetName(Pointer ptr);
