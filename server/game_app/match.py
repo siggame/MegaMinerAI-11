@@ -158,6 +158,8 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: Deal star damage to reefs - need a whiteboard to see what conditions there are
+    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages in [2,star.owner^1] ]
+    print sum(stars)
   #  print("star damage",sum([star.attackPower for star in self.objects.fishes if star.species == "SeaStar" and star.attacksLeft>0 and min<=star.x<max and star.owner != player ]))
   #  print "player = %i, damage = %i"%(self.playerID,damage)
     return damage
