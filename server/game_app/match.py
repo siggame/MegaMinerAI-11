@@ -176,7 +176,7 @@ class Match(DefaultGameWorld):
 
     print "Starting game"
 
-    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False, -1]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False, 2]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     for tile in self.objects.tiles:
       if tile.x < self.mapWidth/2 - self.boundLength:
         tile.damages = 0
