@@ -39,7 +39,8 @@ class Match(DefaultGameWorld):
     self.mapWidth = self.mapWidth
     self.mapHeight = self.mapHeight
     self.trashAmount = self.trashAmount
-    self.boundLength = random.choice(range(1, self.boundLength))
+    self.boundMin = self.boundMin
+    self.boundLength = random.choice(range(self.boundMin, self.boundLength))
     self.currentSeason = random.choice(range(4))
     self.seasonLength = self.seasonLength
     self.healPercent = self.healPercent
@@ -47,7 +48,6 @@ class Match(DefaultGameWorld):
     self.count = 0
     self.minTrash = self.minTrash
     self.offset = [(1,0),(-1,0),(0,1),(0,-1)]
-
     #TODO UPDATE TRASH LIST WHEN EVER TRASH IS MOVED. IT WILL BE A dictionary. (x,y) key tied to a trash amount.
     self.trashDict = dict()
 
