@@ -2,6 +2,15 @@
 #include "util.h"
 
 #include <cstdlib>
+#include <memory.h>
+#include <ctype.h>
+#include <stdio.h>
+#include <memory.h>
+#include <math.h>
+
+#include <vector>
+#include <iostream>
+
 
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
 
@@ -93,8 +102,6 @@ bool AI::run()
          }
       }
    }
-
-   toSpawn = &speciesList[CUTTLEFISH];
 
    if(toSpawn != NULL)
    {
