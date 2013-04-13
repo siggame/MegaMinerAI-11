@@ -131,7 +131,12 @@ class AI(BaseAI):
   def run(self):
     print "Turn %i -- P1: %i P2: %i" % (self.turnNumber, self.players[0].currentReefHealth, self.players[1].currentReefHealth)
     self.saveGrid()
+    for tile in self.tiles:
+      for species in self.speciesList:
+        species.spawn(tile)
 
+    for fish in self.fishes:
+      fish.move(fish.x+1, fish.y)
     self.spawnFish()
     self.actFish()
 
