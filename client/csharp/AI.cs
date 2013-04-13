@@ -57,7 +57,7 @@ class AI : BaseAI
         foreach (Tile tile in tiles)
         {
             // If the tile is yours, is not spawning a fish, and has no fish on it...
-            if (tile.Owner == playerID() && tile.HasEgg == 0 && getFish(tile.X, tile.Y) == null)
+            if (tile.Owner == playerID() && tile.HasEgg == 0 && tile.TrashAmount == 0 && getFish(tile.X, tile.Y) == null)
             {
                 // ...iterate across all species.
                 for (int i = 0; i < speciesList.Length; i++)
