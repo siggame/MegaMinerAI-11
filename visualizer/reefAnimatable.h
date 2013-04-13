@@ -9,6 +9,11 @@
 
 namespace visualizer
 {
+    inline Color GetTeamColor(int team)
+    {
+        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
+    }
+
     struct Fish : public Animatable
     {
         // todo: maybe use the ctor for more init
@@ -111,7 +116,6 @@ namespace visualizer
         int width;
         int height;
     };
-
 
 } // visualizer
 

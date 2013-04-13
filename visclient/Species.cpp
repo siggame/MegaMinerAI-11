@@ -23,9 +23,9 @@ char* Species::name()
   return ((_Species*)ptr)->name;
 }
 
-int Species::index()
+int Species::speciesNum()
 {
-  return ((_Species*)ptr)->index;
+  return ((_Species*)ptr)->speciesNum;
 }
 
 int Species::cost()
@@ -80,7 +80,7 @@ std::ostream& operator<<(std::ostream& stream,Species ob)
 {
   stream << "id: " << ((_Species*)ob.ptr)->id  <<'\n';
   stream << "name: " << ((_Species*)ob.ptr)->name  <<'\n';
-  stream << "index: " << ((_Species*)ob.ptr)->index  <<'\n';
+  stream << "speciesNum: " << ((_Species*)ob.ptr)->speciesNum  <<'\n';
   stream << "cost: " << ((_Species*)ob.ptr)->cost  <<'\n';
   stream << "maxHealth: " << ((_Species*)ob.ptr)->maxHealth  <<'\n';
   stream << "maxMovement: " << ((_Species*)ob.ptr)->maxMovement  <<'\n';

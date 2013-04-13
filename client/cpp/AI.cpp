@@ -29,6 +29,7 @@ bool AI::run()
     //check tile information
     if(tiles[i].owner() == playerID() &&               //Is the tile a cove belonging to you
        tiles[i].hasEgg() == 0 &&                       //Does the tile not have an egg
+       tiles[i].trashAmount() == 0 &&                  //Make sure there isn't trash on the tile
        getFish(tiles[i].x(), tiles[i].y()) == NULL)    //Is there not a fish on the cove
     {
       //Interate through all the species

@@ -31,7 +31,7 @@ class AI(BaseAI):
     for tile in self.tiles:
 
       #Check tile information
-      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFish(tile.x, tile.y) == None:
+      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFish(tile.x, tile.y) == None and tile.trashAmount == 0:
 
         #Iterate through all the species.
         for species in self.speciesList:

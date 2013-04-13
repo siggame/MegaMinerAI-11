@@ -2,100 +2,78 @@
 from BaseAI import BaseAI
 from GameObject import *
 
+import math
+
 SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH = range(12)
 
 class AI(BaseAI):
   """The class implementing gameplay logic."""
 
+  myCoves = []
+  myFish = []
+  trash = []
+
   @staticmethod
   def username():
-    return "Shell AI"
+    return "ruski"
 
   @staticmethod
   def password():
     return "password"
 
-  ##This function is called once, before your first turn
-  def init(self):
-    pass
+########## GET LOCAL LISTS ##########
+  def getMyCoves(self):
+    print "Get My Coves"
+    for tile in self.tiles:
+      if tile.trashAmount > 0:
+        self.trash.append(tile)
+    return
+  def getMyFish(self):
+    print "Get My Fish"
+    for fish in self.fishes:
+      if fish.owner == self.playerID:
+        self.myFish.append(fish)
+    return
 
-  ##This function is called once, after your last turn
+########## FISH FUNCTIONS ##########
+  def spawnFish(self):
+    print "Spawn Fish"
+    for cove in self.myCoves:
+      if cove.hasEgg == 0 and self.getFish(cove.x, cove.y) == None:
+        for species in self.speciesList:
+          if species.season == self.currentSeason and self.players[self.playerID].spawnFood >= species.cost:
+            species.spawn(cove)
+            break
+    return
+
+  def actFish(self):
+    for fish in self.myFish:
+
+    return
+
+########## DISTANCE FUNCTIONS ##########
+  def euclDist(self, x1, y1, x2, y2):
+    return math.sqrt( (x1-x2)**2 + (y1-y2)**2 )
+  def taxiDist(self, x1, y1, x2, y2):
+    return abs(x1-x2) + abs(y1-y2)
+
+########## INIT AND END ##########
+  def init(self):
+    print "Init"
+    self.getMyCoves()
+    return
+
   def end(self):
-    pass
+    print "End"
+    return
 
   ##This function is called each time it is your turn
   ##Return true to end your turn, return false to ask the server for updated information
   def run(self):
+    print "Starting Turn %i" % self.turnNumber
+    self.spawnFish()
 
-    #Iterate through all tiles
-    for tile in self.tiles:
-
-      #Check tile information
-      if tile.owner == self.playerID and tile.hasEgg == 0 and self.getFish(tile.x, tile.y) == None:
-
-        #Iterate through all the species.
-        for species in self.speciesList:
-
-          #If the species is in season and if there is enough money.
-          if species.season == self.currentSeason and self.players[self.playerID].spawnFood >= species.cost:
-
-            #Spawn the fish
-            species.spawn(tile)
-            #Don't spawn multiple fish on the same tile.
-            break
-
-    #Iterate through all the fish
-    for fish in self.fishes:
-
-      #Only attempt to move owned fish
-      if fish.owner == self.playerID:
-
-        if (fish.x+1 < self.mapWidth                                         # We aren't moving off the map
-          and self.getTile(fish.x+1, fish.y).owner != self.playerID^1   # We aren't moving onto an enemy cove
-          and self.getTile(fish.x+1, fish.y).hasEgg == 0                   # We aren't moving onto an egg
-          and self.getTile(fish.x+1,fish.y).owner != 3
-          and self.getFish(fish.x+1, fish.y) == None                      # There is no fish at that spot
-          and self.getTile(fish.x+1, fish.y).trashAmount == 0                # There is no trash on the tile
-          and fish.movementLeft > 0):                                        # We have moves left
-
-          #Move to the right one tile.
-          fish.move(fish.x+1, fish.y)
-
-        # Try to pick up trash one tile below the fish
-        if(fish.y+1 < self.mapHeight                               # Ensure we do not pick up off the map
-          and fish.carryCap - fish.carryingWeight > 0            # Ensure we have the necessary weight
-          and fish.currentHealth >= 1                              # Ensure we have enough health
-          and self.getTile(fish.x, fish.y+1).trashAmount > 0): # Ensure the tile has trash
-
-          # Pick up 1 trash one tile below the fish
-          fish.pickUp(self.getTile(fish.x, fish.y+1), 1)
-
-        # Attempt to drop trash one above the fish
-        if(fish.y-1 >= 0                                  # Ensure we don't drop off the map
-          and self.getFish(fish.x, fish.y-1) == None   # Make sure there's no fish where we intend to drop
-          and fish.carryingWeight > 0):                 # Ensure we have something to drop
-
-          # Drop 1 trash one tile above the fish
-          fish.drop(self.getTile(fish.x, fish.y-1), 1)
-
-        # Try to attack to the right if not a cleaner shrimp
-        if fish.species != CLEANER_SHRIMP:
-          if(fish.x+1 < self.mapWidth                                 # We aren't attacking off the map
-            and self.getFish(fish.x+1,fish.y) != None                 # There is a fish at that spot
-            and self.getFish(fish.x+1,fish.y).owner != self.playerID  # Then that fish is the opponent's
-            and fish.attacksLeft > 0):                                # We have attacks left
-
-            #attack the fish one to the right
-            fish.attack(self.getFish(fish.x+1,fish.y))
-        else:
-          #try to heal allied fish to the right
-          if(fish.x+1 < self.mapWidth                               # We aren't attacking off the map
-            and self.getFish(fish.x+1, fish.y) != None                # There is a fish at that spot
-            and self.getFish(fish.x+1,fish.y).owner == self.playerID  # Then that fish is one of mine
-            and fish.attacksLeft > 0):                                # We have attacks left
-
-            # Heal the fish one to the right
-            fish.attack(self.getFish(fish.x+1,fish.y))
+    self.actFish()
 
     return 1
 

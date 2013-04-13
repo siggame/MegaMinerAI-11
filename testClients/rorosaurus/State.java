@@ -26,4 +26,8 @@ public class State {
     public Point getPoint(){
         return new Point(x,y);
     }
+
+    public int getDepth(){
+        return 1; // todo
+    }
 }

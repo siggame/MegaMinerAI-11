@@ -29,11 +29,6 @@ namespace visualizer
 
     }
 
-    Color GetTeamColor(int team)
-    {
-        // todo: need to change these colors
-        return (team == 1) ? Color(1.0f,.1f,0.1f,1.0f) : Color(0.1f,0.4f,0.1f,1.0f);
-    }
 
    /* void DrawMap::animate(const float& t, AnimData*, IGame* game)
     {
@@ -107,12 +102,12 @@ namespace visualizer
             game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
             game->renderer->drawText(pos.x,pos.y,"Roboto",stream.str(),2.5f); // 3.0f
         }
-	
+
         RenderProgressBar(*game->renderer,pos.x,pos.y - 0.2f,
                           0.8f,0.2f,(float)m_Fish->currentHealth / (float)m_Fish->maxHealth,
                           Color(0.8f,0.1f,0.1f,1.0f));
     }
-    
+
     void DrawTrash::animate(const float &t, AnimData *d, IGame *game)
     {
         /*if((m_Trash->moveTurn == game->timeManager->getTurn()) && t < 0.8f)
@@ -124,7 +119,7 @@ namespace visualizer
 
         stringstream stream;
         stream << m_Trash->amount;
-        game->renderer->setColor( Color( 1.0f, 1.0f, 1.0f, 1.0f ) );
+        game->renderer->setColor( Color( 1.0f, 1.0f, 0.0f, 1.0f ) );
         game->renderer->drawText(m_Trash->x,m_Trash->y,"Roboto",stream.str(),3.0f);
 
     }
