@@ -373,9 +373,6 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
     return 0;
   }
 
-  if(!object->isVisible)
-    object->isVisible = true;
-
   if(object->species != 6) //Tomcod
     object->currentHealth -= weight;
 
@@ -428,8 +425,6 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
        return 0;
     }
   }
-  //Make fish visible when dropping
-  object->isVisible = true;
 
   //add weight to tile
   object->carryingWeight -= weight;
@@ -462,12 +457,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   }
   //must have attacks left
   else if(object->attacksLeft==0)
-  {
-    return 0;
-  }
-  //can't attack opponents invisible fish
-  else if(target->owner != c->playerID &&
-          !target->isVisible)
   {
     return 0;
   }
@@ -510,8 +499,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     {
       target->currentHealth = target->maxHealth;
     }
-    //The healed target should be visible after being healed
-    target->isVisible = true;
   }
   else if(object->species == 10) //Electric Eel
   {

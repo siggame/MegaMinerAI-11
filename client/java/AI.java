@@ -51,6 +51,7 @@ public class AI extends BaseAI
                 // Try to move to the right
                 if(fish.getX()+1 < mapWidth() &&                                        // We aren't moving off the map
                     getTile(fish.getX()+1,fish.getY()).getOwner() != 1-playerID() &&    // We aren't moving onto an enemy cove
+                    getTile(fish.getX()+1,fish.getY()).getOwner() != 3 &&               // We aren't moving onto a wall
                     getTile(fish.getX()+1,fish.getY()).getHasEgg() == 0 &&              // We aren't moving onto an egg
                     getFish(fish.getX()+1,fish.getY()) == null &&                       // There is no fish at that spot
                     getTile(fish.getX()+1, fish.getY()).getTrashAmount() == 0 &&        // There is no trash on the tile
