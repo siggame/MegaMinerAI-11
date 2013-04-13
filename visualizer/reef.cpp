@@ -481,6 +481,8 @@ namespace visualizer
     m_ReefPlayerInfo.clear();
     m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
 
+    m_Bubbles.clear();
+
     m_Tiles.clear();
 
     start();
@@ -582,7 +584,6 @@ namespace visualizer
                   parser::playerTalk &talk = (parser::playerTalk&)*j;
                   stringstream talkstring;
                   talkstring << "(" << state << ") " << talk.message;
-                  //playerTalks[ player.first ] = talkstring.str();
                   //turn[-1]["TALK"] = talkstring.str().c_str();
 
                   //cout<<"hello Talk"<<endl;
