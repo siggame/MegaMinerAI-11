@@ -58,7 +58,6 @@ class Tile(Mappable):
         stats = [self.x, self.y, self.owner, species.maxHealth, species.maxHealth, species.maxMovement, species.maxMovement, species.carryCap, 0, species.attackPower, species.maxAttacks, species.maxAttacks, species.range, species.speciesNum]
 
         newFish = self.game.addObject(Fish, stats)
-        self.game.addAnimation(SpawnAnimation(self.owner,newFish.x,newFish.y,newFish.species))
         self.game.grid[newFish.x][newFish.y].append(newFish)
         self.hasEgg = False
 
@@ -98,23 +97,24 @@ class Species(object):
     player = self.game.objects.players[self.game.playerID]
     x, y = tile.x, tile.y
     if player.spawnFood < self.cost:
-      return "You don't  have enough food to spawn this fish in"
+      return "Turn %i: The %s requires %i food to spawn. Current food: %i."%(self.game.turnNumber, self.name, self.cost, player.spawnFood)
     elif self.game.currentSeason != self.season:
-      return "This fish can't spawn in this season"
+      return "Turn %i: The %s can only spawn in season %i. Current Season: %i" % (self.game.turnNumber,self.name, self.season, self.game.currentSeason)
     elif len(self.game.getFish(x, y)) != 0:
-      return "There is already a fish here"
+      return "Turn %i: The %s cannot spawn on Tile %i because a fish is already there."%(self.game.turnNumber, self.name, tile.id)
 
     if tile.owner != self.game.playerID:
-      return "You can only spawn fish inside of your cove tiles"
+      return "Turn %i: The %s cannot spawn on Tile %i because it is not your cove."%(self.game.turnNumber, self.name, tile.id)
     elif tile.hasEgg:
-      return "There is already a fish to be spawned here."
+      return "Turn %i: The %s cannot spawn on Tile %i because it contains an egg."%(self.game.turnNumber, self.name, tile.id)
     elif tile.trashAmount > 0:
-      return "You cannot spawn on a cove with trash on it."
+      return "Turn %i: The %s cannot spawn on Tile %i because it contains %i trash."%(self.game.turnNumber, self.name, tile.id, tile.trashAmount)
     else:
       tile.hasEgg = True
       tile.species = self
       player.spawnFood -= self.cost
       player.spawnQueue.append(self.cost)
+      self.game.addAnimation(SpawnAnimation(tile.owner,tile.x,tile.y,self.name))
     return True
 
   def __setattr__(self, name, value):
@@ -203,34 +203,34 @@ class Fish(Mappable):
   def move(self, x, y):
     speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID: #check that you own the fish
-      return "You cannot move the other player's %s %i." % (speciesName, self.id)
+      return "Turn %i: You cannot move the other player's %s %i. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     elif self.movementLeft <= 0: #check that there are moves left
-      return "Your %s %i has no moves left." % (speciesName, self.id)
+      return "Turn %i: Your %s %i has no moves left."%(self.game.turnNumber, speciesName, self.id)
 
     elif not (0<=x<self.game.mapWidth) or not (0<=y<self.game.mapHeight):
-      return "Your %s %i cannot move off the map. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y,  x, y)
+      return "Turn %i: Your %s %i cannot move off the map. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y,  x, y)
 
     elif self.taxiDist(self,x,y)!=1:
-      return "Your %s %i can only move to adjacent locations. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+      return "Turn %i: Your %s %i can only move to adjacent locations. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     T = self.game.getTile(x, y) #The tile the player wants to walk onto
     if T.trashAmount > 0:
-      return "Your %s %i can't move on top of trash. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+      return "Turn %i: Your %s %i can't move on top of trash. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     elif T.owner == self.owner^1:
-      return "Your %s %i can't move into an opponent's cove. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+      return "Turn %i: Your %s %i can't move into an opponent's cove. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     elif T.owner == 3:
-      return "Your %s %i can't move into an a wall. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+      return "Turn %i: Your %s %i can't move into an a wall. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     elif T.hasEgg:
-      return "Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)" % (speciesName, self.id, self.x, self.y, x, y)
+      return "Turn %i: Your %s %i can't move onto an egg. (%i, %i)->(%i, %i)"%(self.game.turnNumber, speciesName, self.id, self.x, self.y, x, y)
 
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
+        return "Turn %i: Your %s %i is trying to move onto %s %i. (%i, %i)->(%i, %i)" % (self.game.turnNumber, speciesName, self.id, self.game.speciesStrings[self.species], fish.id, self.x, self.y, x, y)
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
     self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))
@@ -243,23 +243,23 @@ class Fish(Mappable):
     x, y = tile.x, tile.y
     speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID:
-      return "You cannot control your opponent's %s %i." % (speciesName, self.id)
+      return "Turn %i: You cannot control your opponent's %s %i."%(self.game.turnNumber, speciesName, self.id)
 
     elif self.taxiDist(self,x,y) != 1:
-      return "Your %s %i can only pick up adjacent trash. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
+      return "Turn %i: Your %s %i can only pick up adjacent trash. Distance: %i"%(self.game.turnNumber, speciesName, self.id, self.taxiDist(self,x,y))
 
     elif (self.carryingWeight + weight) > self.carryCap:
-      return "Your %s %i cannot carry more weight than %i." % (speciesName, self.id, self.carryCap)
+      return "Turn %i: Your %s %i cannot carry more weight than %i."%(self.game.turnNumber, speciesName, self.id, self.carryCap)
 
     elif weight < 1 :
-      return "Your %s %i cannot pick up a weight of 0." % (speciesName, self.id)
+      return "Turn %i: Your %s %i cannot pick up a weight less than 1."%(self.game.turnNumber, speciesName, self.id)
 
 
     if tile.trashAmount < weight:
-      return "Your %s %i cannot pick up more trash(%i) than trash present(%i)." % (speciesName, self.id, weight, tile.trashAmount)
+      return "Turn %i: Your %s %i cannot pick up more trash(%i) than trash present(%i)."%(self.game.turnNumber, speciesName, self.id, weight, tile.trashAmount)
 
     elif tile.trashAmount < 1:
-      return "Your %s %i cannot pick up trash when there is no trash." % (speciesName, self.id)
+      return "Turn %i: Your %s %i cannot pick up trash when there is no trash." % (self.game.turnNumber, speciesName, self.id)
 
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
@@ -275,33 +275,38 @@ class Fish(Mappable):
     #add weight to fish
     self.carryingWeight += weight
     self.game.addAnimation(PickUpAnimation(self.id, tile.id, x, y, weight))
+    if self.currentHealth <= 0:
+      self.game.grid[self.x][self.y].remove(self)
+      self.game.addAnimation(DeathAnimation(self.id))
+      tile = self.game.getTile(self.x, self.y)
+      tile.trashAmount += self.carryingWeight
+      #          self.game.addAnimation(DropAnimation(self.id,tile.id, self.x, self.y, self.carryingWeight))
+      self.addTrash(self.x,self.y,self.carryingWeight)
+      self.game.removeObject(self)
     return True
 
   def drop(self, tile, weight):
     x, y = tile.x, tile.y
     speciesName = self.game.speciesStrings[self.species]
     if self.owner != self.game.playerID:
-      return "You cannot control the opponent's %s %i." % (speciesName, self.id)
-
-    elif not (0 <= x < self.game.mapWidth) or not (0 <= y < self.game.mapHeight):
-      return "Your %s %i cannot drop trash off the map. (%i, %i)" % (speciesName, self.id, x, y)
+      return "Turn %i: You cannot control the opponent's %s %i."%(self.game.turnNumber, speciesName, self.id)
 
     elif self.taxiDist(self, x, y) != 1:
-      return "Your %s %i can only drop onto adjacent locations. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
+      return "Turn %i: Your %s %i can only drop onto adjacent locations. Distance: %i"%(self.game.turnNumber, speciesName, self.id, self.taxiDist(self,x,y))
 
     elif tile.hasEgg == 1:
-      return "Your %s %i cannot drop trash on a tile that has an egg." % (speciesName, self.id)
+      return "Turn %i: Your %s %i cannot drop trash on a tile that has an egg."%(self.game.turnNumber, speciesName, self.id)
 
     elif weight > self.carryingWeight:
-      return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
+      return "Turn %i: Your %s %i cannot drop more weight(%i) than you're carrying(%i)."%(self.game.turnNumber, speciesName, self.id, weight, self.carryingWeight)
 
     elif weight < 1:
-     return "Your %s %i cannot drop a weight of 0." % (speciesName, self.id)
+     return "Turn %i: Your %s %i cannot drop a weight of 0."%(self.game.turnNumber,speciesName, self.id)
 
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
+        return "Turn %i: Your %s %i cannot drop weight onto %s %i."%(self.game.turnNumber, speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
 
     tile.trashAmount += weight
     self.carryingWeight -= weight
@@ -317,31 +322,28 @@ class Fish(Mappable):
 
     #I feel like stealth units are going to mess up this function
     if self.owner != self.game.playerID:
-      return "You cannot control the opponent's %s %i." % (speciesName, self.id)
+      return "Turn %i: You cannot control the opponent's %s %i."%(self.game.turnNumber, speciesName, self.id)
 
     elif target.id in self.attacked:
-      return "%s %i has already attacked %s %i this turn." % (speciesName, self.id, targetName, target.id)
+      return "Turn %i: %s %i has already attacked %s %i this turn."%(self.game.turnNumber, speciesName, self.id, targetName, target.id)
 
     elif self.taxiDist(self, x, y) > self.range:
-      return "Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i" % (speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
+      return "Turn %i: Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i"%(self.game.turnNumber, speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
 
     elif self.attacksLeft < 1:
-      return "Your %s %i has no attacks left." % (speciesName, self.id)
+      return "Turn %i: Your %s %i has no attacks left."%(self.game.turnNumber, speciesName, self.id)
 
     elif not isinstance(target, Fish):
-      return "Your %s %i can only attack other Fish." % (speciesName, self.id)
-
-    elif not target.isVisible and target.owner != self.game.playerID:
-      return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
+      return "Turn %i: Your %s %i can only attack other Fish."%(self.game.turnNumber, speciesName, self.id)
 
     elif target.currentHealth < 0:
-      return "Your %s %i cannot attack a dead fish %s %i." % (speciesName, self.id, targetName, target.id)
+      return "Turn %i: Your %s %i cannot attack a dead fish %s %i."%(self.game.turnNumber, speciesName, self.id, targetName, target.id)
 
     elif target.owner != self.owner and self.attackPower < 0:
-      return "Your %s %i cannot heal the opponent's %s %i." % (speciesName, self.id, targetName, target.id)
+      return "Turn %i: Your %s %i cannot heal the opponent's %s %i."%(self.game.turnNumber, speciesName, self.id, targetName, target.id)
 
     elif target.owner == self.owner and self.attackPower > 0:
-      return "Your %s %i cannot attack a friendly %s %i." % (speciesName, self.id, targetName, target.id)
+      return "Turn %i: Your %s %i cannot attack a friendly %s %i."%(self.game.turnNumber, speciesName, self.id, targetName, target.id)
 
     #Add target to list of attacked targets
     self.attacked.append(target.id)

@@ -63,5 +63,11 @@ class Tile extends Mappable
     validify();
     return Client.INSTANCE.tileGetHasEgg(ptr);
   }
+  ///Determines which player the trash on this tile will hurt
+  public int getDamages()
+  {
+    validify();
+    return Client.INSTANCE.tileGetDamages(ptr);
+  }
 
 }

@@ -7,16 +7,16 @@ import com.sun.jna.Pointer;
 ///The provided AI class does just that.
 public abstract class BaseAI
 {
-  static Mappable[] mappables;
+  public static Mappable[] mappables;
   public static Tile[] tiles;
-  public static Species[] species;
+  public static Species[] speciesList;
   public static Fish[] fishes;
   public static Player[] players;
   Pointer connection;
   static int iteration;
   boolean initialized;
 
-  static BaseAI baseAI = null;
+    private static BaseAI baseAI = null;
 
   public BaseAI(Pointer c)
   {
@@ -24,11 +24,11 @@ public abstract class BaseAI
       baseAI = this;
   }
 
-    public static BaseAI getBaseAI() {
+    public static BaseAI getBaseAI(){
         return baseAI;
     }
-
-    ///
+    
+  ///
   ///Make this your username, which should be provided.
   public abstract String username();
   ///
@@ -65,10 +65,10 @@ public abstract class BaseAI
       tiles[i] = new Tile(Client.INSTANCE.getTile(connection, i));
     }
     count = Client.INSTANCE.getSpeciesCount(connection);
-    species = new Species[count];
+    speciesList = new Species[count];
     for(int i = 0; i < count; i++)
     {
-      species[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
+      speciesList[i] = new Species(Client.INSTANCE.getSpecies(connection, i));
     }
     count = Client.INSTANCE.getFishCount(connection);
     fishes = new Fish[count];
@@ -117,11 +117,6 @@ public abstract class BaseAI
   {
     return Client.INSTANCE.getGameNumber(connection);
   }
-  ///How much damage trash does
-  int trashDamage()
-  {
-    return Client.INSTANCE.getTrashDamage(connection);
-  }
   ///How wide the map is
   int mapWidth()
   {
@@ -152,17 +147,23 @@ public abstract class BaseAI
   {
     return Client.INSTANCE.getHealPercent(connection);
   }
+  ///The maximum amount of food a player can have.
+  int maxFood()
+  {
+    return Client.INSTANCE.getMaxFood(connection);
+  }
+
   ///Returns the Tile from the specified x and y coordinates, or null if none is found
   Tile getTile(int x, int y){
     return tiles[(mapHeight()*x)+y];
   }
-  ///Returns the index (in fishes[]) of the fish at position (x,y)
-  int getFishIndex(int x, int y){
-    for(int i=0; i<fishes.length; i++){
-      if(fishes[i].getX() == x && fishes[i].getY() == y){
-        return i;
+  ///Returns the index (in fishes[]) of the fish at position (x,y), or null if none is found
+  Fish getFish(int x, int y){
+    for(Fish fish : fishes){
+      if(fish.getX() == x && fish.getY() == y){
+        return fish;
       }
     }
-    return -1;
+    return null;
   }
 }

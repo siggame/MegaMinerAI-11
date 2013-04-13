@@ -19,10 +19,10 @@ public class Spawner {
         List<Tile> validCoves = getSpawnableCoves();
         for(Tile tile : validCoves){
             // Iterate across all species
-            for(int i=0; i<baseAI.species.length; i++){
-                if(baseAI.species[i].getSeason() == baseAI.currentSeason() &&                                   // Ensure that species is in season
-                        baseAI.players[baseAI.playerID()].getSpawnFood() >= baseAI.species[i].getCost()){       // Ensure we can afford this species
-                    baseAI.species[i].spawn(tile.getX(),tile.getY());       // If so, spawn it!
+            for(int i=0; i<baseAI.speciesList.length; i++){
+                if(baseAI.speciesList[i].getSeason() == baseAI.currentSeason() &&                                   // Ensure that species is in season
+                        baseAI.players[baseAI.playerID()].getSpawnFood() >= baseAI.speciesList[i].getCost()){       // Ensure we can afford this species
+                    baseAI.speciesList[i].spawn(tile);       // If so, spawn it!
                     break;                                                  // Don't spawn multiple fish on the same cove
                 }
             }
@@ -34,9 +34,9 @@ public class Spawner {
         for(Tile tile : validCoves){
             // Iterate across all species
             for(FishType type : FishType.getBestTypes()){
-                if(baseAI.species[type.getIndexVal()].getSeason() == baseAI.currentSeason() &&                                   // Ensure that species is in season
-                        baseAI.players[baseAI.playerID()].getSpawnFood() >= baseAI.species[type.getIndexVal()].getCost()){       // Ensure we can afford this species
-                    baseAI.species[type.getIndexVal()].spawn(tile.getX(),tile.getY());      // If so, spawn it!
+                if(baseAI.speciesList[type.getIndexVal()].getSeason() == baseAI.currentSeason() &&                                   // Ensure that species is in season
+                        baseAI.players[baseAI.playerID()].getSpawnFood() >= baseAI.speciesList[type.getIndexVal()].getCost()){       // Ensure we can afford this species
+                    baseAI.speciesList[type.getIndexVal()].spawn(tile);      // If so, spawn it!
                     break;                                                                  // Don't spawn multiple fish on the same cove
                 }
             }
@@ -50,7 +50,8 @@ public class Spawner {
             // Check relevant tile info
             if(tile.getOwner() == baseAI.playerID() &&                       // The tile is a cove that belongs to you
                     tile.getHasEgg() == 0  &&                                // The tile is not already spawning a fish
-                    baseAI.getFishIndex(tile.getX(), tile.getY()) == -1){    // The tile has no fish on it already
+                    tile.getTrashAmount() == 0 &&                            // The tile has no trash on it
+                    baseAI.getFish(tile.getX(), tile.getY()) == null){       // The tile has no fish on it already
                 coves.add(tile);
             }
         }

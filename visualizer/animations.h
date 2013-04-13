@@ -43,6 +43,16 @@ namespace visualizer
         SpriteAnimation* m_animation;
     };
 
+    class DrawMovingAnimation : public Anim
+    {
+    public:
+        DrawMovingAnimation( MovingSpriteAnimation* animation ) : m_animation(animation) {}
+        void animate( const float& t, AnimData* d, IGame* game );
+
+    private:
+        MovingSpriteAnimation* m_animation;
+    };
+
     class DrawFish : public Anim
     {
     public:

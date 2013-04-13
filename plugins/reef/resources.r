@@ -24,6 +24,8 @@ texture winter textures/seasons/Winter.png
 texture ocean_floor textures/OceanFloor.png
 texture wall textures/Wall.png
 
+texture egg textures/Egg.png
+
 animation coral textures/coral.png
 animation trash textures/Trash.png
 
