@@ -64,13 +64,11 @@ namespace visualizer
 
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )
     {
-
         if(m_animation->enable.empty() || game->options->getNumber(m_animation->enable) > 0.0f)
         {
             game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
             game->renderer->drawAnimQuad( m_animation->x, m_animation->y, m_animation->dx, m_animation->dy, m_animation->m_sprite , (int)(m_animation->frames * t));
         }
-
     }
 
 
@@ -82,11 +80,8 @@ namespace visualizer
         glm::vec2 diff = m_Fish->m_moves[index].to - m_Fish->m_moves[index].from;
         glm::vec2 pos = m_Fish->m_moves[index].from + diff * subT;
 
-        Color teamColor = GetTeamColor(m_Fish->owner);
-        teamColor.a -= (!m_Fish->isVisible) * 0.5f;
-	
         // todo: we could just combine all of these sprites into a sprite sheet
-        game->renderer->setColor( teamColor );
+        game->renderer->setColor( GetTeamColor(m_Fish->owner) );
         game->renderer->drawTexturedQuad(pos.x,pos.y,1.0f,1.0f,
                                          (*m_Fish->speciesList)[m_Fish->species],
                                          m_Fish->flipped || (diff.x > 0.0f));
