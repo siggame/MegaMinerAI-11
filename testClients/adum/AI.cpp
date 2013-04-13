@@ -99,7 +99,8 @@ void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int&
 }
 
 //x = can't walk
-/*void findPath(int startX,int startY,int endX,int endY,char map2[],
+/*
+void findPath(int startX,int startY,int endX,int endY,char map2[],
               std::vector<point>& path)
 {
    char map[20*40];
@@ -116,65 +117,35 @@ void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int&
          path.push_back(point(x+1,y));
          x++;
       }
-         else
-         {
-            map[x*40 + y] = 'x';
-            x = path.end()->x;
-            y = path.end()->y;
-            path.pop_back();
-         }
-      }
-      else if(x>endX)
+      else if(map[(x-1)*40 + y] != 'x')
       {
-         if(map[(x-1)*40 + y] != 'x')
-         {
-            path.push_back(point(x-1,y));
-            x--;
-         }
-         else
-         {
-            map[x*40 + y] = 'x';
-            x = path.end()->x;
-            y = path.end()->y;
-            path.pop_back();
-         }
+         path.push_back(point(x-1,y));
+         x--;
       }
-      else if (y<endY)
+      else if(map[x*40 + y + 1]!='x')
       {
-         if(map[x*40 + y + 1]!='x')
-         {
-            path.push_back(point(x,y+1));
-            y++;
-         }
-         else
-         {
-            map[x*40 + y] = 'x';
-            x = path.end()->x;
-            y = path.end()->y;
-            path.pop_back();
-         }
+         path.push_back(point(x,y+1));
+         y++;
       }
-      else if (y>endY)
+      else if(map[x*40 + y - 1]!='x')
       {
-         if(map[x*40 + y - 1]!='x')
-         {
-            path.push_back(point(x,y-1));
-            y--;
-         }
-         else
-         {
-            map[x*40 + y] = 'x';
-            x = path.end()->x;
-            y = path.end()->y;
-            path.pop_back();
-         }
+         path.push_back(point(x,y-1));
+         y--;
+      }
+      else
+      {
+         map[x*40 + y] = 'x';
+         x = path.end()->x;
+         y = path.end()->y;
+         path.pop_back();
       }
       if(x == startX && y == startY)
       {
          return;
       }
    }
-}*/
+}
+*/
 
 //This function is called each time it is your turn.
 //Return true to end your turn, return false to ask the server for updated information.
@@ -238,6 +209,7 @@ bool AI::run()
          for(int p=0;p<fishes[i].movementLeft();p++)
          {
             //fishes[i].move(path[i+1].x,path[i+1].y);
+
 
             if(fishes[i].carryingWeight()==0 && fishes[i].y()!=y)
             {
