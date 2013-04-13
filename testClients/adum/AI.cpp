@@ -11,6 +11,8 @@
 #include <vector>
 #include <iostream>
 
+std::vector<Tile*> MAI_COVEZ;
+std::vector<Tile*> wallz;
 
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
 
@@ -39,7 +41,25 @@ void AI::init()
    {
       xChange = -1;
    }
+   for(int i=0;i<tiles.size();i++)
+   {
+      if(tiles[i].owner() == playerID())
+      {
+         MAI_COVEZ.push_back(&tiles[i]);
+      }
+      if(tiles[i].owner() == 3 ||
+         tiles[i].owner() == 1-playerID())
+      {
+         wallz.push_back(&tiles[i]);
+      }
+   }
 }
+
+struct point
+{
+   int x;
+   int y;
+};
 
 void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int& y)
 {
@@ -77,12 +97,25 @@ void findTrashYX(std::vector<Tile>& tiles,int mapWidth,int mapHeight,int& x,int&
    return;
 }
 
+//X = can't walk
+void pathFind(int startX,int startY,int endX,int endY,char[] map,
+              std::vector<point>& path)
+{
+   int x = startX, y = startY;
+   while(x != endX && y != endY)
+   {
+      ;
+   }
+}
+
 //This function is called each time it is your turn.
 //Return true to end your turn, return false to ask the server for updated information.
 bool AI::run()
 {
-   BuildMapArray();
-   std::vector<VECTOR2D> yoyoyo;
+   char map[40*20];
+   bool claimed[40*20];
+   //BuildMapArray();
+   //std::vector<VECTOR2D> yoyoyo;
    Species* toSpawn = NULL;
    //spawn da fish
    for(int i=0;i<speciesList.size();i++)
@@ -90,42 +123,40 @@ bool AI::run()
       if(speciesList[i].season() == currentSeason() &&
          speciesList[i].carryCap() > 0)
       {
-         if(speciesList[i].index() != CUTTLEFISH)
+         if(toSpawn == NULL)
          {
-            if(toSpawn == NULL)
-            {
-               toSpawn = &speciesList[i];
-            }
-            else if(toSpawn->maxMovement() * toSpawn->carryCap() <
-                    speciesList[i].maxMovement() * speciesList[i].carryCap())
-            {
-               toSpawn = &speciesList[i];
-            }
+            toSpawn = &speciesList[i];
+         }
+         else if(toSpawn->maxMovement() * toSpawn->carryCap() <
+                 speciesList[i].maxMovement() * speciesList[i].carryCap())
+         {
+            toSpawn = &speciesList[i];
          }
       }
    }
 
    if(toSpawn != NULL)
    {
-      for(int p=0;p<tiles.size();p++)
+      for(int p=0;p<MAI_COVEZ.size();p++)
       {
-         if(tiles[p].hasEgg()==false &&
+         if(MAI_COVEZ[p]->hasEgg()==false &&
             toSpawn->cost() < players[playerID()].spawnFood() &&
-            tiles[p].owner() == playerID())
+            MAI_COVEZ[p]->owner() == playerID())
          {
-            toSpawn->spawn(getTile(tiles[p].x(),tiles[p].y()));
+            toSpawn->spawn(getTile(MAI_COVEZ[p]->x(),MAI_COVEZ[p]->y()));
          }
       }
    }
 
-
    //be a slave driver to da fish
    for(int i=0;i<fishes.size();i++)
    {
+      std::vector<point> path;
       int y,x;
       findTrashYX(tiles,mapWidth(),mapHeight(),x,y);
       if(fishes[i].owner() == playerID())
       {
+         findPath(fishes[i].x(),fishes[i].y(),0,0,map,path);
          /*
          VECTOR2D start(fishes[i].x(),fishes[i].y());
          VECTOR2D end(mapWidth()-2,mapHeight()-2);
@@ -236,7 +267,7 @@ bool AI::run()
             }
          }
       }
-      yoyoyo.clear();
+      //yoyoyo.clear();
    }
    return true;
 }
