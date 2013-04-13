@@ -34,6 +34,38 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\AI.cs">
+      <Link>AI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\BaseAI.cs">
+      <Link>BaseAI.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Client.cs">
+      <Link>Client.cs</Link>
+    </Compile>
+    <Compile Include="..\..\ExistentialError.cs">
+      <Link>ExistentialError.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Fish.cs">
+      <Link>Fish.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Main.cs">
+      <Link>Main.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Mappable.cs">
+      <Link>Mappable.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Player.cs">
+      <Link>Player.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Species.cs">
+      <Link>Species.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Tile.cs">
+      <Link>Tile.cs</Link>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
