@@ -288,8 +288,8 @@ namespace visualizer
       renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
       //Display text for Current Selection and Next Selection of fish
-      renderer->drawText(1.0f,20.0f,"Roboto","Available Fish: ",4.0f);
-      renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
+      renderer->drawText(1.0f,20.4f,"Roboto","Available Fish: ",4.0f);
+      renderer->drawText(1.0,24.4f,"Roboto","Next Selection: ",4.0f);
 
       //Display Next Season Progress Bar
       //ostringstream stream;
@@ -303,7 +303,8 @@ namespace visualizer
           //(*m_speciesList);//[m_Species[currentSeason][i].speciesNum)];
          // (*m_speciesList)[0];
 
-          renderer->drawTexturedQuad(13.0f + 4*i,20.4f,1.5f,1.5f,m_speciesList->at(m_Species[currentSeason][i].speciesNum));
+          renderer->drawTexturedQuad(13.0f + 2*i,20.4f,1.5f,1.5f,m_speciesList->at(m_Species[currentSeason][i].speciesNum));
+          renderer->drawTexturedQuad(26.0f + 2*i,24.4f,1.5f,1.5f,m_speciesList->at(m_Species[nextSeason][i].speciesNum));
           //renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,2.5f,IRenderer::Center);
          // renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,2.5f,IRenderer::Center);
       }
@@ -611,6 +612,13 @@ namespace visualizer
                 //cout<<"Move!"<<endl;
                 parser::move& move = (parser::move&)*j;
                 newFish->m_moves.push_back(Fish::Moves(glm::vec2(move.toX, move.toY),glm::vec2(move.fromX, move.fromY)));
+            }
+            else if(j->type == parser::SPAWN)
+            {
+                //cout<<"Spawn!"<<endl;
+                 auto targetIter = m_game->states[state].fishes.find(spawnAnim.targetID); // get the target fish
+                 SmartPointer<MovingSpriteAnimation> pSpawnAnim = new BaseSprite(glm::vec2(6.0f,6.0f), glm::vec2(1.0f,1.0f), "egg");
+                 turn.addAnimatable(pSpawnAnim);
             }
             else if(j->type == parser::DROP || j->type == parser::PICKUP)
             {
