@@ -571,18 +571,26 @@ namespace visualizer
             {
                 parser::attack& attackAnim = (parser::attack&)*j;
 
-                auto attackIter = m_game->states[state].fishes.find(attackAnim.targetID);
+                auto attackIter = m_game->states[state].fishes.find(attackAnim.targetID); // get the target fish
+                auto sourceIter = m_game->states[state].fishes.find(attackAnim.actingID); // get the source fish
 
-                // todo: replace with actual sprite
-                /*
-                SmartPointer<SpriteAnimation> pAttackAnim = new SpriteAnimation(attackIter->second.x,
-                                                                                attackIter->second.y,1.0f,1.0f,
-                                                                                "",2);
+                if(attackIter != m_game->states[state].fishes.end() &&
+                   sourceIter != m_game->states[state].fishes.end())
+                {
+                    // todo: replace with actual sprite
+                    SmartPointer<SpriteAnimation> pAttackAnim = new SpriteAnimation(attackIter->second.x - 0.5f,
+                                                                                    attackIter->second.y,2.0f,2.0f,
+                                                                                    "fin",2);
 
-                pAttackAnim->addKeyFrame( new DrawAnimation( pAttackAnim ) );
-                turn.addAnimatable(pAttackAnim);*/
+                    pAttackAnim->addKeyFrame( new DrawAnimation( pAttackAnim ) );
+                    turn.addAnimatable(pAttackAnim);
 
-                cout<<"Attack"<<endl;
+                    cout<<"Attack: "<<state<<endl;
+                }
+                else
+                {
+                    cout << "Error, fish not found"<<endl;
+                }
 
             }
             else if(j->type == parser::MOVE)
