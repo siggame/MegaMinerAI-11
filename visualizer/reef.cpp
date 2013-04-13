@@ -239,15 +239,15 @@ namespace visualizer
 
       // Render AI's time
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,3.0f);
-      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),3.0f);
+      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.3f,"Roboto",name,3.0f);
+      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.3f,"Roboto",stream.str(),3.0f);
 
       float xHealthPos = m_game->states[0].mapWidth/3.0f;
 
       // Health bar
-      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.8f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
       // Food bar
-      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.45f,xHealthPos,0.25f,foodPercent,Color(0.0f,1.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.55f,xHealthPos,0.25f,foodPercent,Color(0.0f,1.0f,0.0f,1.0f),true);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -299,11 +299,16 @@ namespace visualizer
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
-          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
+          m_speciesList->at(0);
+          //(*m_speciesList);//[m_Species[currentSeason][i].speciesNum)];
+         // (*m_speciesList)[0];
+
+          renderer->drawTexturedQuad(13.0f + 4*i,20.4f,1.5f,1.5f,m_speciesList->at(m_Species[currentSeason][i].speciesNum));
+          //renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,2.5f,IRenderer::Center);
+         // renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,2.5f,IRenderer::Center);
       }
 
-      RenderProgressBar(*renderer,0.0f,m_game->states[0].mapHeight, m_game->states[0].mapWidth, 0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
+      RenderProgressBar(*renderer,0.0f,m_game->states[0].mapHeight, m_game->states[0].mapWidth, 0.25f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
 
   }
 
@@ -526,10 +531,9 @@ namespace visualizer
 
     animationEngine->registerGame(0, 0);
 
+    m_speciesList = new std::vector<string>(m_game->states[0].speciesList.size());
+
     std::map<int,bool> dirMap;
-
-    SmartPointer<std::vector<string>> speciesList = new std::vector<string>(m_game->states[0].speciesList.size());
-
     std::vector<int> idMap;
     BuildWorld(idMap);
 
@@ -537,7 +541,7 @@ namespace visualizer
     {
         m_Species[iter->second.season].push_back(iter->second);
 
-        string& speciesStr = (*speciesList)[iter->second.speciesNum] = iter->second.name;
+        string& speciesStr = (*m_speciesList)[iter->second.speciesNum] = iter->second.name;
         StringToLower(speciesStr);
         auto spacePos = speciesStr.find(' ');
 
@@ -612,7 +616,7 @@ namespace visualizer
             {
                 if(j->type == parser::DROP)
                 {
-                     // todo: do something with the drop
+                    // todo: do something with the drop
                     parser::drop& dropAnim = (parser::drop&)*j;
 
                     if(dropAnim.amount == 0)
@@ -622,10 +626,19 @@ namespace visualizer
                     else
                     {
                         BasicTrash& trash = m_Trash[state][dropAnim.targetID];
+
                         //BasicTrash& trash = m_Trash[state][idMap[dropAnim.y * m_game->states[0].mapWidth + dropAnim.x]];
                         trash.amount += dropAnim.amount;
                         trash.x = dropAnim.x;
                         trash.y = dropAnim.y;
+
+                        SmartPointer<MovingSpriteAnimation> pDropAnim = new MovingSpriteAnimation(glm::vec2(p.second.x,p.second.y),
+                            glm::vec2(trash.x, trash.y),glm::vec2(1.0f),"trash",1);
+
+                        pDropAnim->addKeyFrame( new DrawMovingAnimation( pDropAnim ) );
+                        turn.addAnimatable(pDropAnim);
+
+
                     }
                 }
                 else
@@ -702,10 +715,10 @@ namespace visualizer
         newFish->range = p.second.range;
         newFish->species = p.second.species;
         newFish->carryingWeight = p.second.carryingWeight;
-        newFish->speciesList = speciesList;
+        newFish->speciesList = m_speciesList;
 
         //cout<<(*speciesList)[p.second.species].c_str()<<endl;
-        turn[p.second.id]["Species"] = (*speciesList)[p.second.species].c_str();
+        turn[p.second.id]["Species"] = (*m_speciesList)[p.second.species].c_str();
         turn[p.second.id]["carryingWeight"] = p.second.carryingWeight;
         turn[p.second.id]["X"] = p.second.x;
         turn[p.second.id]["Y"] = p.second.y; //carryingWeight
