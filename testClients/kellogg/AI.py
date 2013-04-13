@@ -200,7 +200,7 @@ class AI(BaseAI):
 
     for cove in self.coves:
       for species in seasonal:
-        if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.index != 8:
+        if species.carryCap > 0 and cove.owner == self.playerID and not cove.hasEgg and len(self.grid[cove.x][cove.y]) == 1 and self.myPlayer.spawnFood >= species.cost and species.getSpeciesNum != 8:
           species.spawn(cove)
 
     for fish in self.fishes: 

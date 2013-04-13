@@ -331,9 +331,6 @@ class Fish(Mappable):
     elif not isinstance(target, Fish):
       return "Your %s %i can only attack other Fish." % (speciesName, self.id)
 
-    elif not target.isVisible and target.owner != self.game.playerID:
-      return "Your %s %i isn't supposed to see or attack invisible Fish." % (speciesName, self.id)
-
     elif target.currentHealth < 0:
       return "Your %s %i cannot attack a dead fish %s %i." % (speciesName, self.id, targetName, target.id)
 

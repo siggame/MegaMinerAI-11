@@ -591,7 +591,7 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
-  object->index = atoi(sub->val);
+  object->speciesNum = atoi(sub->val);
   sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
@@ -639,8 +639,6 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   object->carryingWeight = atoi(sub->val);
   sub = sub->next;
   object->attackPower = atoi(sub->val);
-  sub = sub->next;
-  object->isVisible = atoi(sub->val);
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;
