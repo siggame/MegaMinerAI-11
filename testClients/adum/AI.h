@@ -4,7 +4,7 @@
 #include "BaseAI.h"
 #include <vector>
 
-#define nullptr 0
+#define nullptr NULL
 
 struct VECTOR2D
 {
@@ -82,11 +82,12 @@ public:
 
 	// helper methods
 
-	Tile2& TileAt(const VECTOR2D& pos);
+	Tile2& TileAt(const VECTOR2D& pos)
+	{
+      return m_array[pos.x + pos.y* mapWidth()];
+   }
 
 	void UpdateAI();
-
-	void BuildMapArray();
 
 	template< class T >
 	void NearObject(T& list, const VECTOR2D& pos, VECTOR2D& out);
@@ -94,6 +95,17 @@ public:
     // A* pathfinding
     template< class T >
 	unsigned int FindPath(const VECTOR2D& from, const VECTOR2D& to, const T& heuristic, int iMaxPathLength, std::vector<VECTOR2D>& pathOut);
+
+	void BuildMapArray()
+   {
+      m_array.clear();
+      m_array.resize(mapWidth() * mapHeight());
+
+      for(int i=0;i<tiles.size();i++)
+      {
+         TileAt(VECTOR2D(tiles[i].x(),tiles[i].y())) = Tile2(&tiles[i]);
+      }
+   }
 };
 
 //Thanks Bryce
@@ -181,7 +193,7 @@ unsigned int AI::FindPath(const VECTOR2D& from, const VECTOR2D& to, const T& heu
 				// If the tile is walkable,
 				// todo: clean this up
 				// todo: create functor to change the behavior of seeing if this is a valid node to add
-				bool bLookAtTile = newTile.pObj == nullptr || (newTile.pObj->owner() == playerID() && newTile.pObj->owner() == 2);
+				bool bLookAtTile = newTile.pObj == nullptr || (newTile.pObj->owner() == playerID() && newTile.pObj->owner() == 2 && newTile.pObj->trashAmount() == 0);
 				if((newPos == to) || (bLookAtTile && newTile.list != m_currentList))
 				{
 				    newTile.pos = newPos;
