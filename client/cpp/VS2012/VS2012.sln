@@ -2,11 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "C++Client", "C++Client\C++Client.vcxproj", "{A7B4E24B-7E5F-4B14-9609-552E1731C761}"
-	ProjectSection(ProjectDependencies) = postProject
-		{15857415-9C72-40B7-BD01-AA368B7375B9} = {15857415-9C72-40B7-BD01-AA368B7375B9}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.vcxproj", "{15857415-9C72-40B7-BD01-AA368B7375B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,10 +13,6 @@ Global
 		{A7B4E24B-7E5F-4B14-9609-552E1731C761}.Debug|Win32.Build.0 = Debug|Win32
 		{A7B4E24B-7E5F-4B14-9609-552E1731C761}.Release|Win32.ActiveCfg = Release|Win32
 		{A7B4E24B-7E5F-4B14-9609-552E1731C761}.Release|Win32.Build.0 = Release|Win32
-		{15857415-9C72-40B7-BD01-AA368B7375B9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{15857415-9C72-40B7-BD01-AA368B7375B9}.Debug|Win32.Build.0 = Debug|Win32
-		{15857415-9C72-40B7-BD01-AA368B7375B9}.Release|Win32.ActiveCfg = Release|Win32
-		{15857415-9C72-40B7-BD01-AA368B7375B9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
