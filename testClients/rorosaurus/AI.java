@@ -24,8 +24,8 @@ public class AI extends BaseAI
         // Test player.talk()
         players[playerID()].talk("I appreciate it, BUT LOOK WHAT WE'RE DEALING WITH MAN!");
 
-        PathFinder pathFinder = new PathFinder(new Point(1,6), new Point(0,0));
-        pathFinder.getPath();
+//        PathFinder pathFinder = new PathFinder(new Point(1,6), new Point(0,0));
+//        pathFinder.getPath();
 
         // Iterate across all the fishes!
         for(Fish fish : fishes)
