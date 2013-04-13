@@ -3,8 +3,9 @@
 
 AI::AI(Connection* conn) : BaseAI(conn) {}
 
+#ifndef _WIN32
 enum AI::speciesIndex { SEA_STAR, SPONGE, ANGELFISH, CONESHELL_SNAIL, SEA_URCHIN, OCTOPUS, TOMCOD, REEF_SHARK, CUTTLEFISH, CLEANER_SHRIMP, ELECTRIC_EEL, JELLYFISH };
-
+#endif
 
 const char* AI::username()
 {
