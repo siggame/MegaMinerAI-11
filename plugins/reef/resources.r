@@ -27,3 +27,7 @@ texture wall textures/Wall.png
 animation coral textures/coral.png
 animation trash textures/Trash.png
 
+animation fin textures/fin.png
+animation tentacles textures/tentacles.png
+animation shock textures/shock.png
+animation spike textures/spike.png
