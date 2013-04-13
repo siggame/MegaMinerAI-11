@@ -187,11 +187,6 @@ class Fish(Mappable):
       else:
         self.movementLeft = self.maxMovement
         self.attacksLeft = self.maxAttacks
-      if self.species == 8: #Cuttlefish
-        #Set to invisible
-        if not self.isVisible:
-          self.game.addAnimation(StealthAnimation(self.id))
-        self.isVisible = 0
       if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth <= 0:
@@ -234,12 +229,7 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        #You can't move on a fish that is visible and alive or a fish you own
-        if fish.isVisible == 1 or fish.owner == self.owner:
-          return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
-        else:
-          #return "Fringe case: moving onto a stealthed fish."
-          pass
+        return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
     self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))
@@ -272,11 +262,6 @@ class Fish(Mappable):
 
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
-
-    #unstealth fish... because that's what drop did IF ITS A CUTTLE FISH
-    if self.isVisible and self.species == 8:
-      self.game.addAnimation(DeStealthAnimation(self.id))
-    self.isVisible = 1
 
     #take damage if not immune to it
     if self.species != 6: #Tomcod
@@ -312,15 +297,7 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        #If fish is visible and is alive, you cant drop on it.
-        if fish.isVisible == 1:
-          return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
-        else:
-          pass # "Fringe case: dropping onto a stealthed fish."
-
-    if self.isVisible:
-      self.game.addAnimation(DeStealthAnimation(self.id))
-    self.isVisible = 1 #unstealth while dropping
+        return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
 
     tile.trashAmount += weight
     self.carryingWeight -= weight
@@ -362,21 +339,10 @@ class Fish(Mappable):
     elif target.owner == self.owner and self.attackPower > 0:
       return "Your %s %i cannot attack a friendly %s %i." % (speciesName, self.id, targetName, target.id)
 
-    elif self.x == x and self.y == y:
-      return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
-
-    #Cannot attack if there's trash on top of your fish
-    T = self.game.getTile(self.x, self.y) #The tile the player wants to walk onto
-    if T.trashAmount > 0:
-      return "Your stealthed %s %i can't attack if there's trash on it! (%i, %i)" % (speciesName, self.id, self.x, self.y)
-
     #Add target to list of attacked targets
     self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)
-      if target.isVisible == 0:
-        self.game.addAnimation(DeStealthAnimation(target.id))
-      target.isVisible = 1
 
     #eel stun
     elif self.species == 10: #Electric Eel
@@ -387,9 +353,6 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
-      if self.isVisible == 0:
-        self.game.addAnimation(DeStealthAnimation(self.id))
-      self.isVisible = 1
 
     self.game.addAnimation(AttackAnimation(self.id, target.id))
     self.attacksLeft -= 1
