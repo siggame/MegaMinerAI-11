@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSClient", "CSClient\CSClient.csproj", "{61C3F5A8-AE93-4BED-9E2E-32C98467E4C1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5BE2BAAC-9527-4328-A43F-A22C3125CC2F} = {5BE2BAAC-9527-4328-A43F-A22C3125CC2F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Library", "Library\Library.vcxproj", "{5BE2BAAC-9527-4328-A43F-A22C3125CC2F}"
 EndProject
