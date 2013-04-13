@@ -167,6 +167,7 @@ bool AI::run()
       while(fishes[i].movementLeft() > 0 && !darryl)
       {
         playerID() == 0 ? bob = true : bob = false;
+        karl = false;
           
         //move right if player 1 else move left
         if(bob)
