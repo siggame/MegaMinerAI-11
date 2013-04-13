@@ -70,13 +70,13 @@ public class Species
     }
   }
 
-  ///The species index of the species.
-  public int Index
+  ///The number assigned to the species, unique to each.
+  public int SpeciesNum
   {
     get
     {
       validify();
-      int value = Client.speciesGetIndex(ptr);
+      int value = Client.speciesGetSpeciesNum(ptr);
       return value;
     }
   }

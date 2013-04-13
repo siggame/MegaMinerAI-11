@@ -55,7 +55,7 @@ Tile = Model('Tile',
 Species = Model('Species',
   data = [
     Variable('name', str, 'The name of this species'),
-    Variable('index', int, 'The species index of the species.'),
+    Variable('speciesNum', int, 'The number assigned to the species, unique to each.'),
     Variable('cost', int, 'The amount of food it takes to raise this fish'),
     Variable('maxHealth', int, 'The maximum health of this fish'),
     Variable('maxMovement', int, 'The maximum number of movements in a turn'),
@@ -84,7 +84,6 @@ Fish = Model('Fish',
     Variable('carryCap', int, 'The total weight the fish can carry'),
     Variable('carryingWeight', int, 'The current amount of weight the fish is carrying'),
     Variable('attackPower', int, 'The power of the fish\'s attack'),
-    Variable('isVisible', int, 'The visibleness of the fish'),
     Variable('maxAttacks',int, 'The maximum number of attacks this fish has per turn'),
     Variable('attacksLeft', int, 'The number of attacks a fish has left'),
     Variable('range',int,'The attack range of the fish'),
@@ -161,18 +160,6 @@ drop = Animation('drop',
 
 death = Animation('death',
   data=[
-    Variable('actingID', int)
-  ],
-)
-
-stealth = Animation('stealth',
-  data = [
-    Variable('actingID', int)
-  ],
-)
-
-deStealth = Animation('deStealth',
-  data = [
     Variable('actingID', int)
   ],
 )

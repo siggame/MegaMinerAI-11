@@ -11,8 +11,8 @@
 namespace client
 {
 
-class Tile;
 class Fish;
+class Tile;
 
 ///This is your primary unit for Reef. It will perform all of your major actions (pickup, attack, move, drop). It stats are based off of its species
 class Fish : public Mappable {
@@ -42,8 +42,6 @@ class Fish : public Mappable {
   int carryingWeight();
   ///The power of the fish's attack
   int attackPower();
-  ///The visibleness of the fish
-  int isVisible();
   ///The maximum number of attacks this fish has per turn
   int maxAttacks();
   ///The number of attacks a fish has left

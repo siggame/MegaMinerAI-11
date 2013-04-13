@@ -113,7 +113,7 @@ public class Client {
   [DllImport("client")]
   public static extern IntPtr speciesGetName(IntPtr ptr);
   [DllImport("client")]
-  public static extern int speciesGetIndex(IntPtr ptr);
+  public static extern int speciesGetSpeciesNum(IntPtr ptr);
   [DllImport("client")]
   public static extern int speciesGetCost(IntPtr ptr);
   [DllImport("client")]
@@ -153,8 +153,6 @@ public class Client {
   public static extern int fishGetCarryingWeight(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetAttackPower(IntPtr ptr);
-  [DllImport("client")]
-  public static extern int fishGetIsVisible(IntPtr ptr);
   [DllImport("client")]
   public static extern int fishGetMaxAttacks(IntPtr ptr);
   [DllImport("client")]
