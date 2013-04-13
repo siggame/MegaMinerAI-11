@@ -234,8 +234,8 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        #You can't move on a fish that is visible and alive
-        if fish.isVisible == 1:
+        #You can't move on a fish that is visible and alive or a fish you own
+        if fish.isVisible == 1 or fish.owner == self.owner:
           return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
         else:
           #return "Fringe case: moving onto a stealthed fish."
