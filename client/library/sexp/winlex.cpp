@@ -1,3 +1,6 @@
+#define YY_NO_UNISTD_H
+#pragma warning(disable : 4003)
+#pragma warning(disable : 4996)
 #line 2 "lex.yy.cpp"
 
 #line 4 "lex.yy.cpp"
@@ -1335,8 +1338,13 @@ static void yy_load_buffer_state  (void)
 	yyfree((void *) b  );
 }
 
-#ifndef __cplusplus
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 extern int isatty (int );
+#ifdef __cplusplus
+}
 #endif /* __cplusplus */
     
 /* Initializes or reinitializes a buffer.
