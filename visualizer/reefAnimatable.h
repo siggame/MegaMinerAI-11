@@ -12,7 +12,7 @@ namespace visualizer
     struct Fish : public Animatable
     {
         // todo: maybe use the ctor for more init
-        Fish() : flipped(false), isVisible(true) {}
+        Fish() : flipped(false) {}
 
         struct Moves
         {
@@ -30,9 +30,9 @@ namespace visualizer
         int owner;          // color of the fish
         int maxHealth;      // would this effect the way the fish will be rendered?
         int currentHealth;  // A healthbar?
-        int maxMovement;    //
-        int movementLeft;   //
-        int carryCap;       //
+        //int maxMovement;    //
+        //int movementLeft;   //
+        //int carryCap;       //
         int carryingWeight; //
         //int attackPower;    //
         //int maxAttacks;     //
@@ -40,7 +40,6 @@ namespace visualizer
         int range;          //
         int species;      //
         bool flipped;
-        bool isVisible;      //
 
         SmartPointer<std::vector<string>> speciesList;
 
