@@ -285,8 +285,8 @@ namespace visualizer
       renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
       //Display text for Current Selection and Next Selection of fish
-      renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
-      renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
+      renderer->drawText(1.0f,20.0f,"Roboto","Current Season's Fish: ",2.0f);
+      renderer->drawText(1.0,21.0f,"Roboto","Next Season's Fish: ",2.0f);
 
       //Display Next Season Progress Bar
       //ostringstream stream;
@@ -296,11 +296,11 @@ namespace visualizer
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
-          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,2.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,2.0f,IRenderer::Center);
       }
 
-      RenderProgressBar(*renderer,13.0f,20.0f,m_game->states[0].mapWidth/3.0f,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
+      RenderProgressBar(*renderer,0.0f,30.0f,m_game->states[0].mapWidth,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
 
   }
 
