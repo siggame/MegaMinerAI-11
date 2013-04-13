@@ -202,20 +202,26 @@ namespace visualizer
 
   void Reef::RenderGrid() const
   {
-      int h = m_game->states[0].mapHeight;
-      int w = m_game->states[0].mapWidth;
-      //draw horizontal lines
-      for(unsigned int i = 0; i < h; i++)
+      bool bEnableGrid = options->getNumber("Enable Grid") > 0;
+      if(bEnableGrid)
       {
-          renderer->drawLine(0,i,w,i,1.0f);
-      }
+        int h = m_game->states[0].mapHeight;
+        int w = m_game->states[0].mapWidth;
 
-      //draw vertical lines
-      for(unsigned int i = 0; i < w; i++)
-      {
-          renderer->drawLine(i,0,i,h,1.0f);
-      }
+        //draw horizontal lines
+        setColor(0.0f,0.0f,0.0f,1.0f);
+        for(unsigned int i = 0; i < h; i++)
+        {
+            renderer->drawLine(0,i,w,i,1.0f);
+        }
 
+        //draw vertical lines
+        for(unsigned int i = 0; i < w; i++)
+        {
+            renderer->drawLine(i,0,i,h,1.0f);
+        }
+
+      }
   }
 
   void Reef::RenderPlayerInfo(int id, float xPos) const
@@ -253,6 +259,8 @@ namespace visualizer
   {
       // todo: need to make this look nice
       // todo: change these colors
+
+      //Render season colors
       static const string seasons[] = {"winter" , "spring", "summer", "fall"};
       static const glm::vec4 seasonsColor[] =
       {
@@ -276,20 +284,23 @@ namespace visualizer
 
       renderer->drawTexturedQuad(m_game->states[0].mapWidth / 2.0f - 1.5f, -SEA_OFFSET - 0.5f, 5,5, seasons[currentSeason]);
 
+      //Display text for Current Selection and Next Selection of fish
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
-
-      ostringstream stream;
-      stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
-      renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
-
-      //RenderProgressBar(*renderer,13.0f + 8*i,20.0f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
           renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
           renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
+
+      //Display Next Season Progress Bar
+      ostringstream stream;
+      stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
+      renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+      //RenderProgressBar(*renderer,13.0f + 8*i,20.0f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+
   }
 
 
@@ -316,6 +327,8 @@ namespace visualizer
               renderer->drawAnimQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"coral",2);
               // Render cove
               break;
+            //case 2:
+            //break;
             case 3:
               renderer->drawTexturedQuad(m_Tiles[i].x,m_Tiles[i].y,1.0f,1.0f,"wall");
               // Render wall
