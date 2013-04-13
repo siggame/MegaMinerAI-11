@@ -59,7 +59,7 @@ namespace visualizer
     void DrawSprite::animate(const float &t, AnimData *d, IGame *game)
     {
         game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
-        game->renderer->drawTexturedQuad(m_sprite->x, m_sprite->y, m_sprite->dx, m_sprite->dy,m_sprite->m_sprite);
+        game->renderer->drawTexturedQuad(m_sprite->pos.x, m_sprite->pos.y, m_sprite->scale.x, m_sprite->scale.y,m_sprite->m_sprite);
     }
 
     void DrawAnimation::animate(const float& t, AnimData*, IGame* game )
@@ -67,7 +67,21 @@ namespace visualizer
         if(m_animation->enable.empty() || game->options->getNumber(m_animation->enable) > 0.0f)
         {
             game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
-            game->renderer->drawAnimQuad( m_animation->x, m_animation->y, m_animation->dx, m_animation->dy, m_animation->m_sprite , (int)(m_animation->frames * t));
+            game->renderer->drawAnimQuad( m_animation->pos.x, m_animation->pos.y, m_animation->scale.x, m_animation->scale.y, m_animation->m_sprite , (int)(m_animation->frames * t));
+        }
+    }
+
+    void DrawMovingAnimation::animate(const float& t, AnimData*, IGame* game )
+    {
+        if(m_animation->enable.empty() || game->options->getNumber(m_animation->enable) > 0.0f)
+        {
+            glm::vec2 dir = (m_animation->pos - m_animation->source);
+            glm::vec2 newPos = m_animation->source + dir * t;
+
+            //cout<<"x: " << newPos.x << endl << "y: " << newPos.y << endl;
+
+            game->renderer->setColor( Color(1.0f,1.0f,1.0f,1.0f) );
+            game->renderer->drawAnimQuad( newPos.x, newPos.y, m_animation->scale.x, m_animation->scale.y, m_animation->m_sprite , (int)(m_animation->frames * t));
         }
     }
 

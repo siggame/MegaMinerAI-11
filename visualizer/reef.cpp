@@ -300,7 +300,7 @@ namespace visualizer
           renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,2.0f,IRenderer::Center);
       }
 
-      RenderProgressBar(*renderer,0.0f,30.0f,m_game->states[0].mapWidth,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
+      RenderProgressBar(*renderer,0.0f,m_game->states[0].mapHeight + 2.0f,m_game->states[0].mapWidth,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
 
   }
 
@@ -565,6 +565,9 @@ namespace visualizer
       {
         SmartPointer<Fish> newFish = new Fish();
 
+        newFish->addKeyFrame( new DrawFish( newFish ) );
+        turn.addAnimatable(newFish);
+
         // for each animation each fish has
         for(auto& j : m_game->states[state].animations[p.second.id])
         {
@@ -572,18 +575,18 @@ namespace visualizer
             {
                 parser::attack& attackAnim = (parser::attack&)*j;
 
-                auto attackIter = m_game->states[state].fishes.find(attackAnim.targetID); // get the target fish
-                auto sourceIter = m_game->states[state].fishes.find(attackAnim.actingID); // get the source fish
+                auto targetIter = m_game->states[state].fishes.find(attackAnim.targetID); // get the target fish
+                auto sourceIter = m_game->states[state - 1].fishes.find(attackAnim.actingID); // get the source fish
 
-                if(attackIter != m_game->states[state].fishes.end() &&
-                   sourceIter != m_game->states[state].fishes.end())
+                if(targetIter != m_game->states[state].fishes.end() &&
+                   sourceIter != m_game->states[state - 1].fishes.end())
                 {
-                    // todo: replace with actual sprite
-                    SmartPointer<SpriteAnimation> pAttackAnim = new SpriteAnimation(attackIter->second.x - 0.5f,
-                                                                                    attackIter->second.y,2.0f,2.0f,
-                                                                                    "fin",2);
 
-                    pAttackAnim->addKeyFrame( new DrawAnimation( pAttackAnim ) );
+
+                    SmartPointer<MovingSpriteAnimation> pAttackAnim = new MovingSpriteAnimation(glm::vec2(sourceIter->second.x,sourceIter->second.y),
+                        glm::vec2(targetIter->second.x, targetIter->second.y),glm::vec2(1.0f),"fin",2);
+
+                    pAttackAnim->addKeyFrame( new DrawMovingAnimation( pAttackAnim ) );
                     turn.addAnimatable(pAttackAnim);
 
                     cout<<"Attack: "<<state<<endl;
@@ -704,9 +707,6 @@ namespace visualizer
         turn[p.second.id]["Fish Health"] = p.second.currentHealth;
         turn[p.second.id]["Max Health"] = p.second.maxHealth;
         turn[p.second.id]["Attack Power"] = p.second.attackPower;
-
-        newFish->addKeyFrame( new DrawFish( newFish ) );
-        turn.addAnimatable(newFish);
      }
 
       // Loop over all the trash in the current turn
