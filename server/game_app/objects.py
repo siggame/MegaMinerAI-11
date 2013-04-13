@@ -152,7 +152,7 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
-    fish.currentHealth += fish.maxHealth * self.game.healPercent
+    fish.currentHealth += math.ceil(fish.maxHealth * (self.game.healPercent/100))
     if fish.currentHealth > fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
