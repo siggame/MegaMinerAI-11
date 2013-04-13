@@ -231,6 +231,7 @@ namespace visualizer
       int index = id + turn * 2; // index into the player info vector
       const ReefPlayerInfo& info = m_ReefPlayerInfo[index];
       float currentPercent = (float)info.currentReefHealth / (float)m_game->states[0].maxReefHealth; // current power lvl
+      float foodPercent = (float)info.spawnFood / (float)m_game->states[0].maxFood; // current food
 
       stringstream stream;
 
@@ -238,13 +239,15 @@ namespace visualizer
 
       // Render AI's time
       renderer->setColor(Color(1.0f,1.0f,1.0f,1.0f));
-      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,4.0f);
-      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),4.0f);
+      renderer->drawText(xPos + 5.0f,-Reef::SEA_OFFSET - 0.5f,"Roboto",name,3.0f);
+      renderer->drawText(xPos,-Reef::SEA_OFFSET - 0.5f,"Roboto",stream.str(),3.0f);
 
       float xHealthPos = m_game->states[0].mapWidth/3.0f;
 
       // Health bar
-      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.7f,xHealthPos,0.25f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      // Food bar
+      RenderProgressBar(*renderer,xPos,-SEA_OFFSET + 0.45f,xHealthPos,0.25f,foodPercent,Color(0.0f,1.0f,0.0f,1.0f),true);
   }
 
   void Reef::RenderPlayerInfo() const
@@ -296,11 +299,11 @@ namespace visualizer
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,2.0f,IRenderer::Center);
-          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,2.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
+          renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
 
-      RenderProgressBar(*renderer,0.0f,30.0f,m_game->states[0].mapWidth,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
+      RenderProgressBar(*renderer,0.0f,m_game->states[0].mapHeight, m_game->states[0].mapWidth, 0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
 
   }
 
