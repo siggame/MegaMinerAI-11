@@ -264,6 +264,11 @@ DLLEXPORT int speciesSpawn(_Species* object, _Tile* tile)
   {
     return 0;
   }
+  //tile can't have trash
+  if(tile->trashAmount > 0)
+  {
+     return 0;
+  }
 
   c->Players[c->playerID].spawnFood -= object->cost;
   tile->hasEgg = true;
@@ -373,9 +378,6 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
     return 0;
   }
 
-  if(!object->isVisible)
-    object->isVisible = true;
-
   if(object->species != 6) //Tomcod
     object->currentHealth -= weight;
 
@@ -416,20 +418,11 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
       }
     }
   }
-
-  //Cannot drop on a fish
-  int x = tile->x;
-  int y = tile->y;
-  for(int i = 0; i < c->FishCount; i++)
+  //Do not drop on an egg
+  if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
   {
-    if(x == c->Fishes[i].x &&
-       y == c->Fishes[i].y)
-    {
-       return 0;
-    }
+     return 0;
   }
-  //Make fish visible when dropping
-  object->isVisible = true;
 
   //add weight to tile
   object->carryingWeight -= weight;
@@ -462,12 +455,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
   }
   //must have attacks left
   else if(object->attacksLeft==0)
-  {
-    return 0;
-  }
-  //can't attack opponents invisible fish
-  else if(target->owner != c->playerID &&
-          !target->isVisible)
   {
     return 0;
   }
@@ -510,8 +497,6 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     {
       target->currentHealth = target->maxHealth;
     }
-    //The healed target should be visible after being healed
-    target->isVisible = true;
   }
   else if(object->species == 10) //Electric Eel
   {
@@ -606,7 +591,7 @@ void parseSpecies(Connection* c, _Species* object, sexp_t* expression)
   strncpy(object->name, sub->val, strlen(sub->val));
   object->name[strlen(sub->val)] = 0;
   sub = sub->next;
-  object->index = atoi(sub->val);
+  object->speciesNum = atoi(sub->val);
   sub = sub->next;
   object->cost = atoi(sub->val);
   sub = sub->next;
@@ -654,8 +639,6 @@ void parseFish(Connection* c, _Fish* object, sexp_t* expression)
   object->carryingWeight = atoi(sub->val);
   sub = sub->next;
   object->attackPower = atoi(sub->val);
-  sub = sub->next;
-  object->isVisible = atoi(sub->val);
   sub = sub->next;
   object->maxAttacks = atoi(sub->val);
   sub = sub->next;

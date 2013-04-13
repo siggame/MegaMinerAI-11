@@ -20,9 +20,7 @@ const int PICKUP = 2;
 const int DEATH = 3;
 const int DROP = 4;
 const int ATTACK = 5;
-const int STEALTH = 6;
-const int PLAYERTALK = 7;
-const int DESTEALTH = 8;
+const int PLAYERTALK = 6;
 
 struct Mappable
 {
@@ -47,7 +45,7 @@ struct Species
 {
   int id;
   char* name;
-  int index;
+  int speciesNum;
   int cost;
   int maxHealth;
   int maxMovement;
@@ -70,7 +68,6 @@ struct Fish: public Mappable
   int carryCap;
   int carryingWeight;
   int attackPower;
-  int isVisible;
   int maxAttacks;
   int attacksLeft;
   int range;
@@ -154,26 +151,12 @@ struct attack : public Animation
   friend std::ostream& operator<<(std::ostream& stream, attack obj);
 };
 
-struct stealth : public Animation
-{
-  int actingID;
-
-  friend std::ostream& operator<<(std::ostream& stream, stealth obj);
-};
-
 struct playerTalk : public Animation
 {
   int actingID;
   char* message;
 
   friend std::ostream& operator<<(std::ostream& stream, playerTalk obj);
-};
-
-struct deStealth : public Animation
-{
-  int actingID;
-
-  friend std::ostream& operator<<(std::ostream& stream, deStealth obj);
 };
 
 

@@ -177,7 +177,7 @@ class Match(DefaultGameWorld):
         tile.damages = 0
       elif tile.x >= self.mapWidth/2 + self.boundLength:
         tile.damages = 1
-    self.statList = ["name","index","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
+    self.statList = ["name","speciesNum","cost", "maxHealth", "maxMovement", "carryCap", "attackPower", "range", "maxAttacks", "season"]
     self.turn = self.players[-1]
     self.turnNumber = -1
     self.seed = (0,self.mapHeight-1)
@@ -185,13 +185,13 @@ class Match(DefaultGameWorld):
     self.spawnTrash()
 
     species = cfgSpecies.values()
-    species.sort(key=itemgetter('index'))
+    species.sort(key=itemgetter('speciesNum'))
     for s in species:
       self.addObject(Species, [s[value] for value in self.statList])
 
     self.initSeasons()
-    self.speciesDict = {species.index:species for species in self.objects.speciesList}
-    self.speciesStrings = {species.index:species.name for species in self.objects.speciesList}
+    self.speciesDict = {species.speciesNum:species for species in self.objects.speciesList}
+    self.speciesStrings = {species.speciesNum:species.name for species in self.objects.speciesList}
     self.nextTurn()
     return True
 
@@ -408,7 +408,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.isVisible is 1 or i.owner is self.playerID or connection.type != "player")])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.owner is self.playerID or connection.type != "player")])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)

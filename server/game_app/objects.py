@@ -55,7 +55,7 @@ class Tile(Mappable):
     if self.game.playerID == self.owner:
       if self.hasEgg:
         species = self.species
-        stats = [self.x, self.y, self.owner, species.maxHealth, species.maxHealth, species.maxMovement, species.maxMovement, species.carryCap, 0, species.attackPower, True, species.maxAttacks, species.maxAttacks, species.range, species.index]
+        stats = [self.x, self.y, self.owner, species.maxHealth, species.maxHealth, species.maxMovement, species.maxMovement, species.carryCap, 0, species.attackPower, species.maxAttacks, species.maxAttacks, species.range, species.speciesNum]
 
         newFish = self.game.addObject(Fish, stats)
         self.game.addAnimation(SpawnAnimation(self.owner,newFish.x,newFish.y,newFish.species))
@@ -68,12 +68,12 @@ class Tile(Mappable):
       object.__setattr__(self, name, value)
 
 class Species(object):
-  game_state_attributes = ['id', 'name', 'index', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
-  def __init__(self, game, id, name, index, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
+  game_state_attributes = ['id', 'name', 'speciesNum', 'cost', 'maxHealth', 'maxMovement', 'carryCap', 'attackPower', 'range', 'maxAttacks', 'season']
+  def __init__(self, game, id, name, speciesNum, cost, maxHealth, maxMovement, carryCap, attackPower, range, maxAttacks, season):
     self.game = game
     self.id = id
     self.name = name
-    self.index = index
+    self.speciesNum = speciesNum
     self.cost = cost
     self.maxHealth = maxHealth
     self.maxMovement = maxMovement
@@ -85,11 +85,11 @@ class Species(object):
     self.updatedAt = game.turnNumber
 
   def toList(self):
-    return [self.id, self.name, self.index, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
+    return [self.id, self.name, self.speciesNum, self.cost, self.maxHealth, self.maxMovement, self.carryCap, self.attackPower, self.range, self.maxAttacks, self.season, ]
 
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, name = self.name, index = self.index, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
+    return dict(id = self.id, name = self.name, speciesNum = self.speciesNum, cost = self.cost, maxHealth = self.maxHealth, maxMovement = self.maxMovement, carryCap = self.carryCap, attackPower = self.attackPower, range = self.range, maxAttacks = self.maxAttacks, season = self.season, )
 
   def nextTurn(self):
     pass
@@ -107,7 +107,9 @@ class Species(object):
     if tile.owner != self.game.playerID:
       return "You can only spawn fish inside of your cove tiles"
     elif tile.hasEgg:
-      return "There is already a fish to be spawned here"
+      return "There is already a fish to be spawned here."
+    elif tile.trashAmount > 0:
+      return "You cannot spawn on a cove with trash on it."
     else:
       tile.hasEgg = True
       tile.species = self
@@ -121,8 +123,8 @@ class Species(object):
       object.__setattr__(self, name, value)
 
 class Fish(Mappable):
-  game_state_attributes = ['id', 'x', 'y', 'owner', 'maxHealth', 'currentHealth', 'maxMovement', 'movementLeft', 'carryCap', 'carryingWeight', 'attackPower', 'isVisible', 'maxAttacks', 'attacksLeft', 'range', 'species']
-  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, isVisible, maxAttacks, attacksLeft, range, species):
+  game_state_attributes = ['id', 'x', 'y', 'owner', 'maxHealth', 'currentHealth', 'maxMovement', 'movementLeft', 'carryCap', 'carryingWeight', 'attackPower', 'maxAttacks', 'attacksLeft', 'range', 'species']
+  def __init__(self, game, id, x, y, owner, maxHealth, currentHealth, maxMovement, movementLeft, carryCap, carryingWeight, attackPower, maxAttacks, attacksLeft, range, species):
     self.game = game
     self.id = id
     self.x = x
@@ -135,7 +137,6 @@ class Fish(Mappable):
     self.carryCap = carryCap
     self.carryingWeight = carryingWeight
     self.attackPower = attackPower
-    self.isVisible = 1
     self.maxAttacks = maxAttacks
     self.attacksLeft = attacksLeft
     self.range = range
@@ -144,11 +145,11 @@ class Fish(Mappable):
     self.attacked = []
 
   def toList(self):
-    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.isVisible, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
+    return [self.id, self.x, self.y, self.owner, self.maxHealth, self.currentHealth, self.maxMovement, self.movementLeft, self.carryCap, self.carryingWeight, self.attackPower, self.maxAttacks, self.attacksLeft, self.range, self.species, ]
 
   # This will not work if the object has variables other than primitives
   def toJson(self):
-    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, isVisible = self.isVisible, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
+    return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
     fish.currentHealth += fish.maxHealth * self.game.healPercent
@@ -187,11 +188,6 @@ class Fish(Mappable):
       else:
         self.movementLeft = self.maxMovement
         self.attacksLeft = self.maxAttacks
-      if self.species == 8: #Cuttlefish
-        #Set to invisible
-        if not self.isVisible:
-          self.game.addAnimation(StealthAnimation(self.id))
-        self.isVisible = 0
       if self.species != 6: #Tomcod
         self.currentHealth -= self.carryingWeight #May need to do this at the end of turns in match.py, to ensure a player doesn't think they have a dead fish
         if self.currentHealth <= 0:
@@ -234,12 +230,7 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        #You can't move on a fish that is visible and alive
-        if fish.isVisible == 1:
-          return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
-        else:
-          #return "Fringe case: moving onto a stealthed fish."
-          pass
+        return "Your %s %i is trying to move onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
     self.game.grid[self.x][self.y].remove(self)
     self.game.grid[x][y].append(self)
     self.game.addAnimation(MoveAnimation(self.id,self.x,self.y,x,y))
@@ -273,11 +264,6 @@ class Fish(Mappable):
     #don't need to bother checking for fish because a space with a
     #fish shouldn't have any trash, right?
 
-    #unstealth fish... because that's what drop did IF ITS A CUTTLE FISH
-    if self.isVisible and self.species == 8:
-      self.game.addAnimation(DeStealthAnimation(self.id))
-    self.isVisible = 1
-
     #take damage if not immune to it
     if self.species != 6: #Tomcod
       self.currentHealth -= weight
@@ -303,6 +289,9 @@ class Fish(Mappable):
     elif self.taxiDist(self, x, y) != 1:
       return "Your %s %i can only drop onto adjacent locations. Distance: %i" % (speciesName, self.id, self.taxiDist(self,x,y))
 
+    elif tile.hasEgg == 1:
+      return "Your %s %i cannot drop trash on a tile that has an egg." % (speciesName, self.id)
+
     elif weight > self.carryingWeight:
       return "Your %s %i cannot drop more weight(%i) than you're carrying(%i)." % (speciesName, self.id, weight, self.carryingWeight)
 
@@ -312,15 +301,7 @@ class Fish(Mappable):
     Fishes = self.game.getFish(x,y)
     if len(Fishes)>0: #If there is a fish on the tile
       for fish in Fishes:
-        #If fish is visible and is alive, you cant drop on it.
-        if fish.isVisible == 1:
-          return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
-        else:
-          pass # "Fringe case: dropping onto a stealthed fish."
-
-    if self.isVisible:
-      self.game.addAnimation(DeStealthAnimation(self.id))
-    self.isVisible = 1 #unstealth while dropping
+        return "Your %s %i cannot drop weight onto %s %i." % (speciesName, self.id, self.game.speciesStrings[self.species], fish.id)
 
     tile.trashAmount += weight
     self.carryingWeight -= weight
@@ -362,21 +343,10 @@ class Fish(Mappable):
     elif target.owner == self.owner and self.attackPower > 0:
       return "Your %s %i cannot attack a friendly %s %i." % (speciesName, self.id, targetName, target.id)
 
-    elif self.x == x and self.y == y:
-      return "Your stealthed %s %i cannot attack a fish above it." % (speciesName, self.id)
-
-    #Cannot attack if there's trash on top of your fish
-    T = self.game.getTile(self.x, self.y) #The tile the player wants to walk onto
-    if T.trashAmount > 0:
-      return "Your stealthed %s %i can't attack if there's trash on it! (%i, %i)" % (speciesName, self.id, self.x, self.y)
-
     #Add target to list of attacked targets
     self.attacked.append(target.id)
     if self.species == 9: #Cleaner Shrimp
       self.heal(target)
-      if target.isVisible == 0:
-        self.game.addAnimation(DeStealthAnimation(target.id))
-      target.isVisible = 1
 
     #eel stun
     elif self.species == 10: #Electric Eel
@@ -387,9 +357,6 @@ class Fish(Mappable):
       #hurt the other fish
       target.currentHealth -= self.attackPower
       #make the attacking fish visible
-      if self.isVisible == 0:
-        self.game.addAnimation(DeStealthAnimation(self.id))
-      self.isVisible = 1
 
     self.game.addAnimation(AttackAnimation(self.id, target.id))
     self.attacksLeft -= 1
@@ -557,16 +524,6 @@ class AttackAnimation:
   def toJson(self):
     return dict(type = "attack", actingID = self.actingID, targetID = self.targetID)
 
-class StealthAnimation:
-  def __init__(self, actingID):
-    self.actingID = actingID
-
-  def toList(self):
-    return ["stealth", self.actingID, ]
-
-  def toJson(self):
-    return dict(type = "stealth", actingID = self.actingID)
-
 class PlayerTalkAnimation:
   def __init__(self, actingID, message):
     self.actingID = actingID
@@ -577,14 +534,4 @@ class PlayerTalkAnimation:
 
   def toJson(self):
     return dict(type = "playerTalk", actingID = self.actingID, message = self.message)
-
-class DeStealthAnimation:
-  def __init__(self, actingID):
-    self.actingID = actingID
-
-  def toList(self):
-    return ["deStealth", self.actingID, ]
-
-  def toJson(self):
-    return dict(type = "deStealth", actingID = self.actingID)
 
