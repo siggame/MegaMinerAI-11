@@ -76,12 +76,25 @@ public class AI extends BaseAI
                     // http://www.youtube.com/embed/3JJe2vwNUX4?autoplay=1&start=154&end=157&showinfo=0&controls=0
                 }
                 // Try to attack to the right
-                if(fish.getX()+1 < mapWidth() &&                                        // We aren't attacking off the map
-                        getFish(fish.getX()+1,fish.getY()) != null &&                   // There is a fish at that spot
-                    getFish(fish.getX()+1,fish.getY()).getOwner() != playerID() &&      // Then that fish belongs to the bad guy
-                    fish.getAttacksLeft() > 0)                                          // We have attacks left
+                if(fish.getSpecies() != CLEANER_SHRIMP) // Try to attack to the right, if not Cleaner Shrimp
                 {
-                    fish.attack(getFish(fish.getX()+1,fish.getY()));                    // We can attack the tile to the right!
+                    if(fish.getX()+1 < mapWidth() &&                                            // We aren't attacking off the map
+                            getFish(fish.getX()+1,fish.getY()) != null &&                       // There is a fish at that spot
+                            getFish(fish.getX()+1,fish.getY()).getOwner() != playerID() &&      // Then that fish belongs to the bad guy
+                            fish.getAttacksLeft() > 0)                                          // We have attacks left
+                    {
+                        fish.attack(getFish(fish.getX()+1,fish.getY()));                        // We can attack the tile to the right!
+                    }
+                }
+                else // Try to heal an allied fish to the right
+                {
+                    if(fish.getX()+1 < mapWidth() &&                                            // We aren't attacking off the map
+                            getFish(fish.getX()+1,fish.getY()) != null &&                       // There is a fish at that spot
+                            getFish(fish.getX()+1,fish.getY()).getOwner() == playerID() &&      // Then that fish belongs to the bad guy
+                            fish.getAttacksLeft() > 0)                                          // We have attacks left
+                    {
+                        fish.attack(getFish(fish.getX()+1,fish.getY()));                        // We can heal the fish on the tile to the right!
+                    }
                 }
             }
         }
