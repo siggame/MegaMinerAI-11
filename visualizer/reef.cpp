@@ -300,7 +300,7 @@ namespace visualizer
           renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
 
-      RenderProgressBar(*renderer,13.0f,20.0f,m_game->states[0].mapWidth/3.0f,2.5f,seasonPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,13.0f,20.0f,m_game->states[0].mapWidth/3.0f,0.5f,seasonPercent,Color(newColor.x,newColor.y,newColor.z,1.0f),true);
 
   }
 
