@@ -288,18 +288,19 @@ namespace visualizer
       renderer->drawText(1.0f,20.0f,"Roboto","Current Selection: ",4.0f);
       renderer->drawText(1.0,21.0f,"Roboto","Next Selection: ",4.0f);
 
+      //Display Next Season Progress Bar
+      //ostringstream stream;
+      //stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
+      //renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
+
+
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
           renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,4.0f,IRenderer::Center);
           renderer->drawText(13.0f + 8*i,21.0f,"Roboto",m_Species[nextSeason][i].name,4.0f,IRenderer::Center);
       }
 
-      //Display Next Season Progress Bar
-      ostringstream stream;
-      stream << "Next season begins in: " << (int)(100.0f*(1.0f - seasonPercent));
-      renderer->drawText(1.0f,22.0f,"Roboto",stream.str(),4.0f);
-
-      //RenderProgressBar(*renderer,13.0f + 8*i,20.0f,xHealthPos,0.5f,currentPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
+      RenderProgressBar(*renderer,13.0f,20.0f,m_game->states[0].mapWidth/3.0f,2.5f,seasonPercent,Color(1.0f,0.0f,0.0f,1.0f),true);
 
   }
 
