@@ -364,14 +364,15 @@ class Fish(Mappable):
     self.attacksLeft -= 1
     #check for sea urchin counter attacks
     if target.species == 4 and target.owner != self.owner: #Sea Urchin
-      self.currentHealth -= target.attackPower
-      #check if the counter attack killed the fish
-      if self.currentHealth <= 0:
-        if self.carryingWeight > 0:
-          self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
-          self.addTrash(self.x, self.y, self.carryingWeight)
-        self.game.grid[self.x][self.y].remove(self)
-        self.game.removeObject(self)
+      if abs(target.x - self.x) + abs(target.y - self.y) == target.range: #Only counter-attack if it's within range
+        self.currentHealth -= target.attackPower
+        #check if the counter attack killed the fish
+        if self.currentHealth <= 0:
+          if self.carryingWeight > 0:
+            self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
+            self.addTrash(self.x, self.y, self.carryingWeight)
+          self.game.grid[self.x][self.y].remove(self)
+          self.game.removeObject(self)
 
     #check if target is dead
     if target.currentHealth <= 0:
