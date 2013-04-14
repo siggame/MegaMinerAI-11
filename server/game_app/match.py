@@ -158,7 +158,7 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: verify sea star damage works properly with actual gamelogs!
-    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages == star.owner^1 ]
+    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages == star.owner^1 and star.owner != player]
     starDamage = sum(stars)
     damage += starDamage
     if starDamage > 0:
