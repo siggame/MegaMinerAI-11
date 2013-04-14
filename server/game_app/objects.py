@@ -152,7 +152,7 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
-    fish.currentHealth += math.ceil(fish.maxHealth * (self.game.healPercent/100))
+    fish.currentHealth += int(fish.maxHealth * (self.game.healPercent/100.0))
     if fish.currentHealth > fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
@@ -328,7 +328,7 @@ class Fish(Mappable):
       return "Turn %i: %s %i has already attacked %s %i this turn."%(self.game.turnNumber, speciesName, self.id, targetName, target.id)
 
     elif self.taxiDist(self, x, y) > self.range:
-      return "Turn %i: Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i"%(self.game.turnNumber, speciesName, self.id, targetName, target.id, self.range, self.eucDist(self, x, y))
+      return "Turn %i: Your %s %i can't attack %s %i because it is out of your fish's range(%i). Distance: %i"%(self.game.turnNumber, speciesName, self.id, targetName, target.id, self.range, self.taxiDist(self, x, y))
 
     elif self.attacksLeft < 1:
       return "Turn %i: Your %s %i has no attacks left."%(self.game.turnNumber, speciesName, self.id)
