@@ -368,7 +368,7 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
     return 0;
   }
   //cannot pick up a weight of 0
-  else if(weight == 0)
+  else if(weight < 1)
   {
     return 0;
   }
@@ -376,6 +376,10 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
   if(tile->trashAmount < weight)
   {
     return 0;
+  }
+  else if(tile->trashAmount < 1)
+  {
+     return 0;
   }
 
   if(object->species != 6) //Tomcod
@@ -404,10 +408,23 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
+  else if((abs(object->x - tile->x) + abs(object->y - tile->y)) != 1)
+  {
+     return 0;
+  }
   //Cannot drop more than the fish is carrying
   else if(weight > object->carryingWeight)
   {
     return 0;
+  }
+  else if(weight < 1)
+  {
+     return 0;
+  }
+  //Do not drop on an egg
+  else if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
+  {
+     return 0;
   }
   //Do not drop on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
@@ -417,11 +434,6 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
         return 0;
       }
     }
-  }
-  //Do not drop on an egg
-  if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
-  {
-     return 0;
   }
 
   //add weight to tile
