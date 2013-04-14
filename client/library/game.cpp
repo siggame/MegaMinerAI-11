@@ -329,6 +329,11 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   if(c->Tiles[x*c->mapHeight +y].owner == 3){
     return 0;
   }
+  //check egg
+  if(c->Tiles[x*c->mapHeight+y].hasEgg == true)
+  {
+     return 0;
+  }
 
   //Decrement movement
   object->movementLeft = object->movementLeft-1;
