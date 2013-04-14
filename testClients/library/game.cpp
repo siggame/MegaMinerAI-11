@@ -384,6 +384,12 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
   tile->trashAmount -= weight;
   object->carryingWeight += weight;
 
+  if(object->currentHealth <= 0)
+  {
+    //add weight to tile where target died
+    c->Tiles[object->x * c->mapHeight + object->y].trashAmount += object->carryingWeight;
+  }
+
   return 1;
 }
 
@@ -504,6 +510,11 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     target->movementLeft = -1;
     target->attacksLeft = -1;
   }
+  else
+  {
+    target->currentHealth -= object->attackPower;
+  }
+
   object->attacksLeft -= 1;
 
   if(target->currentHealth <= 0)

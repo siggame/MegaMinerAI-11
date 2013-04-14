@@ -152,7 +152,7 @@ class Fish(Mappable):
     return dict(id = self.id, x = self.x, y = self.y, owner = self.owner, maxHealth = self.maxHealth, currentHealth = self.currentHealth, maxMovement = self.maxMovement, movementLeft = self.movementLeft, carryCap = self.carryCap, carryingWeight = self.carryingWeight, attackPower = self.attackPower, maxAttacks = self.maxAttacks, attacksLeft = self.attacksLeft, range = self.range, species = self.species, )
 
   def heal(self,fish):
-    fish.currentHealth += fish.maxHealth * self.game.healPercent
+    fish.currentHealth += math.ceil(fish.maxHealth * (self.game.healPercent/100))
     if fish.currentHealth > fish.maxHealth:
       fish.currentHealth = fish.maxHealth
 
@@ -364,14 +364,15 @@ class Fish(Mappable):
     self.attacksLeft -= 1
     #check for sea urchin counter attacks
     if target.species == 4 and target.owner != self.owner: #Sea Urchin
-      self.currentHealth -= target.attackPower
-      #check if the counter attack killed the fish
-      if self.currentHealth <= 0:
-        if self.carryingWeight > 0:
-          self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
-          self.addTrash(self.x, self.y, self.carryingWeight)
-        self.game.grid[self.x][self.y].remove(self)
-        self.game.removeObject(self)
+      if abs(target.x - self.x) + abs(target.y - self.y) == target.range: #Only counter-attack if it's within range
+        self.currentHealth -= target.attackPower
+        #check if the counter attack killed the fish
+        if self.currentHealth <= 0:
+          if self.carryingWeight > 0:
+            self.game.getTile(self.x, self.y).trashAmount += self.carryingWeight
+            self.addTrash(self.x, self.y, self.carryingWeight)
+          self.game.grid[self.x][self.y].remove(self)
+          self.game.removeObject(self)
 
     #check if target is dead
     if target.currentHealth <= 0:
