@@ -299,10 +299,6 @@ namespace visualizer
 
       for(unsigned int i = 0; i < m_Species[currentSeason].size(); ++i)
       {
-          m_speciesList->at(0);
-          //(*m_speciesList);//[m_Species[currentSeason][i].speciesNum)];
-         // (*m_speciesList)[0];
-
           renderer->drawTexturedQuad(11.0f + 2*i,20.4f,1.5f,1.5f,m_speciesList->at(m_Species[currentSeason][i].speciesNum));
           renderer->drawTexturedQuad(32.0f + 2*i,20.4f,1.5f,1.5f,m_speciesList->at(m_Species[nextSeason][i].speciesNum));
           //renderer->drawText(13.0f + 8*i,20.0f,"Roboto",m_Species[currentSeason][i].name,2.5f,IRenderer::Center);
@@ -485,6 +481,8 @@ namespace visualizer
     m_ReefPlayerInfo.clear();
     m_ReefPlayerInfo.reserve(m_game->states.size() * 2);
 
+    m_Bubbles.clear();
+
     m_Tiles.clear();
 
     start();
@@ -581,6 +579,16 @@ namespace visualizer
 
                    cout<<"Spawn: "<<state<<endl;
               }
+              else if(j->type == parser::PLAYERTALK)
+              {
+                  parser::playerTalk &talk = (parser::playerTalk&)*j;
+                  stringstream talkstring;
+                  talkstring << "(" << state << ") " << talk.message;
+                  //turn[-1]["TALK"] = talkstring.str().c_str();
+
+                  //cout<<"hello Talk"<<endl;
+                  //cout<<talkstring.str() << endl;
+              }
           }
       }
 
@@ -652,8 +660,6 @@ namespace visualizer
 
                         pDropAnim->addKeyFrame( new DrawMovingAnimation( pDropAnim ) );
                         turn.addAnimatable(pDropAnim);
-
-
                     }
                 }
                 else
@@ -676,6 +682,12 @@ namespace visualizer
                         {
                            m_Trash[state].erase(pickupAnim.targetID);
                         }
+
+                        SmartPointer<MovingSpriteAnimation> pDropAnim = new MovingSpriteAnimation(glm::vec2(trash.x,trash.y),
+                            glm::vec2(p.second.x, p.second.y),glm::vec2(1.0f),"trash",1);
+
+                        pDropAnim->addKeyFrame( new DrawMovingAnimation( pDropAnim ) );
+                        turn.addAnimatable(pDropAnim);
                     }
                 }
 
@@ -740,6 +752,8 @@ namespace visualizer
         turn[p.second.id]["Fish Health"] = p.second.currentHealth;
         turn[p.second.id]["Max Health"] = p.second.maxHealth;
         turn[p.second.id]["Attack Power"] = p.second.attackPower;
+
+
      }
 
       // Loop over all the trash in the current turn

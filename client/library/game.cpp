@@ -329,6 +329,11 @@ DLLEXPORT int fishMove(_Fish* object, int x, int y)
   if(c->Tiles[x*c->mapHeight +y].owner == 3){
     return 0;
   }
+  //check egg
+  if(c->Tiles[x*c->mapHeight+y].hasEgg == true)
+  {
+     return 0;
+  }
 
   //Decrement movement
   object->movementLeft = object->movementLeft-1;
@@ -368,7 +373,7 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
     return 0;
   }
   //cannot pick up a weight of 0
-  else if(weight == 0)
+  else if(weight < 1)
   {
     return 0;
   }
@@ -377,12 +382,22 @@ DLLEXPORT int fishPickUp(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
+  else if(tile->trashAmount < 1)
+  {
+     return 0;
+  }
 
   if(object->species != 6) //Tomcod
     object->currentHealth -= weight;
 
   tile->trashAmount -= weight;
   object->carryingWeight += weight;
+
+  if(object->currentHealth <= 0)
+  {
+    //add weight to tile where target died
+    c->Tiles[object->x * c->mapHeight + object->y].trashAmount += object->carryingWeight;
+  }
 
   return 1;
 }
@@ -404,10 +419,23 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
   {
     return 0;
   }
+  else if((abs(object->x - tile->x) + abs(object->y - tile->y)) != 1)
+  {
+     return 0;
+  }
   //Cannot drop more than the fish is carrying
   else if(weight > object->carryingWeight)
   {
     return 0;
+  }
+  else if(weight < 1)
+  {
+     return 0;
+  }
+  //Do not drop on an egg
+  else if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
+  {
+     return 0;
   }
   //Do not drop on top of another fish.
   for(int ii = 0; ii < c->FishCount; ii++) {
@@ -417,11 +445,6 @@ DLLEXPORT int fishDrop(_Fish* object, _Tile* tile, int weight)
         return 0;
       }
     }
-  }
-  //Do not drop on an egg
-  if(c->Tiles[c->mapHeight * tile->x + tile->y].hasEgg)
-  {
-     return 0;
   }
 
   //add weight to tile
@@ -504,6 +527,11 @@ DLLEXPORT int fishAttack(_Fish* object, _Fish* target)
     target->movementLeft = -1;
     target->attacksLeft = -1;
   }
+  else
+  {
+    target->currentHealth -= object->attackPower;
+  }
+
   object->attacksLeft -= 1;
 
   if(target->currentHealth <= 0)
