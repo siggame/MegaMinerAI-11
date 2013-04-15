@@ -4,7 +4,11 @@
 #include <cstring>
 #include <cassert>
 
+#ifdef _WIN32
+#include "winlex.h"
+#else
 #include "lex.yy.h"
+#endif
 
 #define END 0
 #define STRING 1

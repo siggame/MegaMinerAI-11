@@ -445,6 +445,7 @@ static bool parsePlayer(Player& object, sexp_t* expression)
 
 static bool parseSpawn(spawn& object, sexp_t* expression)
 {
+    cout <<"Spawn parser"<<endl;
   sexp_t* sub;
   if ( !expression ) return false;
   object.type = SPAWN;
@@ -655,6 +656,7 @@ static bool parseAttack(attack& object, sexp_t* expression)
 }
 static bool parsePlayerTalk(playerTalk& object, sexp_t* expression)
 {
+    cout<<"talk"<<endl;
   sexp_t* sub;
   if ( !expression ) return false;
   object.type = PLAYERTALK;
@@ -857,8 +859,9 @@ static bool parseSexp(Game& game, sexp_t* expression)
 
         animations[ ((AnimOwner*)&*animation)->owner ].push_back( animation );
       }
-      if(string(ToLower( sub->val ) ) == "player-talk")
+      if(string(ToLower( sub->val ) ) == "playertalk")
       {
+         // cout<<"playerTalk"<<endl;
         SmartPointer<playerTalk> animation = new playerTalk;
         if ( !parsePlayerTalk(*animation, expression) )
           return false;

@@ -158,7 +158,7 @@ class Match(DefaultGameWorld):
       if min <= key[0] < max:
         damage+=self.trashDict[key]
     #TODO: verify sea star damage works properly with actual gamelogs!
-    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages == star.owner^1 ]
+    stars = [ star.attackPower for star in self.objects.fishes if star.species == 0 and star.attacksLeft>0 and self.getTile(star.x,star.y).damages == star.owner^1 and star.owner != player]
     starDamage = sum(stars)
     damage += starDamage
     if starDamage > 0:
@@ -176,7 +176,7 @@ class Match(DefaultGameWorld):
 
     print "Starting game"
 
-    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False, -1]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
+    self.grid = [[[ self.addObject(Tile,[x, y, 0, 2, False, 2]) ] for y in range(self.mapHeight)] for x in range(self.mapWidth)]
     for tile in self.objects.tiles:
       if tile.x < self.mapWidth/2 - self.boundLength:
         tile.damages = 0
@@ -413,7 +413,7 @@ class Match(DefaultGameWorld):
     updated = [i for i in self.objects.values() if i.__class__ is Species and i.updatedAt > self.turnNumber-3]
     if updated:
       typeLists.append(["Species"] + [i.toList() for i in updated])
-    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish and (i.owner is self.playerID or connection.type != "player")])
+    typeLists.append(["Fish"] + [i.toList() for i in self.objects.values() if i.__class__ is Fish])
     typeLists.append(["Player"] + [i.toList() for i in self.objects.values() if i.__class__ is Player])
 
     msg.extend(typeLists)
